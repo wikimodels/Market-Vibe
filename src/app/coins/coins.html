@@ -1,0 +1,71 @@
+@if (isLoading()) {
+<div class="loading-spinner">
+  <app-loading-spinner></app-loading-spinner>
+</div>
+} @else {
+
+<div class="coins-header">
+
+  <app-search-filter (searchChange)="onFilterChange($event)"></app-search-filter>
+
+  <h2 class="header-title">Coins <span class="navbar-color">({{selectionCount() > 0 ? selectionCount():
+      '0'}}/{{coins().length}})</span></h2>
+
+  <div class="header-actions">
+
+    <app-panel-button [iconPath]="hasSelection() ? 'check_box' : 'check_box_outline_blank'"
+      (actionClick)="toggleSelectAll()" [tooltipText]="hasSelection() ? 'Снять выделение' : 'Выбрать все'"
+      [disabled]="!hasSelection()">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'assets/icons/tv.svg'" (actionClick)="openTradingView()"
+      [tooltipText]="'Открыть TradingView'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'assets/icons/cg.svg'" (actionClick)="openCoinGlass()"
+      [tooltipText]="'Открыть CoinGlass'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'assets/icons/bitcoin.svg'" (actionClick)="openBitcoinChart()"
+      [tooltipText]="'График BTC'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'assets/icons/coin-analytics.svg'" (actionClick)="goToCoinAnalytics()"
+      [tooltipText]="'Coin Analytics'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="sortIcon()" (actionClick)="sortOut()" [tooltipText]="'Сортировка'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'candlestick_chart'" (actionClick)="goToVwapAlertCharts()"
+      [tooltipText]="'VWAP Alerts'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'show_chart'" (actionClick)="goToLineAlertCharts()" [tooltipText]="'Line Alerts'">
+    </app-panel-button>
+
+    <app-panel-button [iconPath]="'close'" (actionClick)="closeWindows()" [tooltipText]="'Закрыть все'">
+    </app-panel-button>
+
+  </div>
+
+</div>
+
+<div class="coin-pills-container">
+
+  @for (coin of filteredCoins(); track coin.symbol) {
+  <app-coin-item [coin]="coin" />
+  } @empty {
+  <div class="empty-list-message">
+    <span>
+      @if (filterText()) {
+      Монет по фильтру "{{filterText()}}" не найдено.
+      } @else {
+      Не удалось загрузить монеты.
+      }
+    </span>
+  </div>
+  }
+</div>
+
+}

@@ -1,0 +1,79 @@
+@mixin analytics-chart-theme {
+  :host {
+    display: block;
+    width: 100%;
+  }
+
+  .analytics-container {
+    width: 100%;
+  }
+
+  /* Заголовок как в референсе */
+  .chart-header {
+    text-align: center;
+    margin: 16px 0;
+    font-weight: 500;
+    color: #ffffff;
+    font-size: 1.2rem;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+
+      .info-btn {
+        color: #aaa;
+        transform: scale(0.8);
+        transition: color 0.2s;
+
+        /* Фикс размеров кнопки */
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  /* Обертка графика */
+  .chart-wrapper {
+    width: 100%;
+    min-height: 500px; /* Как в оригинале */
+
+    /* Тот самый фон */
+    background: var(--surface-bg, #161619);
+    border-radius: 4px;
+
+    margin-top: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Выравнивание по верху */
+
+    padding-top: 20px;
+    position: relative;
+  }
+
+  /* ECharts */
+  .echart-instance {
+    width: 100%;
+    height: 500px; /* Явная высота */
+    display: block;
+  }
+
+  /* Нет данных */
+  .no-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    color: #666;
+    font-size: 14px;
+    padding: 40px;
+  }
+}

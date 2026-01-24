@@ -1,0 +1,27 @@
+<div class="coin-links">
+
+  @if (hasBinance()) {
+  <div class="circle-btn" (click)="clickBinance($event)" title="Open in Binance">
+    <img [src]="binanceLogo()" alt="Binance">
+  </div>
+  }
+
+  @if (hasBybit()) {
+  <div class="circle-btn" (click)="clickBybit($event)" title="Open in Bybit">
+    <img [src]="bybitLogo()" alt="Bybit">
+  </div>
+  }
+
+  @if (tvLink()) {
+  <div class="circle-btn" (click)="clickTv($event)" title="Open in TradingView">
+    <img [src]="tvLogo()" alt="TradingView">
+  </div>
+  }
+
+  @if (cgLink()) {
+  <div class="circle-btn" (click)="clickCg($event)" title="Open in Coinglass">
+    <img [src]="cgLogo()" alt="Coinglass">
+  </div>
+  }
+
+</div>

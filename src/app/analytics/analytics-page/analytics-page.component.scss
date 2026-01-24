@@ -1,0 +1,136 @@
+/* analytics-page.component.scss */
+
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden; /* Скроллим только контент */
+}
+
+.analytics-layout {
+  display: flex;
+  height: 100%;
+  background-color: #0b0b0e; /* Глобальный фон */
+  color: #e0e0e0;
+}
+
+/* === SIDEBAR === */
+.analytics-sidebar {
+  width: 240px;
+  background-color: #15151a;
+  border-right: 1px solid #2a2a35;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+
+  .sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #2a2a35;
+    h3 { margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+
+    .nav-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #9090a0;
+      padding: 12px 15px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 2px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #1f1f25;
+        color: #fff;
+      }
+
+      &.active {
+        background: #2979ff; /* Активный цвет (синий) */
+        color: #fff;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+/* === CONTENT === */
+.analytics-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  .content-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #2a2a35;
+    background: #0b0b0e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h1 { margin: 0; font-size: 24px; font-weight: 300; }
+
+    .loading-badge {
+      background: #ff9100;
+      color: #000;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+  }
+}
+
+/* === TABS OVERRIDES === */
+::ng-deep .analytics-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Header */
+  .mat-mdc-tab-header {
+    background: #15151a;
+    border-bottom: 1px solid #2a2a35;
+  }
+
+  .mat-mdc-tab-label-container {
+    padding: 0 20px;
+  }
+
+  /* Text Color */
+  .mat-mdc-tab .mdc-tab__text-label {
+    color: #9090a0 !important;
+  }
+
+  .mat-mdc-tab--active .mdc-tab__text-label {
+    color: #fff !important;
+  }
+
+  /* Body Scroll */
+  .mat-mdc-tab-body-wrapper {
+    flex: 1;
+    overflow: hidden;
+  }
+}
+
+.tab-body {
+  height: 100%;
+  overflow-y: auto; /* Скроллим только тело таба */
+  padding: 0;
+}
+
+.doc-wrapper {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}

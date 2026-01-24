@@ -1,0 +1,43 @@
+<!-- Вся HTML-разметка для navbar теперь здесь -->
+<mat-toolbar>
+  <span>Market Vibe</span>
+  <app-line-alert-menu></app-line-alert-menu>
+  <app-vwap-alert-menu></app-vwap-alert-menu>
+  <span class="spacer"></span>
+  <button mat-icon-button aria-label="Coins" routerLink="/coins">
+    <mat-icon svgIcon="dollar"></mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Working Coins" routerLink="/analytics">
+    <mat-icon svgIcon="analytics"></mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/coins-aggregated-analytics">
+    <mat-icon svgIcon="hammer-white"></mat-icon>
+  </button>
+
+  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/recent-signals-audit">
+    <mat-icon svgIcon="report"></mat-icon>
+  </button>
+
+  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/settings">
+    <mat-icon svgIcon="settings"></mat-icon>
+  </button>
+
+
+  <button mat-icon-button aria-label="Clear Cache" routerLink="/working-coins">
+    <mat-icon svgIcon="delete" (click)="clearIndexDbCache()"></mat-icon>
+  </button>
+
+  @if (user$ | async; as currentUser) {
+  <div class="user-profile">
+    <span class="user-name">Hi, {{ currentUser.displayName?.split(' ')?.[0] }}!</span>
+    <img [src]="getGravatarUrl(currentUser.email)" alt="Avatar" class="user-avatar">
+    <button mat-icon-button (click)="logout()">
+      <mat-icon svgIcon="logout"></mat-icon>
+    </button>
+  </div>
+  } @else {
+  <button mat-icon-button (click)="login()">
+    <mat-icon svgIcon="login"></mat-icon>
+  </button>
+  }
+</mat-toolbar>

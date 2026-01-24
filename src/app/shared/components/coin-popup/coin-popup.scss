@@ -1,0 +1,67 @@
+:host {
+  display: block;
+  position: fixed; /* Позиционируется директивой */
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.popup-container {
+  /* 🔥 HARMONY: Темный фон с легким оттенком + бордюр в цвет пилюли */
+  background-color: #1e1e1e;
+  border: 1px solid #5a4455;
+
+  /* 🔥 PILL SHAPE: Закругляем полностью */
+  border-radius: 50px;
+
+  /* Чуть больше отступ с боков из-за закругления */
+  padding: 6px 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  /* Тень помягче и глубже */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+  /* Анимация (оставляем как было, она норм) */
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  transition: opacity 0.2s ease-out, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Стрелочка вниз */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    /* Цвет стрелки должен совпадать с фоном попапа (#1e1e1e) */
+    border-color: #1e1e1e transparent transparent transparent;
+  }
+
+  /* Иконки */
+  img {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    background-color: #fff;
+    object-fit: contain;
+
+    /* Чуть приглушаем иконки, пока не наведем */
+    filter: brightness(0.9);
+
+    &:hover {
+      transform: scale(1.2);
+      filter: brightness(1.1);
+    }
+  }
+}
+
+.popup-container.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}

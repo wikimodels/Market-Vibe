@@ -1,0 +1,58 @@
+<h1>MCI: Полная Анатомия (Tech & Deep)</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Техническая Правда</h2>
+  <p><strong>MCI (Market Condition Index)</strong> — это весы, на которых лежат <strong>Память (Hurst)</strong> и
+    <strong>Гладкость (Fractal Dimension)</strong>.</p>
+
+  <div class="doc-formula">
+    MCI = 0.5 * (Hurst - 0.5) + 0.5 * (0.79 - FD)
+  </div>
+
+  <p><strong>Важно:</strong> MCI показывает Глобальный Режим Рынка (Dynamic Window). Это фундаментальный диагноз.</p>
+</div>
+
+<div class="doc-card">
+  <h2>2. Спектр Состояний</h2>
+  <div class="doc-visual-bar grad-spectrum"></div>
+  <div class="doc-labels">
+    <span>CHAOS (< -0.3)</span>
+        <span>NICE REV (~0)</span>
+        <span>SMART TREND (> 0.4)</span>
+  </div>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>3. Структурный Боковик ("Nice Candles")</h2>
+  <p>Зона около нуля. Равновесие сил.</p>
+  <ul>
+    <li><strong>Визуально:</strong> Чистая синусоида или канал. Свечи плотные.</li>
+    <li><strong>Действие:</strong> <span class="doc-tag t-blue">GOLD MINE</span> для ботов.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-red">
+  <h2>4. Хаос и Шум ("Shit & Evil")</h2>
+  <p>Зона глубокого минуса (MCI < -0.3).</p>
+      <ul>
+        <li><strong>Математика:</strong> Hurst (~0.5) + High FD (Наждачка).</li>
+        <li><strong>Визуально:</strong> "Мясорубка". Длинные тени, перекрытия баров.</li>
+        <li><strong>Действие:</strong> <span class="doc-tag t-red">TOILET</span>. Технический анализ не работает.</li>
+      </ul>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>5. Институциональный Тренд</h2>
+  <p>Зона высокого плюса (MCI > 0.4).</p>
+  <ul>
+    <li><strong>Суть:</strong> Алгоритмическое движение (TWAP). Самое безопасное для удержания позиции.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>MCI-скрининг</h2>
+  <div class="doc-screening">
+    MCI < -0.3=автоматическое исключение из пула.<br>
+      MCI > 0.4 = приоритет для трендовых стратегий.
+  </div>
+</div>

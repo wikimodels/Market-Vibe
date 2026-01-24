@@ -1,0 +1,35 @@
+<div class="audit-table-container">
+
+  @if (data && data.length > 0) {
+  <div class="table-content">
+
+    <div class="table-header">
+      <div class="col-time">Candle Time</div>
+      <div class="col-assets">Triggered Assets</div>
+    </div>
+
+    @for (row of data; track row.openTime) {
+    <div class="table-row">
+
+      <div class="col-time">
+        <span class="date">{{ row.openTime | date:'dd MMM' }}</span>
+        <span class="time">{{ row.openTime | date:'HH:mm' }}</span>
+      </div>
+
+      <div class="col-assets">
+        @for (coin of row.coins; track $index) {
+        <app-compact-coin-item [coin]="coin"></app-compact-coin-item>
+        }
+      </div>
+
+    </div>
+    }
+
+  </div>
+  } @else {
+  <div class="no-data">
+    No signals found for {{ timeframeLabel }}
+  </div>
+  }
+
+</div>

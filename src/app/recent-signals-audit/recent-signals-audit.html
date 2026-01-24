@@ -1,0 +1,21 @@
+<div class="analytics-container">
+
+  <div class="header-section">
+    <h2>Recent Signals Audit</h2>
+    <p class="subtitle">Select a strategy to open detailed multi-timeframe analysis</p>
+  </div>
+
+  <div class="controls-bar">
+    <div class="metrics-nav">
+
+      @for (strat of strategies; track strat.id) {
+      <button class="nav-pill" (click)="openStrategy(strat)">
+        {{ strat.navLabel }}
+        <span class="arrow">↗</span>
+      </button>
+      }
+
+    </div>
+  </div>
+
+</div>

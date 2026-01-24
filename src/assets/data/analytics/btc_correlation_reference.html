@@ -1,0 +1,90 @@
+<h1>Справочник метрик корреляции (Market Module)</h1>
+
+<div class="doc-card accent-blue">
+  <h2>
+    btc_corr_1d_w30
+    <span class="doc-tag t-blue">Основная</span>
+  </h2>
+  <p><strong>Что это:</strong> Коэффициент корреляции Пирсона между активом и BTC. Рассчитывается на основе
+    <em>логарифмических доходностей</em>.</p>
+
+  <div class="doc-formula">
+    Corr = Cov(R<sub>asset</sub>, R<sub>btc</sub>) / (σ<sub>asset</sub> · σ<sub>btc</sub>)
+    <div class="desc">Где R — логарифмическая доходность за 1 день. Окно расчета: 30 дней.</div>
+  </div>
+
+  <p><strong>Интерпретация значений:</strong></p>
+  <ul>
+    <li><strong>0.7 ... 1.0:</strong> Сильная связь. Актив почти полностью копирует движения BTC.</li>
+    <li><strong>0.4 ... 0.7:</strong> Умеренная связь. Общее направление совпадает, но у актива есть свой "характер".
+    </li>
+    <li><strong>0.0 ... 0.4:</strong> Слабая связь. Актив живет своей жизнью (новостные пампы, щиткоины).</li>
+    <li><strong>
+        < 0:</strong> Отрицательная корреляция. Актив ходит против рынка (редкость).</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>
+    btc_corr_stability_current_correlation
+    <span class="doc-tag t-purple">Вспомогательная</span>
+  </h2>
+  <p><strong>Что это:</strong> Технический дубликат первой метрики. Используется для верификации анализа стабильности.
+  </p>
+  <div class="doc-screening">
+    Всегда должно совпадать с <code>btc_corr_1d_w30</code>.
+  </div>
+</div>
+
+<div class="doc-card accent-red">
+  <h2>
+    btc_corr_stability_correlation_std
+    <span class="doc-tag t-red">Волатильность связи</span>
+  </h2>
+  <p><strong>Что это:</strong> Стандартное отклонение самой корреляции. Показывает, насколько сильно меняется
+    "настроение" монеты к Биткоину.</p>
+
+  <div class="doc-formula">
+    σ<sub>corr</sub> = √ [ Σ(xᵢ - x̄)² / N ]
+    <div class="desc">Измеряет разброс значений корреляции внутри окна стабильности.</div>
+  </div>
+
+  <p><strong>Интерпретация:</strong></p>
+  <ul>
+    <li><strong>Низкое значение (~0):</strong> Связь постоянна.</li>
+    <li><strong>Высокое значение (> 0.2):</strong> Связь хаотична. Сегодня монета ходит за BTC, завтра — сама по себе.
+    </li>
+  </ul>
+</div>
+
+<div class="doc-card accent-green">
+  <h2>
+    btc_corr_stability_score
+    <span class="doc-tag t-green">Надежность</span>
+  </h2>
+  <p><strong>Что это:</strong> Интегральная оценка предсказуемости поведения актива относительно Биткоина.</p>
+
+  <div class="doc-formula">
+    Score = max(0, 1 - σ<sub>corr</sub>)
+    <div class="desc">Обратная величина от стандартного отклонения корреляции.</div>
+  </div>
+
+  <table class="doc-table">
+    <tbody>
+      <tr class="row-green">
+        <td><strong>0.8 - 0.99</strong></td>
+        <td>Высокая надежность. Связь стабильна.</td>
+      </tr>
+      <tr class="row-grey">
+        <td><strong>0.5 - 0.8</strong></td>
+        <td>Нормальная ситуация. Корреляция "дышит".</td>
+      </tr>
+      <tr class="row-red">
+        <td><strong>
+            < 0.5</strong>
+        </td>
+        <td>Непредсказуемое поведение. Нельзя полагаться на хедж.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

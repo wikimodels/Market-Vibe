@@ -1,0 +1,99 @@
+<h1>ATR Stability: Предсказуемость Риска</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Что мы считаем? (Code Logic)</h2>
+  <p><strong>ATR Stability</strong> измеряет постоянство волатильности. Мы рассчитываем <strong>Коэффициент
+      Вариации</strong> (CV) для значений ATR.</p>
+
+  <div class="doc-formula">
+    Stability = 1 / (StdDev(ATR) / Mean(ATR))
+  </div>
+
+  <p>Мы инвертируем вариацию, чтобы получить метрику "Стабильности":</p>
+  <ul>
+    <li><strong>High Value (>10):</strong> ATR почти не меняется. Свечи одинакового размера. Риск константный.</li>
+    <li><strong>Low Value (<3):< /strong> ATR скачет. То штиль, то шторм. Риск непредсказуем.</li>
+  </ul>
+
+  <div class="doc-screening">
+    Важно: Метрика говорит не о <strong>размере</strong> волатильности, а о её <strong>постоянстве</strong>.
+  </div>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>2. High Stability (>10): CRUISING MODE</h2>
+  <p><strong>Состояние:</strong> Предсказуемый рынок.</p>
+  <ul>
+    <li><strong>Физика:</strong> Участники рынка договорились о диапазоне. Ликвидность распределена равномерно.</li>
+    <li><strong>Для Ботов:</strong> Рай. Стопы не "слизывает" случайной тенью.</li>
+    <li><strong>Трейдинг:</strong> Можно уверенно использовать Position Sizing.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>3. Medium Stability (3-10): NORMAL CONDITIONS</h2>
+  <p><strong>Состояние:</strong> Обычная динамика.</p>
+  <ul>
+    <li><strong>Характер:</strong> Волатильность меняется, но в разумных пределах.</li>
+    <li><strong>Действие:</strong> Стандартный риск-менеджмент. Требуется регулярный пересчет ATR для стопов.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-red">
+  <h2>4. Low Stability (<3): TURBULENCE</h2>
+      <p><strong>Состояние:</strong> Аритмия / Шок.</p>
+      <ul>
+        <li><strong>Физика:</strong> Шоки ликвидности. Свечи то сжимаются в точку, то взрываются на 5%.</li>
+        <li><strong>Опасность:</strong> Невозможно рассчитать риск. Стоп в 1% может быть выбит шумом за секунду.</li>
+        <li><strong>Характер:</strong> Мемкоины, low-cap, пампы.</li>
+      </ul>
+</div>
+
+<div class="doc-card">
+  <h2>5. Размер vs Стабильность</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Сценарий</th>
+        <th>ATR Value</th>
+        <th>ATR Stability</th>
+        <th>Вердикт</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Стабильный Памп</strong></td>
+        <td>HIGH (Большие)</td>
+        <td style="color:var(--c-blue)">HIGH (Одинаковые)</td>
+        <td>Отлично торгуется. Мощный ход.</td>
+      </tr>
+      <tr>
+        <td><strong>Взрывной Памп</strong></td>
+        <td>RISING (Растет)</td>
+        <td style="color:var(--c-red)">LOW (Меняется)</td>
+        <td>Опасно. Вход на хаях волатильности.</td>
+      </tr>
+      <tr>
+        <td><strong>Хаотичный Чоп</strong></td>
+        <td>VARIABLE</td>
+        <td style="color:var(--c-red)">LOW (Скачет)</td>
+        <td>Худший сценарий. Не торговать.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-green">
+  <h2>7. Классификация Монет (Характер)</h2>
+  <p>Оцениваем среднюю стабильность за 6 месяцев.</p>
+
+  <div class="doc-code">
+    # Класс A: "Дисциплинированная" (BTC)
+    Stability > 8. Идеально для алготрейдинга.
+
+    # Класс B: "Обычная" (ETH, SOL)
+    Stability 3-8. Нужна адаптация.
+
+    # Класс C: "Эмоциональная" (SHIB, PEPE)
+    Stability < 3. Только ручная спекуляция. </div>
+  </div>

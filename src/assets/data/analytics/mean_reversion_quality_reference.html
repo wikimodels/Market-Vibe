@@ -1,0 +1,66 @@
+<h1>MR Quality: Физика Эластичности Цены</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Фундаментальный Принцип</h2>
+  <p><strong>MR Quality</strong> — мера <strong>Эластичности</strong> цены. Оценивает силу "гравитации", возвращающей
+    цену к скользящей средней (SMA).</p>
+  <div class="doc-formula">
+    Коэффициент Эластичности = R² (Предсказуемость Возврата)
+  </div>
+</div>
+
+<div class="doc-card accent-teal">
+  <h2>2. High MR Quality (> 0.7): Режим "Упругость"</h2>
+  <p><strong>Состояние:</strong> Структурный Канал / Флэт.</p>
+  <p>Цена ведет себя как гармонический осциллятор. Отклонения имеют высокую вероятность возврата.</p>
+  <ul>
+    <li><strong>Применение:</strong> <span class="doc-tag t-blue">GRID BOTS</span>. Идеальная среда для сеток.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-orange">
+  <h2>3. Low MR Quality (< 0.2): Режим "Разрыв" </h2>
+      <p><strong>Состояние:</strong> Пробой (Breakout) или Потеря Структуры. "Резинка порвана".</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Сценарий</th>
+            <th>Интерпретация</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-red">
+            <td><strong>MOMENTUM</strong></td>
+            <td><strong>Трендовый импульс.</strong> Цена уходит в свободный полет. Возврата не будет.</td>
+          </tr>
+          <tr class="row-grey">
+            <td><strong>NOISE</strong></td>
+            <td><strong>Белый Шум.</strong> Хаотичные колебания без вектора.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="doc-code">
+        # Важно:
+        Низкий MR Quality НЕ означает "плохой рынок".
+        Он означает "Рынок НЕ возвращается к средней".
+        Для трендовика это лучший сигнал (Breakout).
+      </div>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>4. Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <tbody>
+      <tr>
+        <td>MRQ > 0.7 + MCI ≈ 0</td>
+        <td>Высококачественный флэт (Grid)</td>
+      </tr>
+      <tr>
+        <td>MRQ < 0.2 + MCI> 0.4</td>
+        <td>Сильный тренд с разрывом средней (Trend)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

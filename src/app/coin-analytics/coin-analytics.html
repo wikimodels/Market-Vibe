@@ -1,0 +1,66 @@
+<div class="analytics-layout">
+
+  @if (!notFound()) {
+  <header class="header-section">
+    @if (coin(); as c) {
+    <img [src]="'assets/logo/' + symbol().toLowerCase() + '.svg'" (error)="img.src='assets/logo/no-name.svg'" #img
+      class="coin-logo" alt="logo">
+
+    <h1>{{ symbol() }}</h1>
+
+    <div class="external-links">
+
+      @if (tvLink) {
+      <a [href]="tvLink" target="_blank" class="link-circle" title="Open in TradingView">
+        <img src="assets/icons/tv.svg" alt="TV" (error)="tvImg.style.display='none'" #tvImg>
+        <span class="fallback-text" [style.display]="tvImg.style.display === 'none' ? 'block' : 'none'">TV</span>
+      </a>
+      }
+
+      @if (cgLink) {
+      <a [href]="cgLink" target="_blank" class="link-circle" title="Open in CoinGlass">
+        <img src="assets/icons/cg.svg" alt="CG" (error)="cgImg.style.display='none'" #cgImg>
+        <span class="fallback-text" [style.display]="cgImg.style.display === 'none' ? 'block' : 'none'">CG</span>
+      </a>
+      }
+
+      @for (ex of c.exchanges; track ex) {
+      <a [href]="linksService.exchangeLink(c.symbol, ex)" target="_blank" class="link-circle" [title]="'Open in ' + ex">
+        <img [src]="linksService.exchangeLogoLink(ex)" [alt]="ex" (error)="exImg.style.display='none'" #exImg>
+        <span class="fallback-text" [style.display]="exImg.style.display === 'none' ? 'block' : 'none'">{{ ex[0]
+          }}</span>
+      </a>
+      }
+    </div>
+    }
+  </header>
+
+  @if (!isLoading()) {
+  <nav class="metrics-nav">
+    @for (tab of tabs; track tab.id) {
+    <button class="nav-pill" [class.active]="activeTab().id === tab.id" (click)="selectTab(tab)">
+      {{ tab.label }}
+    </button>
+    }
+  </nav>
+  }
+
+  <main class="content-area">
+    @if (isLoading()) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    } @else {
+    <app-coin-analytics-charts [title]="chartTitle()" [chartsData]="chartsData()" [currentTab]="activeTab()">
+    </app-coin-analytics-charts>
+    }
+  </main>
+
+  } @else {
+  <div class="not-found-container">
+    <h2>Coin Not Found</h2>
+    <p>The asset <span class="wrong-symbol">"{{ symbol() }}"</span> is not in the monitored database.</p>
+  </div>
+  }
+
+</div>

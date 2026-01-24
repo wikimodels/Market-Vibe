@@ -1,0 +1,84 @@
+// :host - это сам <app-coin-item>
+:host {
+  display: block; // Компонент должен быть блочным, чтобы занимать место
+}
+
+.coin-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 6px;
+  border-radius: 99px;
+  background-color: #5a4455;//var(--mat-sys-surface);
+
+  // 🚀 ИЗМЕНЕНО: Добавлен прозрачный border для предотвращения "прыжка"
+  border: 1px solid transparent;
+
+  // 🚀 ИЗМЕНЕНО: Плавный переход для hover-эффекта и выделения
+  transition: all 0.2s ease-in-out; // (all включает border, filter, box-shadow)
+  cursor: pointer;
+}
+
+// 🚀 ИЗМЕНЕНО: Hover-эффект (теперь :not(.selected))
+:host:hover .coin-pill:not(.selected) {
+  filter: brightness(1.15); // Делаем фон чуть ярче
+}
+
+// 🚀 ДОБАВЛЕНО: Стиль "Неоновая обводка" при выборе
+.coin-pill.selected {
+  $neon-color: #E000B0; // Цвет мадженты из вашего логотипа
+
+  border-color: $neon-color;
+  box-shadow: 0 0 4px $neon-color, 0 0 8px $neon-color;
+}
+
+
+// --- Левая часть ---
+.coin-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// 🚀 ИЗМЕНЕНО: Стиль главного логотипа (стал крупнее)
+.coin-logo {
+  border-radius: 50%;
+  width: 28px; // (был 20px)
+  height: 28px; // (был 20px)
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// 🚀 ИЗМЕНЕНО: Текст стал жирнее для баланса
+.coin-symbol {
+  padding-right: 3px;
+  font-weight: 300; // (был 200)
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface);
+}
+
+// --- Правая часть ---
+.coin-links {
+  display: flex;
+  align-items: center;
+  gap: 6px; // (был 4px) "Больше воздуха"
+}
+
+// 🚀 ДОБАВЛЕНО: Стиль для иконок сервисов (Binance, TV...)
+.service-logo {
+  // Иконки сервисов меньше, чем главный логотип
+  width: 18px; // (был 20px)
+  height: 18px; // (был 20px)
+  object-fit: contain; // Сохраняем пропорции (не cover)
+  border-radius: 50%;  // Небольшое скругление (НЕ 50%)
+  cursor: pointer;
+
+  // 🚀 ДОБАВЛЕНО: Плавный переход для hover-эффекта
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+// 🚀 ДОБАВЛЕНО: Hover-эффект для иконок сервисов
+.service-logo:hover {
+  transform: scale(1.1); // "Оживление" иконки
+  opacity: 0.9;
+}

@@ -1,0 +1,68 @@
+<div class="analytics-container">
+
+  <h2 class="chart-header">
+    <div class="title-group">
+      <span>{{ title }}</span>
+
+      @if (currentTab?.id) {
+      <button mat-icon-button (click)="showInfo()" class="info-btn" title="Show Metric Info">
+        <mat-icon>info_outline</mat-icon>
+      </button>
+      }
+    </div>
+  </h2>
+
+  <mat-tab-group mat-stretch-tabs="true" animationDuration="0ms">
+
+    <mat-tab label="1h">
+      <div class="chart-wrapper">
+        @if (chartsData && chartsData['1h']) {
+        <div echarts [options]="chartsData['1h']" class="echart-instance"></div>
+        } @else {
+        <div class="no-data">No data for 1h</div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="4h">
+      <div class="chart-wrapper">
+        @if (chartsData && chartsData['4h']) {
+        <div echarts [options]="chartsData['4h']" class="echart-instance"></div>
+        } @else {
+        <div class="no-data">No data for 4h</div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="8h">
+      <div class="chart-wrapper">
+        @if (chartsData && chartsData['8h']) {
+        <div echarts [options]="chartsData['8h']" class="echart-instance"></div>
+        } @else {
+        <div class="no-data">No data for 8h</div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="12h">
+      <div class="chart-wrapper">
+        @if (chartsData && chartsData['12h']) {
+        <div echarts [options]="chartsData['12h']" class="echart-instance"></div>
+        } @else {
+        <div class="no-data">No data for 12h</div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="1d">
+      <div class="chart-wrapper">
+        @if (chartsData && chartsData['D']) {
+        <div echarts [options]="chartsData['D']" class="echart-instance"></div>
+        } @else {
+        <div class="no-data">No data for 1d</div>
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

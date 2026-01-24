@@ -1,0 +1,154 @@
+// --- 🎨 ПЕРЕМЕННЫЕ ---
+$bg-color: #2b2b2b;          // Фон меню
+$hover-color: rgba(255, 255, 255, 0.08); // Фон при наведении
+$active-click: rgba(255, 255, 255, 0.12); // Фон при нажатии
+$text-color: #e0e0e0;        // Цвет текста
+$icon-color: #ffffff;        // Цвет иконок
+$anim-curve: cubic-bezier(0.2, 0.8, 0.2, 1); // Кривая для плавности
+
+.custom-dropdown-container {
+  position: relative;
+  display: inline-block;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// --- 🔘 КНОПКА В ШАПКЕ ---
+.trigger-btn {
+  background: transparent;
+  border: none;
+  color: $text-color;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 8px;
+  height: 36px;
+  border-radius: 4px;
+
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+
+  &:hover, &.active {
+    background: $hover-color;
+  }
+
+  .burger-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+}
+
+// --- 🔽 ВЫПАДАЮЩЕЕ МЕНЮ ---
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+
+  width: 190px;
+  background-color: $bg-color;
+  border-radius: 8px;
+
+  // Тень (Elevation) по умолчанию
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2),
+              0 8px 10px 1px rgba(0,0,0,.14),
+              0 3px 14px 2px rgba(0,0,0,.12);
+
+  padding: 6px 0;
+  z-index: 1000;
+  overflow: hidden;
+
+  // --- 🪄 АНИМАЦИЯ ЗАКРЫТИЯ (Clean Cut) ---
+
+  // 1. Конечное состояние: полностью прозрачное и БЕЗ ТЕНИ
+  opacity: 0;
+  box-shadow: none; // 👈 ВАЖНО: Убираем тень физически
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.9);
+  transform-origin: top left;
+  pointer-events: none;
+
+  // 2. Настройка переходов для закрытия
+  transition:
+    // Opacity и Shadow исчезают мгновенно (0.08 сек), чтобы не мылить
+    opacity 0.08s ease-out,
+    box-shadow 0.08s ease-out,
+
+    // А размеры (scale) меняются плавно и долго, создавая эффект "улетания"
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+
+    // Visibility переключается в конце
+    visibility 0s linear 0.2s;
+
+  // --- ОТКРЫТОЕ СОСТОЯНИЕ ---
+  &.open {
+    opacity: 1;
+    // Возвращаем тень
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,.2),
+                0 8px 10px 1px rgba(0,0,0,.14),
+                0 3px 14px 2px rgba(0,0,0,.12);
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+
+    // При открытии всё появляется плавно и одновременно
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  // ... (divider без изменений) ...
+  .divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 4px 0;
+  }
+}
+
+// --- 📋 ПУНКТЫ МЕНЮ ---
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: transparent;
+  border: none;
+  color: $text-color;
+
+  padding: 8px 16px;
+  cursor: pointer;
+
+  text-align: left;
+  font-size: 13px;
+  line-height: 20px;
+
+  transition: background 0.1s, transform 0.1s;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+
+  // Эффект "пружинки" (вдавливания) при нажатии
+  &:active {
+    transform: scale(0.96);
+    background-color: $active-click;
+  }
+
+  .icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+
+    mat-icon {
+      color: $icon-color;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<div class="analytics-container">
+
+  <h2 class="chart-header">
+    <div class="title-group">
+      <span>{{ activeConfig().title }}</span>
+    </div>
+  </h2>
+
+  <mat-tab-group mat-stretch-tabs="true" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+
+    @for (tf of timeframes; track tf) {
+    <mat-tab [label]="tf">
+
+      <div class="chart-wrapper">
+
+        @if (isLoading()) {
+        <div class="loading-state">Analyzing historical data...</div>
+        }
+
+        @if (!isLoading()) {
+        <app-audit-table [data]="auditDataCache()[tf]" [timeframeLabel]="tf">
+        </app-audit-table>
+        }
+
+      </div>
+
+    </mat-tab>
+    }
+
+  </mat-tab-group>
+
+</div>

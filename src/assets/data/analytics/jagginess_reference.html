@@ -1,0 +1,84 @@
+<h1>Справочник: Jagginess (Зубчатость)</h1>
+
+<div class="doc-card">
+  <h2>Что такое Jagginess?</h2>
+  <p><strong>Суть:</strong> Мера "шумности" движения цены. Отношение "пройденного пути" к "полезному результату".</p>
+  <p>Это метрика качества свечей. Определяет, насколько легко удерживать позицию, не попадаясь на случайные выносы
+    стоп-лоссов.</p>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>Физический смысл (w20)</h2>
+  <div class="doc-formula">
+    J = ( Σ (High - Low) ) / | Close<sub>end</sub> - Close<sub>start</sub> |
+    <div class="desc">Сумма длин свечей делится на итоговое смещение цены.</div>
+  </div>
+  <p><strong>Аналогия:</strong></p>
+  <ul>
+    <li><strong>Low Jagginess:</strong> Вы прошли 100 метров прямо. Минимум усилий.</li>
+    <li><strong>High Jagginess:</strong> Вы прошли 1 км зигзагами, чтобы продвинуться на 100 метров.</li>
+  </ul>
+</div>
+
+<div class="doc-card">
+  <h2>Интерпретация значений</h2>
+
+  <div class="doc-visual-bar grad-heat"></div>
+  <div class="doc-labels">
+    <span>0.0 (Smooth)</span>
+    <span>0.3 (Normal)</span>
+    <span>0.6+ (Messy)</span>
+  </div>
+
+  <ul>
+    <li>
+      <strong>0.0 ... 0.25 (Идеально)</strong> <span class="doc-tag t-green">CLEAN</span><br>
+      Свечи плотные, фитили короткие. Стоп-лосс в безопасности.
+    </li>
+    <li>
+      <strong>0.25 ... 0.50 (Норма)</strong> <span class="doc-tag t-gold">NORMAL</span><br>
+      Обычный рыночный шум. Требует стандартного риск-менеджмента.
+    </li>
+    <li>
+      <strong>> 0.50 (Грязь / Пила)</strong> <span class="doc-tag t-red">MESSY</span><br>
+      "Мясорубка стопов". Длинные тени, перекрытия. Цена постоянно выбивает трейдеров.
+    </li>
+  </ul>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Стратегия: Hurst + Jagginess</h2>
+  <p>Jagginess работает как <strong>фильтр качества</strong> для сигнала Hurst.</p>
+
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Hurst (Тренд)</th>
+        <th>Jagginess (Шум)</th>
+        <th>Вердикт</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td>Высокий (>0.6)</td>
+        <td>Низкая (<0.3)< /td>
+        <td><strong>Святой Грааль.</strong> Сильный и гладкий тренд. Вход агрессивный.</td>
+      </tr>
+      <tr class="row-grey">
+        <td>Высокий (>0.6)</td>
+        <td>Высокая (>0.6)</td>
+        <td><strong>"Grind" (Опасно).</strong> Тренд есть, но грязный. Широкие стопы, малый леверидж.</td>
+      </tr>
+      <tr class="row-red">
+        <td>Низкий (<0.45)< /td>
+        <td>Высокая (>0.6)</td>
+        <td><strong>Казино.</strong> Боковик с тенями. Гарантированная потеря денег.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="doc-screening" style="border-color: var(--c-red); background: rgba(255, 23, 68, 0.1);">
+    <strong>⚠ ВАЖНО:</strong> Если Hurst хороший (0.60), но Jagginess высокая (0.8) — не торгуйте внутри дня (1H). Вас
+    высадит тенью.
+  </div>
+</div>

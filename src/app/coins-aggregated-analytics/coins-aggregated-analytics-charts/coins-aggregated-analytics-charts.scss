@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.chart-header {
+  text-align: center;
+  margin: 16px 0;
+  font-weight: 500;
+  color: #ffffff;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+}
+
+/* Обертка для контента таба */
+.chart-wrapper {
+  width: 100%;
+  /* Оставляем минимальную высоту, чтобы блок был солидным */
+  min-height: 500px;
+  /* Исправлен синтаксис цвета и возвращен темный фон */
+  background: var(--surface-bg);
+  border-radius: 4px;
+
+  /* 🚀 УБРАЛИ margin-top: -125px */
+  margin-top: 16px;
+
+  display: flex;
+  justify-content: center;
+
+  /* 🚀 ИЗМЕНЕНИЕ: Выравниваем контент по верху, а не по центру */
+  align-items: flex-start;
+
+  /* Добавляем немного воздуха сверху */
+  padding-top: 20px;
+
+  position: relative;
+}
+
+/* Сам график ECharts */
+.echart-instance {
+  width: 100%;
+  height: 400px; /* Фиксированная высота графика */
+}
+
+.no-data {
+  /* Для сообщения "No data" можно вернуть центрирование через margin */
+  margin-top: 100px;
+  color: #666;
+  font-style: italic;
+  font-size: 14px;
+}

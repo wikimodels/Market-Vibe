@@ -1,0 +1,33 @@
+<div class="analytics-container">
+
+  <div class="header-section">
+    <h2>Market Overview</h2>
+  </div>
+
+  <div class="controls-bar">
+    <div class="metrics-nav">
+      @for (tab of tabs; track tab.id) {
+      <button class="nav-pill" [class.active]="activeTab().id === tab.id" (click)="selectTab(tab)">
+        {{ tab.label }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="content-area">
+
+    @if (isLoading()) {
+    <div class="loading-state">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    }
+
+    @if (!isLoading() && chartsData()) {
+    <app-coins-aggregated-analytics-charts [title]="chartTitle()" [chartsData]="chartsData()"
+      [currentTab]="activeTab()">
+    </app-coins-aggregated-analytics-charts>
+    }
+
+  </div>
+
+</div>

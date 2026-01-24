@@ -1,0 +1,164 @@
+// src/styles/analytics-docs.scss
+
+/* === ЦВЕТОВАЯ ПАЛИТРА === */
+:root {
+  --ad-bg-card: #15151a;
+  --ad-border: #2a2a35;
+  --ad-text-main: #e0e0e0;
+  --ad-text-muted: #9090a0;
+  --ad-code-bg: #111;
+
+  --c-gold:   #ffd700;
+  --c-blue:   #2979ff;
+  --c-red:    #ff1744;
+  --c-green:  #00e676;
+  --c-purple: #d500f9;
+  --c-orange: #ff9100;
+  --c-ice:    #00bcd4;
+}
+
+/* === КОНТЕЙНЕР ДОКУМЕНТАЦИИ (Обертка) === */
+.analytics-doc-wrapper {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ad-text-main);
+  line-height: 1.6;
+  padding: 20px;
+  max-width: 1000px; /* Чтобы текст не плыл на широких экранах */
+  margin: 0 auto;
+
+  /* Типографика */
+  h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #fff;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ad-border);
+    color: #fff;
+  }
+
+  p { margin-bottom: 1rem; }
+  strong { color: #fff; font-weight: 600; }
+  ul { padding-left: 20px; margin-bottom: 1rem; }
+  li { margin-bottom: 0.5rem; }
+}
+
+/* === КАРТОЧКИ === */
+.doc-card {
+  background: var(--ad-bg-card);
+  border: 1px solid var(--ad-border);
+  border-radius: 6px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+  /* Цветовые акценты (border-left + цвет заголовка) */
+  &.accent-gold   { border-left: 4px solid var(--c-gold);   h2 { color: var(--c-gold); } }
+  &.accent-blue   { border-left: 4px solid var(--c-blue);   h2 { color: var(--c-blue); } }
+  &.accent-red    { border-left: 4px solid var(--c-red);    h2 { color: var(--c-red); } }
+  &.accent-green  { border-left: 4px solid var(--c-green);  h2 { color: var(--c-green); } }
+  &.accent-purple { border-left: 4px solid var(--c-purple); h2 { color: var(--c-purple); } }
+  &.accent-ice    { border-left: 4px solid var(--c-ice);    h2 { color: var(--c-ice); } }
+  &.accent-orange { border-left: 4px solid var(--c-orange); h2 { color: var(--c-orange); } }
+}
+
+/* === ТЕХНИЧЕСКИЕ ЭЛЕМЕНТЫ === */
+.doc-formula {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #333;
+  padding: 15px;
+  text-align: center;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 20px 0;
+  color: #fff;
+
+  .desc {
+    display: block;
+    margin-top: 5px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ad-text-muted);
+    font-style: normal;
+  }
+}
+
+.doc-code {
+  font-family: 'Courier New', monospace;
+  background: var(--ad-code-bg);
+  color: var(--c-green);
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px dashed #444;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  margin: 15px 0;
+}
+
+/* === ТАБЛИЦЫ === */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.95rem;
+
+  th {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #555;
+    color: var(--ad-text-muted);
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid var(--ad-border);
+    vertical-align: top;
+  }
+
+  /* Модификаторы строк/ячеек */
+  .row-green { background: rgba(0, 230, 118, 0.1); }
+  .row-red   { background: rgba(255, 23, 68, 0.1); }
+  .row-grey  { background: rgba(158, 158, 158, 0.1); }
+}
+
+/* === ВИЗУАЛЬНЫЕ ШКАЛЫ === */
+.doc-visual-bar {
+  height: 8px;
+  border-radius: 4px;
+  margin: 20px 0 5px 0;
+  width: 100%;
+
+  &.grad-spectrum { background: linear-gradient(90deg, var(--c-red), var(--c-blue), var(--c-green)); }
+  &.grad-heat     { background: linear-gradient(90deg, var(--c-blue), var(--c-gold), var(--c-red)); }
+}
+
+.doc-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--ad-text-muted);
+  font-family: monospace;
+}
+
+/* === АЛЕРТЫ / ВЫВОДЫ === */
+.doc-screening {
+  border: 1px solid var(--c-gold);
+  background: rgba(255, 215, 0, 0.05);
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 20px;
+  font-style: italic;
+  color: #fff;
+}

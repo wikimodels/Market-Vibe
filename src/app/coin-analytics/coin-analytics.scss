@@ -1,0 +1,204 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  /* 🚀 ИЗМЕНЕНИЕ: Используем глобальную переменную фона */
+  background-color: var(--surface-bg);
+  padding-top: 14px;
+}
+
+.analytics-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+}
+
+/* === HEADER SECTION (Лого + Символ) === */
+.header-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 12px;
+
+  .coin-logo {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  /* === Блок внешних ссылок === */
+  .external-links {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-left: 4px;
+    padding-left: 4px;
+    border-left: 1px solid #333;
+    height: 24px;
+    align-items: center;
+
+    .link-circle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      width: 26px;
+      height: 26px;
+
+      border-radius: 50%;
+      background-color: #000; /* Черный для иконок можно оставить или заменить на var(--surface-bg) по вкусу */
+      overflow: hidden;
+
+      /* Границы нет (border убран) */
+
+      transition: all 0.2s ease;
+      text-decoration: none;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        padding: 3px;
+
+        /* В покое: чуть прозрачная */
+        opacity: 0.8;
+        transition: all 0.2s ease;
+      }
+
+      .fallback-text {
+        font-size: 11px;
+        color: #fff;
+        font-weight: 700;
+      }
+
+      &:hover {
+        /* При наведении: увеличиваем весь кружок */
+        transform: scale(1.15);
+        background-color: #1a1a1a;
+
+        img {
+          /* При наведении: полная непрозрачность + яркость */
+          opacity: 1;
+          filter: brightness(1.4);
+        }
+      }
+    }
+  }
+}
+
+/* === NAV PILLS === */
+.metrics-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 1000px;
+  margin-bottom: 20px;
+
+  .nav-pill {
+    background: #202028;
+    border: 1px solid #333;
+    color: #9090a0;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: #555;
+      color: #e0e0e0;
+      background: #252530;
+    }
+
+    &.active {
+      background: #7c4dff;
+      color: #fff;
+      border-color: #7c4dff;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);
+    }
+  }
+}
+
+/* === CONTENT AREA === */
+.content-area {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Контейнер для лоадера */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-left: 35px;
+  min-height: 300px;
+  margin-top: 16px;
+
+  /* 🚀 ИЗМЕНЕНИЕ: Используем переменную для карточек */
+  background: var(--surface-bg);
+
+  border-radius: 4px;
+
+  app-loading-spinner {
+    width: auto;
+  }
+}
+
+/* === NOT FOUND STYLES === */
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  padding: 40px;
+  border: 1px solid #333;
+  border-radius: 12px;
+
+  /* 🚀 ИЗМЕНЕНИЕ: Заменил #15151a на системную переменную для единообразия */
+  background: var(--surface-card);
+
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+
+  h2 {
+    color: #e0e0e0;
+    font-size: 24px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+
+  p {
+    color: #a0a0b0;
+    font-size: 14px;
+    margin: 0;
+
+    .wrong-symbol {
+      color: #ffffffaa;
+      font-weight: 500;
+      padding: 0 4px;
+    }
+  }
+}

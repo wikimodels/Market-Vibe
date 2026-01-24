@@ -1,0 +1,87 @@
+/* 🚀 Перенесено из */
+$neon-color: #E000B0;
+
+/* 🚀 Перенесено из */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+
+  /* ::ng-deep нужен, чтобы стилизовать иконки,
+    которые приходят через <ng-content>
+  */
+
+  // 🚀 ИСПРАВЛЕНО: Стили ТОЛЬКО для MatIcon (шрифтовых)
+  ::ng-deep .font-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2rem;
+    transition: color 0.25s ease;
+  }
+
+  // Стили для SVG (из)
+  ::ng-deep .svg-icon {
+    width: 24px;
+    height: 24px;
+    /* 🚀 ИСПРАВЛЕНО: УБИРАЕМ ОТСТУПЫ */
+    /* margin-bottom: 3px; */
+    /* margin-right: 3px; */
+
+    // 🚀 ДОБАВЛЕНО: Базовый стиль и плавный переход для яркости
+    transition: filter 0.25s ease;
+    filter: brightness(0.9); // Слегка приглушенный вид в покое
+  }
+
+
+  // Hover (из)
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+
+    // 🚀 ИСПРАВЛЕНО: Обновляем селектор для MatIcon
+    ::ng-deep .font-icon {
+      color: #fff;
+    }
+
+    // 🚀 ДОБАВЛЕНО: Эффект Hover для SVG
+    ::ng-deep .svg-icon {
+        filter: brightness(2); // ПРИНУДИТЕЛЬНО ДЕЛАЕМ СВЕТЛЕЕ (Подсветка)
+    }
+  }
+
+  // Active (клик) (из)
+  &:active {
+    transform: translateY(0) scale(0.96);
+    transition: all 0.1s ease;
+  }
+
+  // Disabled (из)
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background-color: transparent;
+      transform: none;
+    }
+  }
+
+  // Focus (из)
+  &:focus-visible {
+    outline: none;
+    border-color: $neon-color;
+    box-shadow: 0 0 8px rgba($neon-color, 0.6);
+  }
+}

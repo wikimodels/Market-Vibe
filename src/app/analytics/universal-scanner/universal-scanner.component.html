@@ -1,0 +1,47 @@
+<div class="scanner-container">
+  <div class="scanner-header">
+    <h2>{{ config.title }}</h2>
+  </div>
+
+  <table class="scanner-table">
+    <thead>
+      <tr>
+        <th (click)="sort('symbol')" style="cursor: default;">COIN</th>
+        <th *ngFor="let tf of timeframes" (click)="sort(tf)" [class.th-active]="sortKey === getKey(tf)"
+          [class.th-main]="tf === '4h'">
+          {{ tf | uppercase }}
+          <span *ngIf="sortKey === getKey(tf)">{{ sortDir === 1 ? '▲' : '▼' }}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let coin of sortedCoins">
+        <td>
+          <div style="font-weight:bold;">{{ coin.symbol }}</div>
+        </td>
+
+        <td *ngFor="let tf of timeframes" [class.td-main]="tf === '4h'">
+          <ng-container *ngTemplateOutlet="cellTemplate; context: { val: getValue(coin, tf) }"></ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #cellTemplate let-val="val">
+  <div class="cell-wrap">
+    <div class="val-row">
+      <span class="val-txt" [style.color]="getColor(val)">
+        {{ val | number:'1.2-3' }}
+      </span>
+    </div>
+
+    <div class="bar-container">
+      <div *ngIf="config.visualType === 'diverging'" class="bar-zero"></div>
+
+      <div class="bar-fill" [style.width]="getBarWidth(val)" [style.left]="getBarLeft(val)"
+        [style.background]="getColor(val)">
+      </div>
+    </div>
+  </div>
+</ng-template>

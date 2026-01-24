@@ -1,0 +1,11 @@
+<div class="analytics-doc-wrapper">
+
+  <ng-container *ngIf="docContent$ | async as content; else loading">
+    <div [innerHTML]="content"></div>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="doc-loading">Loading documentation...</div>
+  </ng-template>
+
+</div>

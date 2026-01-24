@@ -1,0 +1,12 @@
+<button class="action-button" matRipple [disabled]="disabled" (click)="onClick()" [matTooltip]="tooltipText"
+  [matTooltipPosition]="'above'">
+
+  @if (isSvgIcon()) {
+  <mat-icon>
+    <img [src]="iconPath" alt="icon" class="svg-icon">
+  </mat-icon>
+  } @else {
+  <mat-icon class="font-icon">{{ iconPath }}</mat-icon>
+  }
+
+</button>

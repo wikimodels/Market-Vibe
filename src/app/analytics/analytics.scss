@@ -1,0 +1,162 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0b0b0e;
+}
+
+.analytics-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* === HEADER & NAV === */
+.analytics-header {
+  background-color: #15151a;
+  border-bottom: 1px solid #2a2a35;
+  padding: 30px 20px 0 20px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .loading-badge {
+      font-size: 10px;
+      background: #ff9100;
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.metrics-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 20px;
+  max-width: 1200px;
+
+  /* Hide scrollbar for nav if it wraps/overflows */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .nav-pill {
+    background: #202028;
+    border: 1px solid #333;
+    color: #9090a0;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: #555;
+      color: #e0e0e0;
+      background: #252530;
+    }
+
+    &.active {
+      background: #7c4dff;
+      color: #fff;
+      border-color: #7c4dff;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);
+    }
+  }
+}
+
+/* === MAIN CONTENT === */
+.analytics-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* === TABS CUSTOMIZATION === */
+::ng-deep .analytics-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .mat-mdc-tab-header {
+    background: #0b0b0e;
+    border-bottom: 1px solid #2a2a35;
+    --mdc-tab-indicator-active-indicator-color: #7c4dff;
+    --mdc-tab-text-label-color-default: #9090a0;
+    --mat-tab-header-active-label-text-color: #fff;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* 🔥 KILL THE MATERIAL SCROLLBAR 🔥 */
+  .mat-mdc-tab-body-content {
+    overflow: hidden !important;
+  }
+}
+
+/* === TAB BODY === */
+.tab-body {
+  height: 100%;
+  overflow-y: auto;
+  background-color: #0b0b0e;
+  padding: 0;
+
+  /* HIDE SCROLLBARS COMPLETELY */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+.tab-context-header {
+  padding: 20px 20px 10px 20px;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #e0e0e0;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+.doc-wrapper {
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}

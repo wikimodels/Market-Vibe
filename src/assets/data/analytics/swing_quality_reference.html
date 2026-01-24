@@ -1,0 +1,139 @@
+<h1>Swing Quality: Геометрия Волн (Tech Docs)</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Техническая Правда (Code Audit)</h2>
+  <p><code>swing_quality</code> рассчитывается как <strong>Адаптивный Алгоритм</strong> (ZigZag + R²).</p>
+
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Этап</th>
+        <th>Метод</th>
+        <th>Смысл</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Pivot Detection</strong></td>
+        <td><code>find_pivots</code></td>
+        <td>Поиск вершин и низин (ZigZag).</td>
+      </tr>
+      <tr>
+        <td><strong>2. Segmentation</strong></td>
+        <td><code>get_segments</code></td>
+        <td>Разбивка истории на "свинги" (отрезки).</td>
+      </tr>
+      <tr>
+        <td><strong>3. Evaluation</strong></td>
+        <td><code>R-Squared (R²)</code></td>
+        <td>Оценка линейности каждого свинга.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="doc-code">
+    # structure.py logic:
+    1. Находим точки разворота
+    2. Для каждого "плеча" считаем R² (насколько чисто цена идет)
+    3. Swing Quality = Mean(R²) последних N свингов
+  </div>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>2. Физика: Чистота Импульса</h2>
+  <div class="doc-formula">
+    Swing Quality = "Насколько прямолинейно цена идет от Pivots к Pivot?"
+  </div>
+  <ul>
+    <li><strong>Высокое качество:</strong> Цена идет от Low к High почти по прямой (без глубоких откатов). Сильный поток
+      ордеров.</li>
+    <li><strong>Низкое качество:</strong> Цена идет "пьяной походкой". Куча теней и перекрытий.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-green">
+  <h2>3. High Score (> 0.7): Elliott Wave / Clean</h2>
+  <p><strong>Состояние:</strong> Чистые Волны.</p>
+  <ul>
+    <li><strong>Визуал:</strong> Импульсы четкие, коррекции понятные.</li>
+    <li><strong>Трейдинг:</strong> Рай для свинг-трейдера. Можно тянуть фибо-сетку.</li>
+    <li><strong>Стратегия:</strong> Вход на откате (Pullback). Стоп за прошлый Pivot.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-red">
+  <h2>4. Low Score (< 0.4): Messy / Choppy</h2>
+      <p><strong>Состояние:</strong> Грязь / "Краб".</p>
+      <ul>
+        <li><strong>Визуал:</strong> График "рваный". Свинги короткие, часто перекрывают друг друга.</li>
+        <li><strong>Трейдинг:</strong> "Вынос стопов". Технический анализ работает плохо.</li>
+        <li><strong>Стратегия:</strong> Скальпинг или полный выход.</li>
+      </ul>
+</div>
+
+<div class="doc-card">
+  <h2>5. Trend Quality vs Swing Quality</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Метрика</th>
+        <th>Вопрос</th>
+        <th>Фокус</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Trend Quality</strong></td>
+        <td>"Растем ли мы стабильно?"</td>
+        <td>Временное окно (Blind to Structure).</td>
+      </tr>
+      <tr>
+        <td><strong>Swing Quality</strong></td>
+        <td>"Красиво ли мы ходим от уровня к уровню?"</td>
+        <td>Структура рынка (Aware of Structure).</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>6. Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Комбинация</th>
+        <th>Интерпретация</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td>SwingQ > 0.7 + MCI > 0.4</td>
+        <td>Идеальный тренд с чистой структурой</td>
+        <td>Увеличить позицию; держать до разворота</td>
+      </tr>
+      <tr>
+        <td>SwingQ > 0.7 + MCI < -0.2</td>
+        <td>Чистый откат во флэте</td>
+        <td>Торговать mean-reversion</td>
+      </tr>
+      <tr class="row-red">
+        <td>SwingQ < 0.4 + Jagginess> 0.6</td>
+        <td>Структурный хаос</td>
+        <td>Полный выход из рынка</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>8. SwingQ-скрининг</h2>
+  <div class="doc-screening">
+    Высокий SwingQ = зелёный свет для структурных стратегий. Низкий SwingQ = отказ от свингов.
+  </div>
+  <ul>
+    <li><strong>SwingQ > 0.7:</strong> Включать в пул для волнового анализа.</li>
+    <li><strong>SwingQ < 0.4:</strong> Только скальпинг.</li>
+    <li><strong>BTC с SwingQ < 0.5 на 1h:</strong> норма (из-за шума).</li>
+  </ul>
+</div>

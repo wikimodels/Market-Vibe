@@ -1,0 +1,12 @@
+// 1. Миксин для базовых SVG-стилей (размер, переход)
+@mixin base-svg-styles {
+    width: 24px;
+    height: 24px;
+    transition: filter 0.25s ease;
+    filter: brightness(0.9);
+}
+
+// 2. Миксин для эффекта наведения (hover) на SVG
+@mixin svg-hover-effect {
+    filter: brightness(2); // ПРИНУДИТЕЛЬНО ДЕЛАЕМ СВЕТЛЕЕ
+}

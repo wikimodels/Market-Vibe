@@ -1,0 +1,119 @@
+<h1>Справочник: Smoothness Index</h1>
+
+<div class="doc-card">
+  <h2>Что такое Smoothness Index?</h2>
+  <p><strong>Суть:</strong> Мера линейности и постоянства движения цены. Она отвечает на вопрос: "Насколько текущее
+    движение похоже на прямую линию?"</p>
+  <p>В отличие от простого роста цены, Smoothness оценивает <strong>качество траектории</strong>. Высокая гладкость
+    означает отсутствие резких рывков, гэпов и хаотичной волатильности.</p>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Физический смысл</h2>
+  <div class="doc-formula">
+    Smoothness ≈ Correlation(Price, Time)
+    <div class="desc">
+      Рассчитывается через ранговую корреляцию (Спирмена) или R-Squared линейной регрессии цен.<br>
+      Диапазон значений: <strong>[0.0 ... 1.0]</strong>
+    </div>
+  </div>
+  <p><strong>Как это работает:</strong></p>
+  <ul>
+    <li>Если цена растет на $1 каждую минуту ровно — Smoothness = <strong>1.0 (Максимум)</strong>.</li>
+    <li>Если цена растет, но скачет (+5, -3, +10) — Smoothness падает.</li>
+    <li>Если цена стоит во флэте — Smoothness около <strong>0.0</strong>.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>Интерпретация (Шкала)</h2>
+  <p class="doc-screening">Обратите внимание: здесь шкала обратна Jagginess. Чем БОЛЬШЕ, тем ЛУЧШЕ.</p>
+
+  <div class="doc-visual-bar grad-spectrum"></div>
+  <div class="doc-labels">
+    <span>0.0 (Хаос / Флэт)</span>
+    <span>0.5 (Норма)</span>
+    <span>1.0 (Идеальный Тренд)</span>
+  </div>
+
+  <ul>
+    <li>
+      <strong>HIGH (> 0.8)</strong> <span class="doc-tag t-green">STRONG</span><br>
+      Цена движется "как по рельсам". Мощный импульс. Безопасно для входа на пробой.
+    </li>
+    <li>
+      <strong>MID (0.4 - 0.8)</strong><br>
+      Обычное рыночное поведение. Есть направление, но присутствует шум.
+    </li>
+    <li>
+      <strong>LOW (< 0.4)</strong> <span class="doc-tag t-red">WEAK</span><br>
+          Отсутствие структуры. Цена дрейфует или совершает случайные колебания. Торговать опасно.
+    </li>
+  </ul>
+</div>
+
+<div class="doc-card">
+  <h2>Smoothness vs Jagginess</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th width="50%">Jagginess (Зубчатость)</th>
+        <th width="50%">Smoothness (Гладкость)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Измеряет <strong>эффективность пути</strong>. <br><em>"Сколько лишних движений мы сделали?"</em></td>
+        <td>Измеряет <strong>стабильность наклона</strong>. <br><em>"Насколько ровно мы идем?"</em></td>
+      </tr>
+      <tr>
+        <td>Критична для <strong>Стоп-лоссов</strong>. <br>Высокая Jagginess выбивает стопы тенями.</td>
+        <td>Критична для <strong>Тейк-профитов</strong>. <br>Высокая Smoothness позволяет держать сделку дольше.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--c-red)">Меньше — Лучше</td>
+        <td style="color:var(--c-green)">Больше — Лучше</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Тактика применения (4H)</h2>
+  <div class="doc-code">
+    ★ Золотой стандарт входа:
+    1. Hurst > 0.55 (Есть тренд)
+    2. Jagginess < 0.5 (Нет "шпилек" ) 3. Smoothness> 0.7 (Есть стабильная тяга)
+  </div>
+  <p>Если <strong>Smoothness падает</strong> на растущем тренде — это первый сигнал к выходу. Цена теряет инерцию.</p>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Комбинация</th>
+        <th>Интерпретация</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td>Smoothness > 0.8 + MCI > 0.4</td>
+        <td>Идеальный тренд высокого качества</td>
+        <td>Увеличить размер позиции</td>
+      </tr>
+      <tr class="row-grey">
+        <td>Smoothness > 0.8 + MCI < -0.2</td>
+        <td>Структурированный откат во флэте</td>
+        <td>Mean-reversion с коротким тейком</td>
+      </tr>
+      <tr class="row-red">
+        <td>Smoothness < 0.4 + Jagginess> 0.6</td>
+        <td>Абсолютный хаос</td>
+        <td>Полный выход из рынка</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

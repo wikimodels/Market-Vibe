@@ -1,0 +1,36 @@
+<div class="custom-dropdown-container">
+
+  <button class="trigger-btn" [class.active]="isOpen" (click)="toggleMenu()">
+    <mat-icon class="burger-icon">menu</mat-icon>
+    <span class="label">Line Alerts</span>
+  </button>
+
+  <div class="dropdown-menu" [class.open]="isOpen">
+
+    <button class="menu-item" (click)="goToAlertsAtWork()" matRipple>
+      <div class="icon-wrapper">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <span>Alerts at Work</span>
+    </button>
+    <div class="divider"></div>
+
+    <button class="menu-item" (click)="goToTriggeredAlerts()" matRipple>
+      <div class="icon-wrapper">
+        <mat-icon>notifications_active</mat-icon>
+      </div>
+      <span>Triggered Alerts</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="menu-item" (click)="goToArchivedAlerts()" matRipple>
+      <div class="icon-wrapper">
+        <mat-icon>history</mat-icon>
+      </div>
+      <span>Archived Alerts</span>
+    </button>
+
+  </div>
+
+</div>

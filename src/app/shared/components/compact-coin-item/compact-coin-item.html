@@ -1,0 +1,8 @@
+<div class="compact-pill" (click)="onPillClick()" [class.selected]="isSelected()" mat-ripple>
+
+  <img [src]="'assets/logo/' + shortSymbol().toLowerCase() + '.svg'" class="coin-logo" (error)="onImageError($event)"
+    [appCoinHover]="coin()">
+
+  <span class="symbol-text">{{ shortSymbol() }}</span>
+
+</div>

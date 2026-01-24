@@ -1,0 +1,19 @@
+<div class="popup-container" [class.show]="isVisible()">
+
+  @if (binanceLink()) {
+  <img [src]="binanceLogo()" title="Binance" (click)="open($event, binanceLink())">
+  }
+
+  @if (bybitLink()) {
+  <img [src]="bybitLogo()" title="Bybit" (click)="open($event, bybitLink())">
+  }
+
+  @if (tvLink()) {
+  <img [src]="tvLogo()" title="TradingView" (click)="open($event, tvLink())">
+  }
+
+  @if (cgLink()) {
+  <img [src]="cgLogo()" title="CoinGlass" (click)="open($event, cgLink())">
+  }
+
+</div>

@@ -1,0 +1,320 @@
+/* src/styles/_scanner-theme.scss */
+
+:root {
+  /* === GLOBAL THEME VARS === */
+  --sc-bg: #0b0b0e;           /* Background Body */
+  --sc-panel: #15151a;        /* Card/Table Background */
+  --sc-border: #2a2a35;       /* Borders */
+  --sc-text-main: #e0e0e0;    /* Main Text */
+  --sc-text-muted: #9090a0;   /* Muted Text */
+  --sc-header-bg: #202028;    /* Table Header Background */
+  --sc-hover-bg: #1f1f25;     /* Table Row Hover */
+  --sc-bar-bg: #111;          /* Bar Background */
+
+  /* === METRIC PALETTE (Defaults) === */
+  /* Эти переменные могут переопределяться в компонентах или конфиге */
+  --c-bull: #00e676;
+  --c-bear: #ff1744;
+  --c-blue: #2979ff;
+  --c-purple: #d500f9;
+  --c-cyan: #00e5ff;
+  --c-orange: #ff9100;
+  --c-grey: #b0bec5;
+  --c-noise: #444;
+}
+
+/* === LAYOUT === */
+.scanner-container {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--sc-bg);
+  color: var(--sc-text-main);
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.scanner-header {
+  text-align: center;
+  margin-bottom: 25px;
+
+  h2 {
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0 5px 0;
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    color: var(--sc-text-muted);
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+}
+
+/* === LEGEND / STATS GRID === */
+.scanner-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+
+  .legend-item {
+    background: #1a1a20;
+    padding: 10px 15px;
+    border-top: 3px solid var(--sc-border); /* Color overridden inline */
+    text-align: center;
+    border-radius: 4px;
+    min-width: 100px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+    .label {
+      display: block;
+      font-size: 10px;
+      color: var(--sc-text-muted);
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff; /* Default, overridden inline */
+    }
+  }
+}
+
+/* === TABLE STRUCTURE === */
+.scanner-table-wrapper {
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border);
+  border-radius: 6px;
+  overflow-x: auto; /* Horizontal Scroll */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.scanner-table {
+  width: 100%;
+  border-collapse: separate; /* Required for sticky */
+  border-spacing: 0;
+  min-width: 800px; /* Ensure generic width on small screens */
+
+  /* HEADERS */
+  th {
+    background: var(--sc-header-bg);
+    color: var(--sc-text-muted);
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    transition: color 0.2s, background 0.2s;
+
+    &:hover {
+      color: #fff;
+      background: #25252e;
+    }
+
+    &.th-active {
+      color: #fff;
+      background: #2a2a35;
+    }
+
+    /* Highlighted Main Column Header (4H) */
+    &.th-main {
+      background: #252530;
+      color: #fff;
+      border-left: 1px solid #444;
+      border-right: 1px solid #444;
+    }
+  }
+
+  /* CELLS */
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e1e26;
+    text-align: center;
+    vertical-align: middle;
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+    background: var(--sc-panel); /* Ensure background for sticky */
+
+    /* Highlighted Main Column Cell (4H) */
+    &.td-main {
+      background: #1e1e28;
+      border-left: 1px solid #333;
+      border-right: 1px solid #333;
+      font-weight: bold;
+    }
+  }
+
+  /* ROWS */
+  tr:hover td {
+    background: var(--sc-hover-bg);
+  }
+
+  /* === STICKY FIRST COLUMN (SYMBOL) === */
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 11; /* Higher than normal cells */
+    border-right: 1px solid var(--sc-border);
+    text-align: left;
+    width: 100px;
+    padding-left: 20px;
+  }
+
+  th:first-child {
+    z-index: 12; /* Highest (corner) */
+  }
+
+  td:first-child {
+    font-weight: bold;
+    color: #fff;
+  }
+}
+
+/* === VISUAL CELLS (Bar Charts) === */
+.cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 100px; /* Min width for bars */
+
+  .val-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+
+    .val-txt {
+      font-weight: bold;
+    }
+
+    /* Small Badge inside cell */
+    .tier-badge {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      font-weight: 800;
+      color: #000; /* Contrast text */
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* === BAR COMPONENT === */
+.bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--sc-bar-bg);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+
+  /* The actual colored bar */
+  .bar-fill {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    transition: width 0.3s ease, left 0.3s ease;
+    border-radius: 2px;
+  }
+
+  /* Center line for diverging bars */
+  .bar-zero {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #555;
+    z-index: 2;
+  }
+}
+
+/* === UTILS === */
+.text-bull { color: var(--c-bull) !important; }
+.text-bear { color: var(--c-bear) !important; }
+.text-muted { color: var(--sc-text-muted) !important; }
+
+/* === SCROLL TO TOP BUTTON === */
+/* src/app/analytics/analytics.scss или global styles */
+
+.scroll-to-top-btn {
+  /* ИЗМЕНЕНИЕ: Используем fixed, чтобы кнопка всегда была в углу экрана */
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  /* Визуал */
+  width: 45px; /* Чуть крупнее для удобства */
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background-color: #15151a; /* Плотный цвет фона, чтобы не сливалось */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  /* Начальное состояние - скрыта */
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none; /* Чтобы не мешала кликать, когда невидима */
+  z-index: 9999; /* Поверх всего */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+
+  /* Hover эффект */
+  &:hover {
+    background-color: #7c4dff;
+    border-color: #7c4dff;
+    transform: translateY(0) scale(1.1);
+    box-shadow: 0 0 20px rgba(124, 77, 255, 0.6);
+
+    .arrow-up {
+      border-color: #fff;
+    }
+  }
+
+  /* Класс для показа (добавляется директивой) */
+  &.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+}
+
+.arrow-up {
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #9090a0;
+  border-left: 2px solid #9090a0;
+  transform: rotate(45deg);
+  margin-top: 4px; /* Центровка стрелки */
+}
+/* Рисуем стрелку CSS-ом (без иконок) */
+.arrow-up {
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #9090a0;
+  border-left: 2px solid #9090a0;
+  transform: rotate(45deg);
+  margin-top: 2px;
+  transition: border-color 0.2s;
+}

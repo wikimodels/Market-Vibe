@@ -1,0 +1,159 @@
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: block;
+}
+
+// Главный контейнер toolbar
+mat-toolbar {
+  background-color: var(--toolbar-background, #7b1fa2) !important;
+  color: var(--toolbar-text, #ffffff) !important;
+
+  // КРИТИЧНО: убираем дефолтные отступы Material
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 16px !important;
+
+  // Flex-контейнер с идеальным центрированием
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+
+  font-size: 14px !important;
+
+  // Лого/заголовок
+  > span:first-child {
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  // Все вложенные компоненты (app-line-alert-menu, app-vwap-alert-menu)
+  > * {
+    display: flex !important;
+    align-items: center !important;
+    height: 48px !important;
+  }
+
+  // Кнопки внутри toolbar
+  .mat-mdc-icon-button,
+  button[mat-icon-button] {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 8px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+
+    --mdc-icon-button-state-layer-size: 40px !important;
+  }
+
+  // Иконки
+  mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    color: var(--toolbar-text, #ffffff) !important;
+  }
+
+  // SVG иконки
+  mat-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: var(--toolbar-text, #ffffff) !important;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto !important;
+}
+
+// User profile section
+.user-profile {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: 48px !important;
+  padding-left: 12px !important;
+  margin-left: 8px !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+
+  .user-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: border-color 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .mat-mdc-icon-button {
+    margin-left: 4px !important;
+  }
+}
+
+// Фикс для custom dropdown компонентов (если они есть)
+.custom-dropdown-container {
+  display: flex !important;
+  align-items: center !important;
+  height: 48px !important;
+
+  .trigger-btn {
+    display: flex !important;
+    align-items: center !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+
+    background: transparent !important;
+    border: none !important;
+    color: var(--toolbar-text, #ffffff) !important;
+    cursor: pointer !important;
+
+    transition: background-color 0.2s ease !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .burger-icon {
+      font-size: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    .label {
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      white-space: nowrap !important;
+    }
+  }
+}

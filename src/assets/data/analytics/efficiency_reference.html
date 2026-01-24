@@ -1,0 +1,75 @@
+<h1>Справочник: Movement Efficiency (ER)</h1>
+
+<div class="doc-card">
+  <h2>Суть метрики</h2>
+  <p><strong>Movement Efficiency</strong> — это КПД цены. Отношение "полезного" смещения к "затраченным усилиям".</p>
+  <p>В этой системе метрика <strong>направленная</strong> (от -1.0 до +1.0).</p>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Формула расчёта</h2>
+  <div class="doc-formula">
+    ER = (Price<sub>end</sub> - Price<sub>start</sub>) / Σ|Price<sub>i</sub> - Price<sub>i-1</sub>|
+  </div>
+  <div class="doc-code">
+    # Пример:
+    Net Move = +10
+    Total Move = 18
+    ER = 10 / 18 = 0.556 (Бычий тренд)
+  </div>
+</div>
+
+<div class="doc-card">
+  <h2>Интерпретация значений</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Значение</th>
+        <th>Состояние рынка</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td style="color:var(--c-green)">> +0.40</td>
+        <td><strong>Сильный бычий тренд</strong></td>
+        <td>Держать LONG. Не шортить!</td>
+      </tr>
+      <tr class="row-grey">
+        <td>-0.10 ... +0.10</td>
+        <td><strong>Шум / Боковик</strong></td>
+        <td>Не торговать.</td>
+      </tr>
+      <tr class="row-red">
+        <td style="color:var(--c-red)">
+          < -0.40</td>
+        <td><strong>Сильный медвежий тренд</strong></td>
+        <td>Держать SHORT. Не ловить дно!</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-orange">
+  <h2>⚡ ДВА ЗОЛОТЫХ ПРАВИЛА</h2>
+
+  <div class="doc-screening" style="border-color: var(--c-red);">
+    <strong>1. Правило Шорта (Ловля ножей):</strong>
+    Пока ER < -0.40, закрывать шорт рано. Попытка купить дно=поймать нож. </div>
+
+      <div class="doc-screening" style="border-color: var(--c-green);">
+        <strong>2. Правило Лонга (Паровоз):</strong>
+        Пока ER > +0.40, шортить = встать перед поездом. Ждите падения эффективности.
+      </div>
+
+      <p style="margin-top:15px"><strong>Почему RSI не работает?</strong> При высокой ER он будет показывать
+        "Перекупленность" (>70) весь путь от $100 до $10,000.</p>
+  </div>
+
+  <div class="doc-card accent-green">
+    <h2>Классификация (1D)</h2>
+    <div class="doc-code">
+      def classify(er_1d):
+      if er_1d > 0.40: return "ELITE BULL TRENDY"
+      if er_1d < -0.40: return "ELITE BEAR TRENDY" if abs(er_1d) < 0.15: return "FLAT CHOPPER" </div>
+    </div>

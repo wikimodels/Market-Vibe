@@ -1,0 +1,13 @@
+<div class="custom-search-field">
+  <mat-icon class="prefix-icon">filter_list</mat-icon>
+
+  <input type="text" class="search-input" [formControl]="searchControl"
+    [placeholder]="isFocused || searchControl.value ? '' : 'Filter'" (focus)="isFocused = true"
+    (blur)="isFocused = false" autocomplete="off">
+
+  @if (searchControl.value) {
+  <button class="clear-button" (click)="clearSearch()" type="button">
+    <mat-icon>close</mat-icon>
+  </button>
+  }
+</div>

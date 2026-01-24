@@ -1,0 +1,91 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--surface-bg, #121212);
+  padding-top: 0px;
+}
+
+.analytics-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  width: 100%;
+}
+
+/* === HEADER SECTION === */
+.header-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-top: 10px;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+
+  .subtitle {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+/* === CONTROLS BAR (Pills Container) === */
+.controls-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+}
+
+.metrics-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px; // Чуть больше отступ между стратегиями
+
+  .nav-pill {
+    background: #202028;
+    border: 1px solid #333;
+    color: #9090a0;
+    padding: 8px 20px; // Чуть крупнее, так как это основные кнопки
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .arrow {
+      font-size: 10px;
+      opacity: 0.5;
+      transition: transform 0.2s;
+    }
+
+    &:hover {
+      border-color: #7c4dff; // Фиолетовая рамка при наведении
+      color: #fff;
+      background: #252530;
+      box-shadow: 0 0 10px rgba(124, 77, 255, 0.2);
+
+      .arrow {
+        opacity: 1;
+        transform: translate(2px, -2px); // Анимация стрелочки
+      }
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+}

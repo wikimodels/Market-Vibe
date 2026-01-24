@@ -1,0 +1,95 @@
+<h1>Movement Intensity: Кинетическая Энергия</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Что мы измеряем? (Code Logic)</h2>
+  <p><strong>Movement Intensity</strong> — нормированная мера амплитуды изменений цены (размер свечи относительно цены).
+  </p>
+
+  <div class="doc-formula">
+    Intensity = (High - Low) / Close * 100%
+  </div>
+
+  <ul>
+    <li><strong>0.5:</strong> Средняя свеча меняет цену на 0.5% (Спокойно).</li>
+    <li><strong>5.0:</strong> Средняя свеча меняет цену на 5% (Паника/Памп).</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-orange">
+  <h2>2. High Intensity (Огонь): EXPANSION</h2>
+  <p><strong>Состояние:</strong> Взрыв волатильности / Расширение.</p>
+  <ul>
+    <li><strong>Физика:</strong> Энергия выплескивается наружу. Активное переопределение цены.</li>
+    <li><strong>Опасность:</strong> Огромные стопы, проскальзывание.</li>
+    <li><strong>Трейдинг:</strong>
+      <ul>
+        <li>Если <strong>Efficiency</strong> высок -> Трендовый импульс (Rocket).</li>
+        <li>Если <strong>Efficiency</strong> низок -> "Вертолет" (Choppy Volatility). Выбивание стопов.</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div class="doc-card accent-ice">
+  <h2>3. Low Intensity (Лед): COMPRESSION</h2>
+  <p><strong>Состояние:</strong> Сжатие (Squeeze) / Смерть.</p>
+  <ul>
+    <li><strong>Физика:</strong> Энергия накапливается. Ликвидность уплотняется.</li>
+    <li><strong>Паттерн:</strong> Треугольники, клинья, флэт "нитка".</li>
+    <li><strong>Трейдинг:</strong> Ожидание пробоя (Breakout). "Тишина перед бурей".</li>
+  </ul>
+</div>
+
+<div class="doc-card">
+  <h2>4. Матрица Intensity vs Efficiency</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Intensity</th>
+        <th>Efficiency</th>
+        <th>Вердикт</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td><strong>HIGH</strong></td>
+        <td><strong>HIGH</strong></td>
+        <td><strong>Снайперский выстрел.</strong> Мощное направленное движение.</td>
+      </tr>
+      <tr class="row-red">
+        <td><strong>HIGH</strong></td>
+        <td><strong>LOW</strong></td>
+        <td><strong>Мясорубка.</strong> Огромные свечи вверх-вниз. Не лезть.</td>
+      </tr>
+      <tr class="row-grey">
+        <td><strong>LOW</strong></td>
+        <td>Any</td>
+        <td><strong>Спячка / Сжатие.</strong> Подготовка к движению.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <tbody>
+      <tr>
+        <td>Intensity > 3.0 + Jagginess < 0.4</td>
+        <td>Чистый импульс высокой амплитуды</td>
+      </tr>
+      <tr>
+        <td>Intensity < 0.5 + Entropy < 1.0</td>
+        <td>Глубокое сжатие (пружина)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Intensity-скрининг</h2>
+  <div class="doc-screening">
+    Высокая интенсивность = проверить качество (Efficiency). Низкая интенсивность = ждать пробоя.
+  </div>
+  <p>Эта метрика — ваш <strong>детектор взрывов и затишья</strong>. Используйте её для тайминга входа.</p>
+</div>

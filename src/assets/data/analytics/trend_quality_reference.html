@@ -1,0 +1,109 @@
+<h1>Trend Quality: Deep Analysis</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Техническая Правда (Code Audit)</h2>
+  <p>Метрика <code>trend_quality_w20</code> показывает <strong>Среднюю Стабильность Тренда</strong>.</p>
+
+  <table class="doc-table">
+    <tbody>
+      <tr>
+        <td><strong>Алгоритм</strong></td>
+        <td>Linear Regression R²</td>
+      </tr>
+      <tr>
+        <td><strong>Тип данных</strong></td>
+        <td>Log Prices (экспоненциальный рост = прямая)</td>
+      </tr>
+      <tr>
+        <td><strong>Окно</strong></td>
+        <td>20 свечей (Скользящее)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="doc-code">
+    # Логика:
+    1. Логарифмируем цены
+    2. Считаем R² в окне 20
+    3. Возвращаем среднее "качество" за всю историю
+  </div>
+</div>
+
+<div class="doc-card accent-blue">
+  <h2>2. Физика: R-Squared (R²)</h2>
+  <div class="doc-formula">
+    R² = 1.0 → Идеальная Прямая Линия (Рельсы)<br>
+    R² = 0.0 → Облако точек (Шум)
+  </div>
+  <p>Метрика оценивает <strong>"Геометрическую Чистоту"</strong> движения.</p>
+  <ul>
+    <li><strong>Памп и Дамп:</strong> Качество низкое (взлет и падение ломают линейность).</li>
+    <li><strong>Органический Рост:</strong> Качество высокое (0.8-0.9).</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-green">
+  <h2>3. Декодер Значений</h2>
+  <div class="doc-visual-bar grad-spectrum"></div>
+  <div class="doc-labels">
+    <span>MESSY (< 0.3)</span>
+        <span>NORMAL (~0.5)</span>
+        <span>RAILROAD (> 0.8)</span>
+  </div>
+
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>TQ Score</th>
+        <th>Характер</th>
+        <th>Стратегия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td><strong>Высокий (> 0.7)</strong></td>
+        <td><strong>"Послушная"</strong></td>
+        <td>Пробои. Цена идет линейно. Стопы в безопасности.</td>
+      </tr>
+      <tr>
+        <td><strong>Средний (0.4 - 0.6)</strong></td>
+        <td><strong>"Шумная"</strong></td>
+        <td>Стандартный рынок. Нужны подтверждения.</td>
+      </tr>
+      <tr class="row-red">
+        <td><strong>Низкий (< 0.3)</strong>
+        </td>
+        <td><strong>"Рваная"</strong></td>
+        <td>Избегать трендов. Только Mean Reversion или пампы.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <tbody>
+      <tr>
+        <td>TQ > 0.8 + MCI > 0.4</td>
+        <td>Идеальный, предсказуемый тренд</td>
+      </tr>
+      <tr>
+        <td>TQ > 0.8 + MCI < -0.2</td>
+        <td>Чистый откат в стабильном диапазоне</td>
+      </tr>
+      <tr>
+        <td>TQ < 0.3 + Jagginess> 0.6</td>
+        <td>Абсолютный хаос</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>TQ-скрининг</h2>
+  <div class="doc-screening">
+    Высокая TQ = зелёный свет для тренд-фолловинга. Низкая TQ = сигнал к отказу от направленных стратегий.
+  </div>
+  <p>Эта метрика — ваш <strong>калибр рельсов</strong>. Торгуйте только там, где цена уважает линейность.</p>
+</div>

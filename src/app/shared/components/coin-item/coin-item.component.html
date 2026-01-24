@@ -1,0 +1,12 @@
+<div class="coin-pill" (click)="onPillClick()" [class.selected]="isSelected()" mat-ripple>
+
+  <div class="coin-info">
+    <img [src]="'assets/logo/' + coin().logoUrl" alt="{{coin().symbol}} logo" class="coin-logo" style="cursor: pointer;"
+      (click)="clickLogo($event)" (ngSrcError)="onImageError($event)">
+
+    <span class="coin-symbol">{{ coin().symbol }} ({{ coin().categoryStr }})</span>
+  </div>
+
+  <app-links [linkableObject]="coin()"></app-links>
+
+</div>

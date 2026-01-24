@@ -1,0 +1,198 @@
+<style>
+  /* Обертка для изоляции стилей */
+  .doc-wrapper {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #e0e0e0;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Заголовки */
+  .doc-wrapper h1 {
+    font-size: 28px;
+    font-weight: 200;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .doc-wrapper h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #7c4dff;
+    /* Твой акцентный фиолетовый */
+    margin-top: 32px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .doc-wrapper h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #b0b0c0;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* Текст */
+  .doc-wrapper p {
+    margin-bottom: 16px;
+    font-size: 15px;
+    color: #cccccc;
+  }
+
+  /* Выделение важного */
+  .doc-wrapper .highlight {
+    color: #fff;
+    background: rgba(124, 77, 255, 0.15);
+    /* Легкий фиолетовый фон */
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  /* Списки */
+  .doc-wrapper ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 24px;
+  }
+
+  .doc-wrapper li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 10px;
+    color: #d0d0d0;
+  }
+
+  .doc-wrapper li::before {
+    content: "•";
+    color: #7c4dff;
+    font-weight: bold;
+    font-size: 18px;
+    position: absolute;
+    left: 0;
+    top: -2px;
+  }
+
+  /* Легенда (Цвета графиков) */
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #15151a;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    margin-bottom: 8px;
+  }
+
+  .color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Цвета для легенды */
+  .c-cyan {
+    background-color: #00bcd4;
+    box-shadow: 0 0 8px #00bcd4;
+  }
+
+  .c-purple {
+    background-color: #7c4dff;
+    box-shadow: 0 0 8px #7c4dff;
+  }
+
+  .c-green {
+    background-color: #00e676;
+  }
+
+  .c-red {
+    background-color: #ff1744;
+  }
+
+  /* Блок формулы */
+  .formula-box {
+    background: #1a1a20;
+    border-left: 4px solid #7c4dff;
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #a0a0b0;
+    margin: 20px 0;
+  }
+</style>
+
+<div class="doc-wrapper">
+
+  <h1>Z-Velocity Metric</h1>
+
+  <p>
+    <strong>Z-Velocity</strong> — это составной индикатор импульса, который измеряет "скорость" изменения цены
+    относительно её нормального распределения, скорректированную на торговый объем.
+  </p>
+  <p>
+    В отличие от обычного RSI или MACD, этот инструмент показывает статистические аномалии. Он отвечает на вопрос: <span
+      class="highlight">"Насколько текущее движение цены необычно для этого актива?"</span>
+  </p>
+
+  <h2>Как это работает?</h2>
+  <p>
+    В основе лежит концепция <strong>Z-Score</strong> (стандартной оценки). Мы берем отклонение цены от скользящей
+    средней и делим его на стандартное отклонение (волатильность).
+  </p>
+
+  <div class="formula-box">
+    Z = (Price - Mean) / StandardDeviation
+  </div>
+
+  <p>
+    Если значение <strong>Z > 2.0</strong>, это означает, что цена отклонилась на 2 стандартных отклонения.
+    Статистически такие события происходят редко (менее 5% времени), что сигнализирует о сильном импульсе или перегреве.
+  </p>
+
+  <h2>Легенда Графика</h2>
+
+  <div class="legend-item">
+    <div class="color-box c-cyan"></div>
+    <div>
+      <strong>Cyan Line (Price Z)</strong> — Основная линия импульса цены. Высокие значения указывают на
+      перекупленность, низкие — на перепроданность.
+    </div>
+  </div>
+
+  <div class="legend-item">
+    <div class="color-box c-purple"></div>
+    <div>
+      <strong>Purple Dashed (Volume)</strong> — Взвешенная активность объема. Помогает подтвердить истинность движения.
+    </div>
+  </div>
+
+  <h2>Торговые Сигналы</h2>
+
+  <ul>
+    <li>
+      <strong>Пробой уровня +2.0:</strong> Сильный бычий импульс. Если сопровождается объемом, тренд может продолжиться
+      (Pump). Если объема нет — возможен разворот.
+    </li>
+    <li>
+      <strong>Пробой уровня -2.0:</strong> Паническая продажа или сильный медвежий тренд (Dump). Часто является хорошей
+      точкой для поиска отскока.
+    </li>
+    <li>
+      <strong>Возврат к 0:</strong> Цена возвращается к "справедливой стоимости" (Mean Reversion).
+    </li>
+  </ul>
+
+  <p style="margin-top: 40px; font-size: 13px; color: #666; text-align: center;">
+    <em>Market Vibe Analytics Engine v2.0</em>
+  </p>
+
+</div>

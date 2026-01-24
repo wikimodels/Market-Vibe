@@ -1,0 +1,102 @@
+<h1>Справочник: Hurst Exponent (H)</h1>
+
+<div class="doc-card">
+  <h2>Что такое Экспонента Херста?</h2>
+  <p><strong>Суть:</strong> Мера "памяти" рынка. Отвечает на вопрос: зависит ли следующее движение цены от предыдущего?
+  </p>
+  <p>В отличие от обычного трендового индикатора (MA), Херст оценивает <em>структуру хаоса</em>. Он говорит, является ли
+    движение цены направленным (тренд), возвращающимся к среднему (флэт) или случайным (шум).</p>
+
+  <div class="doc-formula">
+    H = log(R/S) / log(T)
+    <div class="desc">
+      Используется метод R/S Analysis на логарифмических доходностях.<br>
+      Диапазон: <strong>[0.01 ... 0.99]</strong>
+    </div>
+  </div>
+</div>
+
+<div class="doc-card">
+  <h2>Интерпретация значений</h2>
+
+  <div class="doc-visual-bar grad-spectrum"></div>
+  <div class="doc-labels">
+    <span>0.0 (Reversion)</span>
+    <span>0.5 (Random)</span>
+    <span>1.0 (Trend)</span>
+  </div>
+
+  <ul>
+    <li>
+      <strong>0.5 < H ≤ 1.0 (Персистентность / Тренд)</strong> <span class="doc-tag t-green">TREND</span><br>
+          <span style="color:#aaa; font-size:0.9em;">"Если росло, то продолжит расти".</span><br>
+          Рынок имеет инерцию. Чем ближе к 1.0, тем сильнее и чище тренд.
+    </li>
+    <li>
+      <strong>0.0 ≤ H < 0.5 (Анти-персистентность)</strong> <span class="doc-tag t-red">MEAN REVERSION</span><br>
+          <span style="color:#aaa; font-size:0.9em;">"Если выросло, то упадет".</span><br>
+          Рынок "пилит". Цена стремится вернуться к среднему. Режим флэта или пилы.
+    </li>
+    <li>
+      <strong>H ≈ 0.5 (Случайное блуждание)</strong> <span class="doc-tag t-gold">RANDOM</span><br>
+      <span style="color:#aaa; font-size:0.9em;">"Подбрось монетку".</span><br>
+      Движение цены непредсказуемо. Прошлые данные не влияют на будущие. Торговать опасно.
+    </li>
+  </ul>
+</div>
+
+<div class="doc-card">
+  <h2>Анализ по Таймфреймам (MTF)</h2>
+  <p>Рынок фрактален: на 1 часе может быть шум, а на 1 дне — тренд.</p>
+
+  <div class="doc-code">
+    Пример анализа:
+    hurst_12h = 0.26 (Пила/Флэт)
+    hurst_1h = 0.43 (Шум/Random)
+    hurst_1d = 0.54 (Начало тренда)
+
+    Вывод: Глобально актив пытается расти (D1), но внутри дня его сильно болтает.
+  </div>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Комбинация</th>
+        <th>Интерпретация</th>
+        <th>Стратегия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-green">
+        <td>H > 0.6 + FD < 1.4</td>
+        <td>Чистый, гладкий тренд</td>
+        <td>Торговать по тренду, увеличить позицию</td>
+      </tr>
+      <tr class="row-red">
+        <td>H < 0.4 + FD> 1.6</td>
+        <td>Жёсткий mean reversion</td>
+        <td>Фэйд экстремумы, контртренд</td>
+      </tr>
+      <tr class="row-grey">
+        <td>H ≈ 0.5 + Entropy > 2.8</td>
+        <td>Random Walk (Хаос)</td>
+        <td>Избегать актива</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Hurst-скрининг</h2>
+  <div class="doc-screening">
+    Низкий H у альткоина = признак пилы. Высокий H = готовность к тренду.
+  </div>
+  <ul>
+    <li><strong>H > 0.6:</strong> Приоритет для трендовых стратегий.</li>
+    <li><strong>H < 0.4:</strong> Актив в режиме "пилы". Только mean-reversion.</li>
+    <li><strong>BTC с H ≈ 0.5 на коротких TF:</strong> Норма. Не требует исключения.</li>
+  </ul>
+</div>

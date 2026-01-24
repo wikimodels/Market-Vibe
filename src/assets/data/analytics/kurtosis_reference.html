@@ -1,0 +1,106 @@
+<h1>Справочник: Kurtosis (Risk Scanner)</h1>
+
+<div class="doc-card">
+  <h2>Что такое Kurtosis?</h2>
+  <p><strong>Kurtosis (Эксцесс)</strong> — мера "толщины хвостов". Отвечает на вопрос: <strong>насколько часто актив
+      совершает безумные прыжки?</strong></p>
+  <p>Цена движется плавно или стоит-стоит, а потом взрывается на 20% одной свечой?</p>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Математика</h2>
+  <div class="doc-formula">
+    K = (Σ(x - μ)⁴ / n) / σ⁴
+    <div class="desc">Нормальное распределение (Гаусс) имеет K ≈ 3.0.</div>
+  </div>
+</div>
+
+<div class="doc-card">
+  <h2>Интерпретация значений</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Тип</th>
+        <th>Значение</th>
+        <th>Характер</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-red">
+        <td><span class="doc-tag t-red">HIGH RISK</span></td>
+        <td><strong>> 5.0 ... 10.0+</strong></td>
+        <td>
+          <strong>"Толстые хвосты".</strong> Актив спит, потом делает резкий вынос ("палку").<br>
+          <em>Опасно для стопов, идеально для пробоев.</em>
+        </td>
+      </tr>
+      <tr class="row-green">
+        <td><span class="doc-tag t-green">NORMAL</span></td>
+        <td><strong>2.5 ... 4.5</strong></td>
+        <td><strong>Нормальный рынок.</strong> Движения предсказуемы.</td>
+      </tr>
+      <tr class="row-grey">
+        <td><span class="doc-tag t-blue">FLAT</span></td>
+        <td><strong>
+            < 2.0</strong>
+        </td>
+        <td><strong>"Тонкие хвосты".</strong> Монотонное движение. Редкость для крипты.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-orange">
+  <h2>Как это торговать?</h2>
+
+  <div class="doc-code">
+    Сценарий 1: Высокий Куртозис (K > 6)
+    - ❌ Нельзя: Mean Reversion без стопов. Один прыжок убьет депозит.
+    - ✅ Надо: OCO-ордера на пробой. Если рванет — то сильно.
+
+    Сценарий 2: Нормальный Куртозис (K ≈ 3)
+    - ✅ Надо: Классический теханализ, каналы, RSI.
+  </div>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>Синергия с другими метриками</h2>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Комбинация</th>
+        <th>Интерпретация</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>K > 6 + Entropy < 1.5</td>
+        <td>"Сжатая пружина"</td>
+        <td>Ордера на пробой границ</td>
+      </tr>
+      <tr>
+        <td>K > 6 + FD > 1.7</td>
+        <td>Хаотичный всплеск (Pump/Dump)</td>
+        <td>Избегать или торговать малым объемом</td>
+      </tr>
+      <tr>
+        <td>K ≈ 3 + Hurst > 0.6</td>
+        <td>Стабильный тренд</td>
+        <td>Тренд-фолловинг</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Kurtosis-скрининг</h2>
+  <div class="doc-screening">
+    Высокий Kurtosis = высокая вероятность внезапного выброса (Tail Risk).
+  </div>
+  <ul>
+    <li><strong>K > 6:</strong> Только пробойные стратегии. Mean-reversion запрещен.</li>
+    <li><strong>K ∈ [2.5, 4.5]:</strong> Универсальный актив.</li>
+    <li><strong>BTC с K > 6 на 1h:</strong> Норма (из-за стоп-хантинга).</li>
+  </ul>
+</div>

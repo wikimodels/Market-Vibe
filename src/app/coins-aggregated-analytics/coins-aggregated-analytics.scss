@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--surface-bg);
+  padding-top: 0px;
+}
+
+.analytics-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  width: 100%;
+}
+
+/* === HEADER SECTION === */
+.header-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-top: 10px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+}
+
+/* === CONTROLS BAR (Pills) === */
+.controls-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.metrics-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+
+  .nav-pill {
+    background: #202028;
+    border: 1px solid #333;
+    color: #9090a0;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: #555;
+      color: #e0e0e0;
+      background: #252530;
+    }
+
+    &.active {
+      background: #7c4dff;
+      color: #fff;
+      border-color: #7c4dff;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);
+    }
+  }
+}
+
+/* === CONTENT AREA === */
+.content-area {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* === LOADING STATE === */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
+  margin-left: 20px;
+}

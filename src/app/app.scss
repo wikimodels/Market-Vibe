@@ -1,0 +1,37 @@
+// :host - это сам <app-root>
+:host {
+  display: flex;
+  flex-direction: column;
+  // Занимаем 100% высоты окна браузера
+  height: 100vh;
+
+  // (Берем переменные из твоего styles.scss)
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.main-content {
+  // Занимает все оставшееся место (после <app-navbar>)
+  flex: 1;
+  // !!! Это главный скроллбар твоего приложения !!!
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.content-wrapper {
+  // --- Центрирование ---
+  // Контент никогда не будет шире 1400px
+  max-width: 1400px;
+  // (0 - сверху/снизу, auto - слева/справа)
+  margin: 10px auto;
+
+  // --- "Равные отступы" ---
+  // 24px сверху/снизу, 32px слева/справа
+  padding: 24px 12px;
+
+  // Адаптивность для мобильных:
+  @media (max-width: 768px) {
+    // На маленьких экранах отступы меньше
+    padding: 16px;
+  }
+}

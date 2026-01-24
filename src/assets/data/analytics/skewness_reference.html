@@ -1,0 +1,56 @@
+<h1>Skewness: Физика "Хвостов" (Tech Docs)</h1>
+
+<div class="doc-card accent-gold">
+  <h2>1. Что мы считаем?</h2>
+  <p>Метрика рассчитывает коэффициент асимметрии распределения доходностей.</p>
+
+  <div class="doc-formula">
+    Skew = E[(x - μ)³] / σ³
+  </div>
+
+  <p>Код смотрит, в какую сторону "перекосило" график распределения.</p>
+</div>
+
+<div class="doc-card accent-green">
+  <h2>2. Positive Skew (> 0.5): The Lottery Ticket</h2>
+  <p><strong>Состояние:</strong> "Сжатая пружина" или актив, который любят пампить.</p>
+  <ul>
+    <li><strong>Тип хвоста:</strong> Длинный правый (редкие мощные взлеты).</li>
+    <li><strong>Психология:</strong> Толпа боится шортить ("а вдруг улетит?").</li>
+    <li><strong>Трейдинг:</strong> Идеально для Long-стратегий. Стоять в шорт смертельно опасно.</li>
+  </ul>
+</div>
+
+<div class="doc-card accent-red">
+  <h2>3. Negative Skew (< -0.5): The Steamroller</h2>
+      <p><strong>Состояние:</strong> "Перегрев" или токсичный актив.</p>
+      <ul>
+        <li><strong>Тип хвоста:</strong> Длинный левый (редкие мощные обвалы).</li>
+        <li><strong>График:</strong> Медленный рост "лесенкой", который мгновенно стирается одной красной свечой (Rug
+          Pull).</li>
+        <li><strong>Трейдинг:</strong> Опасно для лонга без стопов.</li>
+      </ul>
+</div>
+
+<div class="doc-card accent-purple">
+  <h2>4. Синергия</h2>
+  <table class="doc-table">
+    <tbody>
+      <tr>
+        <td>Skew > 0.5 + Kurtosis > 6</td>
+        <td>"Сжатая пружина" (Pump Risk)</td>
+      </tr>
+      <tr>
+        <td>Skew < -0.5 + Entropy> 2.8</td>
+        <td>Токсичный хаос (Crash Risk)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="doc-card accent-gold">
+  <h2>Skewness-скрининг</h2>
+  <div class="doc-screening">
+    Positive Skew = риск упущенной выгоды. Negative Skew = риск катастрофического убытка.
+  </div>
+</div>

@@ -1,0 +1,110 @@
+// FILE: vwap-alert-chart.scss
+:host {
+  display: flex;
+  flex-direction: column;
+  /* 🚀 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ: Точный расчет высоты.
+     100vh - (116px (внешние отступы) + 34px (margin-top хидера)) = 100vh - 150px
+  */
+  height: calc(100vh - 150px);
+
+  padding: 0 16px 16px 16px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+
+  height: 89vh;
+}
+
+/* 🚀 Скрытие без смещения макета */
+.is-hidden {
+  visibility: hidden;
+}
+
+/* === Header === */
+.coins-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 34px; // ❌ ИСПРАВЛЕНО: margin-top: 34px удален, так как компенсируем высоту
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.header-spacer-left {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 🚀 Контейнер для логотипа + заголовка */
+.header-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.coin-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 50%;
+
+}
+
+/* Обработка ошибки загрузки логотипа */
+.coin-logo.logo-error {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #aaa;
+  border: 1px solid #555;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #fff;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.header-actions {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* === Chart === */
+.chart-content {
+  flex-grow: 1;
+  margin-top: 24px;
+
+}
+
+.chart-container-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* === Loading Overlay === */
+.chart-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(20, 20, 20, 0.7);
+}

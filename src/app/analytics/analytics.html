@@ -1,0 +1,49 @@
+<div class="analytics-layout">
+
+  <header class="analytics-header">
+    <div class="title-row">
+      <h1>Analytics</h1>
+      @if (isLoading$ | async) {
+      <span class="loading-badge">Updating Data...</span>
+      }
+    </div>
+
+    <nav class="metrics-nav">
+      @for (key of registryKeys; track key) {
+      <button (click)="selectMetric(key)" [class.active]="selectedKey === key" class="nav-pill">
+        {{ registry[key].label }}
+      </button>
+      }
+    </nav>
+  </header>
+
+  <main class="analytics-content">
+    <mat-tab-group animationDuration="0ms" class="analytics-tabs">
+
+      <mat-tab label="Scanner Matrix">
+        <div class="tab-body" appScrollToTop>
+          @if (coins$ | async; as coins) {
+
+          <div class="tab-context-header">
+            <h2>{{ currentItem.config.title }}</h2>
+          </div>
+
+          @if (selectedKey === 'btc_correlation') {
+          <app-btc-scanner [coins]="coins"></app-btc-scanner>
+          } @else {
+          <app-universal-scanner [coins]="coins" [config]="currentItem.config">
+          </app-universal-scanner>
+          }
+          }
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Theory & Logic">
+        <div class="tab-body doc-wrapper" appScrollToTop>
+          <app-doc-viewer [filename]="currentItem.docFile"></app-doc-viewer>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </main>
+</div>

@@ -1,0 +1,109 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 20px;
+  background: inherit;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  background: #2a2530;
+  color: #e8eaed;
+
+  border: 1px solid #3d3540;
+  border-radius: 4px;
+
+  padding: 12px 24px;
+  min-width: 240px;
+
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Roboto', sans-serif;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.15s ease;
+
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    background: #342d3d;
+    border-color: #4a4050;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    background: #3a3240;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #6b5b73;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      0 0 0 1px #6b5b73;
+  }
+}
+
+.google-icon-wrapper {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.btn-text {
+  letter-spacing: 0.25px;
+}
+
+/* ============================================
+   ALTERNATIVE: More modern gradient style
+   ============================================ */
+
+// .google-btn {
+//   background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+//   border: 1px solid rgba(255, 255, 255, 0.1);
+//
+//   &:hover {
+//     background: linear-gradient(135deg, #333333 0%, #222222 100%);
+//     border-color: rgba(255, 255, 255, 0.15);
+//   }
+// }
+
+/* ============================================
+   ALTERNATIVE: Outlined style
+   ============================================ */
+
+// .google-btn {
+//   background: transparent;
+//   border: 1.5px solid #5f6368;
+//
+//   &:hover {
+//     background: rgba(255, 255, 255, 0.05);
+//     border-color: #8ab4f8;
+//   }
+// }

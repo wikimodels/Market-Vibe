@@ -1,0 +1,56 @@
+:host {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.compact-pill {
+  display: flex;
+  align-items: center;
+  gap: 3px;                  // Ещё меньше (было 4px)
+  padding: 2px 6px 2px 2px;  // Микро-отступы (было 3px 8px...)
+  border-radius: 99px;
+  background-color: #5a4455;
+  border: 1px solid transparent;
+
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+
+  // Hover
+  &:hover:not(.selected) {
+    filter: brightness(1.15);
+  }
+
+  // Active
+  &.selected {
+    $neon-color: #E000B0;
+    border-color: $neon-color;
+    box-shadow: 0 0 3px $neon-color, 0 0 6px rgba($neon-color, 0.4); // Тень чуть меньше
+
+    .symbol-text {
+      color: #fff;
+      font-weight: 500;
+    }
+  }
+}
+
+.coin-logo {
+  // Ужали на 30% (было 20px)
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  text-indent: -9999px;
+  display: block;
+}
+
+.symbol-text {
+  font-size: 0.65rem; // ~10-11px (было 0.75rem)
+  color: #e0e0e0;
+  line-height: 1;
+  white-space: nowrap;
+  padding-right: 2px; // Чуть воздуха справа
+}

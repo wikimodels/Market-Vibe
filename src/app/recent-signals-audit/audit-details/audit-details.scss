@@ -1,0 +1,121 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.analytics-container {
+  /* Центрируем основной контейнер, но даем ему ширину */
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* === ЗАГОЛОВОК (1 в 1 из образца) === */
+.chart-header {
+  text-align: center;
+  margin: 16px 0;
+  font-weight: 500;
+  color: #ffffff;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .strategy-badge {
+    background: rgba(0, 188, 212, 0.1);
+    color: #00bcd4;
+    border: 1px solid rgba(0, 188, 212, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.6em;
+    vertical-align: middle;
+  }
+}
+
+/* === ОБЕРТКА КОНТЕНТА (1 в 1 из образца) === */
+.chart-wrapper {
+  width: 100%;
+  min-height: 500px;
+  /* Используем переменную или фоллбек */
+  background: var(--surface-bg, #1e1e1e);
+  border-radius: 4px;
+  margin-top: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Контент сверху */
+
+  padding: 20px; /* Внутренний отступ */
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* === ТАБЛИЦА ВНУТРИ === */
+.audit-table {
+  width: 100%; /* Растягиваем таблицу внутри chart-wrapper */
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  background: #252526;
+  border-bottom: 1px solid #333;
+  padding: 14px 24px;
+
+  .col-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #666;
+    font-weight: 700;
+  }
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px 24px;
+  transition: background 0.2s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(255, 255, 255, 0.03); }
+}
+
+.col-time {
+  display: flex;
+  flex-direction: column;
+  .date { font-size: 14px; color: #e0e0e0; font-weight: 500; }
+  .time { font-size: 13px; color: #888; margin-top: 2px; font-family: monospace; }
+}
+
+.col-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* === СОСТОЯНИЯ === */
+.loading-state, .no-data {
+  width: 100%;
+  margin-top: 100px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  font-size: 14px;
+}
