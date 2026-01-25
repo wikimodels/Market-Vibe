@@ -56,6 +56,19 @@ export class KlineCacheService {
     }
   }
 
+  /**
+   * Удаляет MarketData для указанного таймфрейма из IndexedDB.
+   * @param timeframe Таймфрейм для удаления ('1h', '4h', '8h', и т.д.)
+   */
+  public async deleteMarketData(timeframe: TF): Promise<void> {
+    try {
+      await this.db.marketData.delete(timeframe);
+      console.warn(`🗑️ Cache: Удален MarketData [${timeframe}] из IndexedDB`);
+    } catch (error) {
+      console.error(`❌ Cache: Ошибка удаления MarketData [${timeframe}]`, error);
+    }
+  }
+
   // ========================================
   // --- CoinData (Мастер-список) ---
   // ========================================

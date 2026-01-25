@@ -60,6 +60,13 @@ import { MarketGravityService } from './services/market-gravity.service';
 import { RsiMedianService } from './services/rsi-median.service';
 import { VzoMedianService } from './services/vzo-median.service';
 
+// --- 10. STATISTICAL METRICS ---
+import { StatisticalRegimeService } from './services/statistical-regime.service';
+import { MarketRegimeTransitionsService } from './services/market-regime-transitions.service';
+import { VolatilityExhaustionTrackerService } from './services/volatility-exhaustion-tracker.service';
+import { SkewExtremesService } from './services/skew-extremes.service';
+import { SignalIntensityHeatmapService } from './services/signal-intensity-heatmap.service';
+
 import { CoinsAggregatedAnalyticsCharts } from './coins-aggregated-analytics-charts/coins-aggregated-analytics-charts';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 import { AnalyticsChartsData } from '../models/analytics-charts-data.model';
@@ -125,6 +132,13 @@ export class CoinsAggregatedAnalytics implements OnInit {
   private rsiMedianService = inject(RsiMedianService);
   private vzoMedianService = inject(VzoMedianService);
 
+  // --- STATISTICAL METRICS ---
+  private statRegimeService = inject(StatisticalRegimeService);
+  private regimeTransService = inject(MarketRegimeTransitionsService);
+  private volExhaustService = inject(VolatilityExhaustionTrackerService);
+  private skewExtremesService = inject(SkewExtremesService);
+  private signalHeatmapService = inject(SignalIntensityHeatmapService);
+
   public isLoading = signal<boolean>(true);
   public chartsData = signal<AnalyticsChartsData | null>(null);
   public chartTitle = signal<string>('Market Overview');
@@ -176,6 +190,13 @@ export class CoinsAggregatedAnalytics implements OnInit {
 
     { id: 'rsi_median', label: 'RSI Median', hasChart: true },
     { id: 'vzo_median', label: 'VZO Median', hasChart: true },
+
+    // 🔥 STATISTICAL METRICS
+    { id: 'stat_regime', label: 'Statistical Regime Map', hasChart: true },
+    { id: 'regime_trans', label: 'Market Regime Transitions', hasChart: true },
+    { id: 'vol_exhaust', label: 'Volatility Exhaustion', hasChart: true },
+    { id: 'skew_extremes', label: 'Skewness Extremes', hasChart: true },
+    { id: 'signal_heatmap', label: 'Signal Intensity Heatmap', hasChart: true },
   ];
 
   public activeTab = signal<AnalyticsTab>(this.tabs[0]);
@@ -197,10 +218,37 @@ export class CoinsAggregatedAnalytics implements OnInit {
 
       const results = await Promise.all(tfs.map((tf) => this.klineService.getKlines(tf)));
 
+      console.log('📊 [Aggregated] Results received:', results.map((r, i) => ({
+        tf: tfs[i],
+        hasData: !!r,
+        dataLength: r?.data?.length || 0,
+        timeframe: r?.timeframe
+      })));
+
       results.forEach((data, index) => {
+        const tf = tfs[index];
+        console.log(`🔍 [Aggregated] Processing ${tf}:`, {
+          hasData: !!data,
+          hasDataArray: !!(data?.data),
+          dataLength: data?.data?.length || 0,
+          willAdd: !!(data && data.data && data.data.length > 0)
+        });
+
         if (data && data.data && data.data.length > 0) {
-          this.allMarketData.set(tfs[index], data);
+          this.allMarketData.set(tf, data);
+          console.log(`✅ [Aggregated] Added ${tf} to allMarketData`);
+        } else {
+          console.warn(`⚠️ [Aggregated] Skipped ${tf} - no valid data`);
         }
+      });
+
+      console.log('📦 [Aggregated] Final allMarketData Map:', {
+        size: this.allMarketData.size,
+        keys: Array.from(this.allMarketData.keys()),
+        details: Array.from(this.allMarketData.entries()).map(([k, v]) => ({
+          timeframe: k,
+          coinCount: v.data.length
+        }))
       });
 
       if (this.allMarketData.size > 0) {
@@ -346,6 +394,28 @@ export class CoinsAggregatedAnalytics implements OnInit {
           charts: this.vzoMedianService.getWidgetData(this.allMarketData),
           title: 'Market VZO Median',
         };
+
+        // 🔥 STATISTICAL METRICS
+        this.widgetCache['stat_regime'] = {
+          charts: this.statRegimeService.getWidgetData(this.allMarketData),
+          title: 'Statistical Regime Map (Hurst vs ER)',
+        };
+        this.widgetCache['regime_trans'] = {
+          charts: this.regimeTransService.getWidgetData(this.allMarketData),
+          title: 'Market Regime Transitions (Trending vs Mean Reversion)',
+        };
+        this.widgetCache['vol_exhaust'] = {
+          charts: this.volExhaustService.getWidgetData(this.allMarketData),
+          title: 'Volatility Exhaustion Tracker (High Kurtosis)',
+        };
+        this.widgetCache['skew_extremes'] = {
+          charts: this.skewExtremesService.getWidgetData(this.allMarketData),
+          title: 'Skewness Extremes & Reversals',
+        };
+        this.widgetCache['signal_heatmap'] = {
+          charts: this.signalHeatmapService.getWidgetData(this.allMarketData),
+          title: 'Signal Intensity Heatmap (Normalized, Last 20 Candles)',
+        };
       }
     } catch (err) {
       console.error('❌ Error loading aggregated analytics:', err);
@@ -355,6 +425,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
   }
 
   public selectTab(tab: AnalyticsTab) {
+    console.log(`🎯 [SelectTab] Switching to tab: ${tab.id} (${tab.label})`);
     this.activeTab.set(tab);
 
     this.chartsData.set(null);
@@ -363,8 +434,23 @@ export class CoinsAggregatedAnalytics implements OnInit {
     setTimeout(() => {
       if (this.widgetCache[tab.id]) {
         const cached = this.widgetCache[tab.id];
+        console.log(`📊 [SelectTab] Found cached data for ${tab.id}:`, {
+          hasCharts: !!cached.charts,
+          chartKeys: Object.keys(cached.charts || {}),
+          chartCount: Object.keys(cached.charts || {}).length
+        });
+
+        // Проверим конкретно данные для 8h
+        if (cached.charts && cached.charts['8h']) {
+          console.log(`✅ [SelectTab] 8h chart data EXISTS for ${tab.id}`);
+        } else {
+          console.warn(`⚠️ [SelectTab] 8h chart data MISSING for ${tab.id}`);
+        }
+
         this.chartsData.set(cached.charts);
         this.chartTitle.set(cached.title);
+      } else {
+        console.warn(`⚠️ [SelectTab] No cached data found for ${tab.id}`);
       }
     }, 0);
   }

@@ -17,7 +17,11 @@
     <mat-tab label="1h">
       <div class="chart-wrapper">
         @if (chartsData && chartsData['1h']) {
+        @if (currentTab?.id === 'signal_heatmap') {
+        <app-signal-intensity-table [data]="chartsData['1h']"></app-signal-intensity-table>
+        } @else {
         <div echarts [options]="chartsData['1h']" class="echart-instance"></div>
+        }
         } @else {
         <div class="no-data">No data for 1h</div>
         }
@@ -27,7 +31,11 @@
     <mat-tab label="4h">
       <div class="chart-wrapper">
         @if (chartsData && chartsData['4h']) {
+        @if (currentTab?.id === 'signal_heatmap') {
+        <app-signal-intensity-table [data]="chartsData['4h']"></app-signal-intensity-table>
+        } @else {
         <div echarts [options]="chartsData['4h']" class="echart-instance"></div>
+        }
         } @else {
         <div class="no-data">No data for 4h</div>
         }
@@ -37,7 +45,11 @@
     <mat-tab label="8h">
       <div class="chart-wrapper">
         @if (chartsData && chartsData['8h']) {
+        @if (currentTab?.id === 'signal_heatmap') {
+        <app-signal-intensity-table [data]="chartsData['8h']"></app-signal-intensity-table>
+        } @else {
         <div echarts [options]="chartsData['8h']" class="echart-instance"></div>
+        }
         } @else {
         <div class="no-data">No data for 8h</div>
         }
@@ -47,7 +59,11 @@
     <mat-tab label="12h">
       <div class="chart-wrapper">
         @if (chartsData && chartsData['12h']) {
+        @if (currentTab?.id === 'signal_heatmap') {
+        <app-signal-intensity-table [data]="chartsData['12h']"></app-signal-intensity-table>
+        } @else {
         <div echarts [options]="chartsData['12h']" class="echart-instance"></div>
+        }
         } @else {
         <div class="no-data">No data for 12h</div>
         }
@@ -57,7 +73,11 @@
     <mat-tab label="1d">
       <div class="chart-wrapper">
         @if (chartsData && chartsData['D']) {
+        @if (currentTab?.id === 'signal_heatmap') {
+        <app-signal-intensity-table [data]="chartsData['D']"></app-signal-intensity-table>
+        } @else {
         <div echarts [options]="chartsData['D']" class="echart-instance"></div>
+        }
         } @else {
         <div class="no-data">No data for 1d</div>
         }

@@ -6,8 +6,6 @@ import { MarketData, Candle } from '../../models/kline.model';
   providedIn: 'root',
 })
 export class CmfRegimeService {
-  private readonly WARMUP = 20; // Стандартный период CMF
-
   public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
     const charts: Record<string, EChartsOption> = {};
 
@@ -31,24 +29,9 @@ export class CmfRegimeService {
     }
 
     for (const coin of data.data) {
-      if (!coin.candles || coin.candles.length < this.WARMUP) continue;
+      if (!coin.candles) continue;
 
-      // --- ЛОГИКА FALLBACK ---
-      // Проверяем последнюю свечу: есть ли там готовый CMF?
-      // Если нет, считаем массив CMF локально для всей монеты.
-      const lastCandle = coin.candles[coin.candles.length - 1] as any;
-      const hasPipelineCmf = lastCandle.cmf !== undefined && lastCandle.cmf !== null;
-
-      let localCmf: number[] = [];
-      if (!hasPipelineCmf) {
-        localCmf = this.calculateRollingCmf(coin.candles, this.WARMUP);
-      }
-
-      for (let i = 0; i < coin.candles.length; i++) {
-        // Если считаем локально, пропускаем период разгона
-        if (!hasPipelineCmf && i < this.WARMUP) continue;
-
-        const c = coin.candles[i];
+      for (const c of coin.candles) {
         const time = c.openTime;
 
         if (!timeMap.has(time)) {
@@ -56,8 +39,9 @@ export class CmfRegimeService {
         }
         const counts = timeMap.get(time)!;
 
-        // Получаем значение: либо из пайплайна, либо из локального расчета
-        const val = hasPipelineCmf ? (c as any).cmf : localCmf[i];
+        // Используем CMF из pipeline
+        const candle = c as any;
+        const val = candle.cmf;
 
         // Строгая проверка валидности числа
         if (typeof val !== 'number' || isNaN(val)) continue;
@@ -104,52 +88,6 @@ export class CmfRegimeService {
     }
 
     return result;
-  }
-
-  // --- Локальный расчет CMF (классическая формула) ---
-  private calculateRollingCmf(candles: Candle[], length: number): number[] {
-    const len = candles.length;
-    const cmfData = new Array(len).fill(NaN);
-
-    // Массивы для Money Flow Volume и Volume
-    const mfv = new Array(len).fill(0);
-    const vol = new Array(len).fill(0);
-
-    for (let i = 0; i < len; i++) {
-      const h = Number(candles[i].highPrice);
-      const l = Number(candles[i].lowPrice);
-      const c = Number(candles[i].closePrice);
-      const v = Number(candles[i].volume);
-
-      vol[i] = v;
-
-      if (h === l) {
-        mfv[i] = 0;
-      } else {
-        // Multiplier = ((Close - Low) - (High - Close)) / (High - Low)
-        const mul = (c - l - (h - c)) / (h - l);
-        mfv[i] = mul * v;
-      }
-    }
-
-    // Rolling Sum
-    for (let i = length - 1; i < len; i++) {
-      let sumMfv = 0;
-      let sumVol = 0;
-
-      for (let j = 0; j < length; j++) {
-        sumMfv += mfv[i - j];
-        sumVol += vol[i - j];
-      }
-
-      if (sumVol === 0) {
-        cmfData[i] = 0;
-      } else {
-        cmfData[i] = sumMfv / sumVol;
-      }
-    }
-
-    return cmfData;
   }
 
   private buildChart(data: any, tf: string): EChartsOption {

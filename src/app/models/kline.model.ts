@@ -113,6 +113,16 @@ export interface Candle {
   isCrossedDownRvwap?: boolean | null;
   isBetweenRvwapBands?: boolean | null;
 
+  // RVWAP Band Crossovers
+  isCrossedUpRvwapUpperBand1?: boolean | null;
+  isCrossedDownRvwapUpperBand1?: boolean | null;
+  isCrossedUpRvwapUpperBand2?: boolean | null;
+  isCrossedDownRvwapUpperBand2?: boolean | null;
+  isCrossedUpRvwapLowerBand1?: boolean | null;
+  isCrossedDownRvwapLowerBand1?: boolean | null;
+  isCrossedUpRvwapLowerBand2?: boolean | null;
+  isCrossedDownRvwapLowerBand2?: boolean | null;
+
   isAboveKama?: boolean | null;
   isBelowKama?: boolean | null;
   isCrossedUpKama?: boolean | null;
@@ -158,6 +168,50 @@ export interface Candle {
   // === EMA Fan Punches ===
   isBullishPunch?: boolean | null;
   isBearishPunch?: boolean | null;
+
+  // === RVWAP-RSI Divergence ===
+  isBullishRvwapRsiDivergence?: boolean | null;
+  isBearishRvwapRsiDivergence?: boolean | null;
+
+  // === RVWAP-VZO Divergence ===
+  isBullishRvwapVzoDivergence?: boolean | null;
+  isBearishRvwapVzoDivergence?: boolean | null;
+
+  // === RVWAP-CMF Divergence ===
+  isBullishRvwapCmfDivergence?: boolean | null;
+  isBearishRvwapCmfDivergence?: boolean | null;
+
+  // === Order Flow Regime ===
+  isLongAccumulation?: boolean | null;
+  isShortAccumulation?: boolean | null;
+  isLongLiquidation?: boolean | null;
+  isShortCovering?: boolean | null;
+
+  // === RVWAP Momentum Reversal ===
+  isTopReversalRisk?: boolean | null;
+  isBottomReversalChance?: boolean | null;
+
+  // === CMF Slope Change ===
+  isCmfSlopeUp?: boolean | null;
+  isCmfSlopeDown?: boolean | null;
+
+  // === Statistical Metrics ===
+  hurst?: number | null;           // Hurst Exponent (0-1)
+  hurstConfidence?: number | null; // R-squared confidence
+  kurtosis?: number | null;        // Kurtosis (excess)
+  skewness?: number | null;        // Skewness
+  efficiencyRatio?: number | null; // Kaufman's ER (0-1)
+
+  // === Market Regime Signals ===
+  isTrendingRegimeStart?: boolean | null;
+  isMeanReversionRegimeStart?: boolean | null;
+
+  // === Volatility Exhaustion ===
+  isVolatilityExhaustion?: boolean | null;
+
+  // === Skew Reversal ===
+  isBullishSkewReversal?: boolean | null;
+  isBearishSkewReversal?: boolean | null;
 }
 /**
  * Holds all candle data for a single coin.

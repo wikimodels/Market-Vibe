@@ -6,21 +6,12 @@ import { MarketData } from '../../models/kline.model';
   providedIn: 'root',
 })
 export class RvwapMomentumReversalService {
-  // RVWAP и MACD требуют разгона. Если свечей меньше, индикаторы будут некорректны.
-  private readonly WARMUP_INDEX = 35;
-
   public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
     const charts: Record<string, EChartsOption> = {};
 
     allMarketData.forEach((marketData, timeframe) => {
-      // 🔥 ДЕБАГ: Смотрим в консоль
-      console.group(`🔍 RVWAP Reversal DEBUG: Timeframe ${timeframe}`);
-      console.log(`Total coins in dataset: ${marketData.data.length}`);
-
       const stats = this.calculateStats(marketData);
       charts[timeframe] = this.buildChart(stats, timeframe);
-
-      console.groupEnd();
     });
 
     return charts;
@@ -32,104 +23,39 @@ export class RvwapMomentumReversalService {
       { topRisk: number; bottomChance: number; totalScanned: number }
     >();
 
-    // Счетчики диагностики
-    let skippedShortHistory = 0;
-    let skippedMissingFields = 0;
-    let acceptedCoins = 0;
-
     if (!data.data || data.data.length === 0) {
       return { dates: [], topRisk: [], bottomChance: [], totalScanned: [] };
     }
 
     for (const coin of data.data) {
-      // 1. Проверка истории
-      if (!coin.candles || coin.candles.length <= this.WARMUP_INDEX) {
-        skippedShortHistory++;
-        continue;
-      }
+      if (!coin.candles) continue;
 
-      // 2. Проверка наличия данных в последней свече (быстрый чек)
-      const last = coin.candles[coin.candles.length - 1] as any;
-      if (
-        last.rvwapUpperBand1 === undefined ||
-        last.rvwapUpperBand1 === null ||
-        last.macdHistogram === undefined ||
-        last.macdHistogram === null
-      ) {
-        skippedMissingFields++;
-        // Выводим пример первой проблемной монеты
-        if (skippedMissingFields === 1) {
-          console.warn(
-            `⚠️ [${coin.symbol}] Missing RVWAP or MACD fields! Keys:`,
-            Object.keys(last),
-          );
-        }
-        continue;
-      }
-
-      acceptedCoins++;
-
-      for (let i = this.WARMUP_INDEX; i < coin.candles.length; i++) {
-        const curr = coin.candles[i] as any;
-        const prev = coin.candles[i - 1] as any;
-        const time = curr.openTime;
+      for (const c of coin.candles) {
+        const time = c.openTime;
 
         if (!timeMap.has(time)) {
           timeMap.set(time, { topRisk: 0, bottomChance: 0, totalScanned: 0 });
         }
         const counts = timeMap.get(time)!;
 
-        // 1. ЧТЕНИЕ ДАННЫХ С ПРОВЕРКОЙ НА NULL
-        // Используем строгое сравнение с null, чтобы не получить 0
+        // Используем готовые флаги из бэкенда (рассчитаны в pipeline)
+        const candle = c as any;
+
+        // Проверяем наличие хотя бы одного флага (если нет - пропускаем)
         if (
-          curr.rvwapUpperBand1 == null ||
-          curr.rvwapLowerBand1 == null ||
-          curr.macdHistogram == null
-        )
-          continue;
-        if (prev.macdHistogram == null) continue;
-
-        const price = Number(curr.closePrice);
-        const upper1 = Number(curr.rvwapUpperBand1);
-        const lower1 = Number(curr.rvwapLowerBand1);
-        const h = Number(curr.macdHistogram);
-        const hPrev = Number(prev.macdHistogram);
-
-        // 2. ФИЛЬТР ВАЛИДНОСТИ (NaN)
-        if (isNaN(price) || isNaN(upper1) || isNaN(lower1) || isNaN(h) || isNaN(hPrev)) {
-          continue;
+          candle.isTopReversalRisk == null &&
+          candle.isBottomReversalChance == null
+        ) {
+          continue; // Нет данных для этой свечи
         }
 
         counts.totalScanned++;
 
-        // --- ЛОГИКА СТРАТЕГИИ ---
-
-        // 1. Top Reversal Risk
-        // Цена выше верхней полосы, но гистограмма MACD падает (слабость быков)
-        // h > 0 проверка важна, чтобы ловить именно затухание роста, а не падение в бездну
-        const isExpensive = price > upper1;
-        const isFadingBull = h > 0 && h < hPrev;
-
-        if (isExpensive && isFadingBull) {
-          counts.topRisk++;
-        }
-
-        // 2. Bottom Reversal Chance
-        // Цена ниже нижней полосы, но гистограмма MACD растет (слабость медведей)
-        // h < 0 проверка важна, чтобы ловить отскок со дна
-        const isCheap = price < lower1;
-        const isFadingBear = h < 0 && h > hPrev;
-
-        if (isCheap && isFadingBear) {
-          counts.bottomChance++;
-        }
+        // Считаем монеты в каждом состоянии
+        if (candle.isTopReversalRisk === true) counts.topRisk++;
+        if (candle.isBottomReversalChance === true) counts.bottomChance++;
       }
     }
-
-    // 🔥 ИТОГИ
-    console.log(`✅ Accepted coins: ${acceptedCoins}`);
-    console.log(`❌ Skipped (History < ${this.WARMUP_INDEX}): ${skippedShortHistory}`);
-    console.log(`❌ Skipped (Missing RVWAP/MACD data): ${skippedMissingFields}`);
 
     const sortedTimes = Array.from(timeMap.keys()).sort((a, b) => a - b);
 
@@ -149,7 +75,6 @@ export class RvwapMomentumReversalService {
 
     for (const t of sortedTimes) {
       const c = timeMap.get(t)!;
-      // Рисуем точку только если были валидные данные
       if (c.totalScanned > 0) {
         result.dates.push(fmt.format(new Date(t)));
         result.topRisk.push(c.topRisk);

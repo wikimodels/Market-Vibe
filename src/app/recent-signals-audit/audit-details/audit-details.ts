@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 // Custom Components & Services
 
 import { AuditStrategyService } from '../services/audit-strategy.service';
+import { SignalDataService, SignalType, Timeframe } from '../services/signal-data.service';
 import { WorkingCoin } from '../../shared/models/working-coin.model';
 import { AuditTable, AuditTableRow } from '../audit-table/audit-table';
 
@@ -27,6 +28,7 @@ export class AuditDetails implements OnInit {
   private route = inject(ActivatedRoute);
   private titleService = inject(Title);
   private strategyService = inject(AuditStrategyService);
+  private signalDataService = inject(SignalDataService);
 
   // --- Configuration ---
   public readonly timeframes: AuditTimeframe[] = ['1h', '4h', '8h', '12h', '1d'];
@@ -75,14 +77,85 @@ export class AuditDetails implements OnInit {
     const config = this.activeConfig();
     this.titleService.setTitle(`Audit: ${config.title}`);
 
-    // Simulate API Delay
-    setTimeout(() => {
-      this.generateMockData();
-      this.isLoading.set(false);
-    }, 600);
+    // Check if this is a signal-based strategy
+    const signalTypes: SignalType[] = [
+      'ema50crossedUp', 'ema50crossedDown',
+      'ema100crossedUp', 'ema100crossedDown',
+      'ema150crossedUp', 'ema150crossedDown',
+      'kamaCrossedUp', 'kamaCrossedDown',
+      'lowest50crossedUp', 'lowest50crossedDown',
+      'lowest100crossedUp', 'lowest100crossedDown',
+      'doji', 'bullishEngulfing', 'bearishEngulfing',
+      'hammer', 'pinbar',
+      'rvwapCrossedUp', 'rvwapCrossedDown',
+      'rvwapUpperBand1CrossedUp', 'rvwapUpperBand1CrossedDown',
+      'rvwapUpperBand2CrossedUp', 'rvwapUpperBand2CrossedDown',
+      'rvwapLowerBand1CrossedUp', 'rvwapLowerBand1CrossedDown',
+      'rvwapLowerBand2CrossedUp', 'rvwapLowerBand2CrossedDown',
+      'bullishPunch', 'bearishPunch',
+      'bullishRvwapRsiDivergence', 'bearishRvwapRsiDivergence',
+      'bullishRvwapVzoDivergence', 'bearishRvwapVzoDivergence',
+      'bullishRvwapCmfDivergence', 'bearishRvwapCmfDivergence',
+      'longAccumulation', 'shortAccumulation', 'longLiquidation', 'shortCovering',
+      'topReversalRisk', 'bottomReversalChance',
+      'cmfSlopeUp', 'cmfSlopeDown',
+      'trendingRegimeStart', 'meanReversionRegimeStart',
+      'volatilityExhaustion',
+      'bullishSkewReversal', 'bearishSkewReversal'
+    ];
+
+    if (signalTypes.includes(id as SignalType)) {
+      // Load real signal data
+      this.loadSignalData(id as SignalType);
+    } else {
+      // For other strategies, use mock data
+      setTimeout(() => {
+        this.generateMockData();
+        this.isLoading.set(false);
+      }, 600);
+    }
   }
 
-  // --- Mock Data Generator (Replace with API call later) ---
+  // Load Signal Data from API
+  private loadSignalData(signalType: SignalType) {
+    const newData: Record<AuditTimeframe, AuditTableRow[]> = {
+      '1h': [],
+      '4h': [],
+      '8h': [],
+      '12h': [],
+      '1d': [],
+    };
+
+    // Load data for each timeframe
+    let completedRequests = 0;
+    const totalRequests = this.timeframes.length;
+
+    this.timeframes.forEach((tf) => {
+      this.signalDataService.getSignalData(signalType, tf as Timeframe).subscribe({
+        next: (data) => {
+          newData[tf] = data;
+          completedRequests++;
+
+          if (completedRequests === totalRequests) {
+            this.auditDataCache.set(newData);
+            this.isLoading.set(false);
+          }
+        },
+        error: (err) => {
+          console.error(`Failed to load data for ${signalType} ${tf}:`, err);
+          completedRequests++;
+
+          // Even on error, check if all requests completed
+          if (completedRequests === totalRequests) {
+            this.auditDataCache.set(newData);
+            this.isLoading.set(false);
+          }
+        },
+      });
+    });
+  }
+
+  // --- Mock Data Generator (For non-signal strategies) ---
   private generateMockData() {
     const newData: any = { ...this.auditDataCache() };
 

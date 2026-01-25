@@ -48,8 +48,8 @@ export function calculateEmaFan(
     isBearishFan[i] = bearishFan;
     isMessFan[i] = !bullishFan && !bearishFan;
 
-    isBullishPunch[i] = bullishFan && high > ema150;
-    isBearishPunch[i] = bearishFan && low < ema150;
+    isBullishPunch[i] = bullishFan && low < ema150; // Пробой ВНИЗ через нижнюю EMA в бычьем веере
+    isBearishPunch[i] = bearishFan && high > ema50; // Пробой ВВЕРХ через верхнюю EMA в медвежьем веере
   }
 
   return {

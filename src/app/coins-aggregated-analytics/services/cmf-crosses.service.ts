@@ -6,8 +6,6 @@ import { MarketData } from '../../models/kline.model';
   providedIn: 'root',
 })
 export class CmfCrossesService {
-  // 🔥 Удален CORR_THRESHOLD
-
   public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
     const charts: Record<string, EChartsOption> = {};
 
@@ -28,14 +26,10 @@ export class CmfCrossesService {
     }
 
     for (const coin of data.data) {
-      // 1. УБРАН ФИЛЬТР ПО КОРРЕЛЯЦИИ. Сканируем все монеты.
+      if (!coin.candles) continue;
 
-      if (!coin.candles || coin.candles.length < 2) continue;
-
-      for (let i = 1; i < coin.candles.length; i++) {
-        const curr = coin.candles[i] as any;
-        const prev = coin.candles[i - 1] as any;
-        const time = curr.openTime;
+      for (const c of coin.candles) {
+        const time = c.openTime;
 
         if (!timeMap.has(time)) {
           timeMap.set(time, { up: 0, down: 0, scanned: 0 });
@@ -43,34 +37,25 @@ export class CmfCrossesService {
 
         const counts = timeMap.get(time)!;
 
-        // Проверяем наличие CMF в пайплайне
+        // Используем готовые флаги из бэкенда (рассчитаны в pipeline)
+        const candle = c as any;
+
+        // Проверяем наличие хотя бы одного флага
         if (
-          typeof curr.cmf !== 'number' ||
-          Number.isNaN(curr.cmf) ||
-          typeof prev.cmf !== 'number' ||
-          Number.isNaN(prev.cmf)
+          candle.isCmfSlopeUp == null &&
+          candle.isCmfSlopeDown == null
         ) {
-          continue;
+          continue; // Нет данных для этой свечи
         }
 
         counts.scanned++;
 
-        // --- ЛОГИКА ПЕРЕСЕЧЕНИЙ ---
-
-        // Cross UP (снизу вверх через 0)
-        // CMF < 0 -> Outflow, CMF > 0 -> Inflow
-        if (prev.cmf <= 0 && curr.cmf > 0) {
-          counts.up++;
-        }
-
-        // Cross DOWN (сверху вниз через 0)
-        if (prev.cmf >= 0 && curr.cmf < 0) {
-          counts.down++;
-        }
+        // Считаем монеты в каждом состоянии
+        if (candle.isCmfSlopeUp === true) counts.up++;
+        if (candle.isCmfSlopeDown === true) counts.down++;
       }
     }
 
-    // 3. Сортировка и упаковка
     const sortedTimes = Array.from(timeMap.keys()).sort((a, b) => a - b);
 
     const result = {
@@ -89,7 +74,6 @@ export class CmfCrossesService {
 
     for (const t of sortedTimes) {
       const counts = timeMap.get(t)!;
-      // Рисуем, если были просканированы монеты
       if (counts.scanned > 0) {
         result.dates.push(fmt.format(new Date(t)));
         result.up.push(counts.up);
@@ -138,7 +122,7 @@ export class CmfCrossesService {
         },
       },
       legend: {
-        data: ['New Inflow (Cross 0 Up)', 'New Outflow (Cross 0 Down)'],
+        data: ['CMF Slope Up (Strengthening Inflow)', 'CMF Slope Down (Strengthening Outflow)'],
         top: 0,
         left: 'center',
         textStyle: { color: '#ccc', fontSize: 11 },
@@ -161,7 +145,7 @@ export class CmfCrossesService {
       },
       series: [
         {
-          name: 'New Inflow (Cross 0 Up)',
+          name: 'CMF Slope Up (Strengthening Inflow)',
           type: 'bar',
           stack: 'total',
           data: data.up,
@@ -169,7 +153,7 @@ export class CmfCrossesService {
           emphasis: { focus: 'series' },
         },
         {
-          name: 'New Outflow (Cross 0 Down)',
+          name: 'CMF Slope Down (Strengthening Outflow)',
           type: 'bar',
           stack: 'total',
           data: data.down,

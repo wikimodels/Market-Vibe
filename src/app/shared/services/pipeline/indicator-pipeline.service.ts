@@ -37,6 +37,15 @@ import { calculateAdxDensity } from '../../../calculations/adx-density';
 import { calculateDiPlusDominance } from '../../../calculations/di-dominance';
 import { CoinsDataService } from '../coin-data.service';
 import { calculateRollingNormalization } from '../../../calculations/calculate-rolling-normalization';
+import { analyzeRvwapRsiDivergence } from '../../../calculations/rvwap-rsi-divergence';
+import { analyzeRvwapVzoDivergence } from '../../../calculations/rvwap-vzo-divergence';
+import { analyzeRvwapCmfDivergence } from '../../../calculations/rvwap-cmf-divergence';
+import { analyzeOrderFlowRegime } from '../../../calculations/order-flow-regime';
+import { analyzeRvwapMomentumReversal } from '../../../calculations/rvwap-momentum-reversal';
+import { analyzeCmfSlopeChange } from '../../../calculations/cmf-slope-change';
+import { analyzeMarketRegimeChange } from '../../../calculations/market-regime-change';
+import { analyzeVolatilityExhaustion } from '../../../calculations/volatility-exhaustion';
+import { analyzeSkewReversal } from '../../../calculations/skew-reversal';
 
 // Интерфейс для динамического расширения свойств свечи
 interface CandleWithIndicators extends Candle {
@@ -161,7 +170,19 @@ export class IndicatorPipelineService {
       const signEntropyResult50 = calculateSignEntropy(priceSeries, 50);
 
       const kurtosis100 = calculateRollingKurtosis(priceSeries, 100);
-      const hurst400 = calculateRollingHurst(priceSeries, 400);
+
+      // Адаптивное окно для Hurst в зависимости от количества свечей
+      // Hurst требует много данных для надёжного расчёта
+      const candleCount = coin.candles.length;
+      let hurstWindow = 400; // По умолчанию для 1h
+
+      if (candleCount < 500) {
+        // Для старших таймфреймов (4h+) используем меньшее окно
+        hurstWindow = Math.max(Math.floor(candleCount * 0.6), 200);
+      }
+
+      const hurst = calculateRollingHurst(priceSeries, hurstWindow);
+
       const skewness50 = calculateRollingSkewness(priceSeries, 50);
       const er10 = calculateEfficiencyRatio(priceSeries, 10);
       const adxDensityResult = calculateAdxDensity(adxResult['adx'], 50, 25);
@@ -212,6 +233,85 @@ export class IndicatorPipelineService {
         highestHighResult['highest100'],
         lowestLowResult['lowest100'],
         100,
+      );
+
+      // --- RVWAP-RSI DIVERGENCE ---
+      const rvwapRsiDivergence = analyzeRvwapRsiDivergence(
+        closePrices,
+        priceSeries.highPrice,
+        priceSeries.lowPrice,
+        rsiResult['rsi'],
+        rVwwapResult['rvwap_upper_band_1'],
+        rVwwapResult['rvwap_lower_band_1'],
+        5 // lookback period
+      );
+
+      // --- RVWAP-VZO DIVERGENCE ---
+      const rvwapVzoDivergence = analyzeRvwapVzoDivergence(
+        closePrices,
+        priceSeries.highPrice,
+        priceSeries.lowPrice,
+        vzoResult['vzo'],
+        rVwwapResult['rvwap_upper_band_1'],
+        rVwwapResult['rvwap_lower_band_1'],
+        5 // lookback period
+      );
+
+      // --- RVWAP-CMF DIVERGENCE ---
+      const rvwapCmfDivergence = analyzeRvwapCmfDivergence(
+        closePrices,
+        priceSeries.highPrice,
+        priceSeries.lowPrice,
+        cmfResult['cmf'],
+        rVwwapResult['rvwap_upper_band_1'],
+        rVwwapResult['rvwap_lower_band_1'],
+        5 // lookback period
+      );
+
+      // --- ORDER FLOW REGIME ---
+      const orderFlowRegime = analyzeOrderFlowRegime(
+        slopeZClose,
+        slopeZoi,
+        0 // slope threshold
+      );
+
+      // --- RVWAP MOMENTUM REVERSAL ---
+      const momentumReversal = analyzeRvwapMomentumReversal(
+        closePrices,
+        macdResult['macd_histogram'],
+        rVwwapResult['rvwap_upper_band_1'],
+        rVwwapResult['rvwap_lower_band_1']
+      );
+
+      // --- CMF SLOPE CHANGE ---
+      const cmfSlopeChange = analyzeCmfSlopeChange(
+        cmfResult['cmf'],
+        5 // lookback period
+      );
+
+      // --- MARKET REGIME CHANGE ---
+      const regimeChange = analyzeMarketRegimeChange(
+        hurst,
+        er10,
+        0.4 // ER threshold
+      );
+
+      // --- VOLATILITY EXHAUSTION ---
+      const volExhaustion = analyzeVolatilityExhaustion(
+        kurtosis100,
+        hurst,
+        er10,
+        5, // kurtosis threshold
+        0.6 // hurst threshold
+      );
+
+      // --- SKEW REVERSAL ---
+      const skewReversal = analyzeSkewReversal(
+        closePrices,
+        skewness50,
+        rVwwapResult['rvwap_upper_band_1'],
+        rVwwapResult['rvwap_lower_band_1'],
+        1.5 // skew threshold
       );
 
       // --- 8. ЗАПИСЬ В СВЕЧИ (Data Mapping) ---
@@ -299,7 +399,7 @@ export class IndicatorPipelineService {
         c['signEntropy50'] = signEntropyResult50;
 
         c['kurtosis100'] = kurtosis100[index];
-        const hData = hurst400[index];
+        const hData = hurst[index];
         c['hurst'] = hData.value;
         c['hurstConf'] = hData.confidence;
         c['skewness50'] = skewness50[index];
@@ -386,6 +486,50 @@ export class IndicatorPipelineService {
         c['isCrossedDownLowest50'] = breakout50['isCrossedDownLowest50'][index];
         c['isCrossedUpHighest100'] = breakout100['isCrossedUpHighest100'][index];
         c['isCrossedDownLowest100'] = breakout100['isCrossedDownLowest100'][index];
+
+        // --- RVWAP-RSI DIVERGENCE FLAGS ---
+        c['isBullishRvwapRsiDivergence'] = rvwapRsiDivergence['isBullishRvwapRsiDivergence'][index];
+        c['isBearishRvwapRsiDivergence'] = rvwapRsiDivergence['isBearishRvwapRsiDivergence'][index];
+
+        // --- RVWAP-VZO DIVERGENCE FLAGS ---
+        c['isBullishRvwapVzoDivergence'] = rvwapVzoDivergence['isBullishRvwapVzoDivergence'][index];
+        c['isBearishRvwapVzoDivergence'] = rvwapVzoDivergence['isBearishRvwapVzoDivergence'][index];
+
+        // --- RVWAP-CMF DIVERGENCE FLAGS ---
+        c['isBullishRvwapCmfDivergence'] = rvwapCmfDivergence['isBullishRvwapCmfDivergence'][index];
+        c['isBearishRvwapCmfDivergence'] = rvwapCmfDivergence['isBearishRvwapCmfDivergence'][index];
+
+        // --- ORDER FLOW REGIME FLAGS ---
+        c['isLongAccumulation'] = orderFlowRegime['isLongAccumulation'][index];
+        c['isShortAccumulation'] = orderFlowRegime['isShortAccumulation'][index];
+        c['isLongLiquidation'] = orderFlowRegime['isLongLiquidation'][index];
+        c['isShortCovering'] = orderFlowRegime['isShortCovering'][index];
+
+        // --- RVWAP MOMENTUM REVERSAL FLAGS ---
+        c['isTopReversalRisk'] = momentumReversal['isTopReversalRisk'][index];
+        c['isBottomReversalChance'] = momentumReversal['isBottomReversalChance'][index];
+
+        // --- CMF SLOPE CHANGE FLAGS ---
+        c['isCmfSlopeUp'] = cmfSlopeChange['isCmfSlopeUp'][index];
+        c['isCmfSlopeDown'] = cmfSlopeChange['isCmfSlopeDown'][index];
+
+        // --- STATISTICAL METRICS ---
+        c['hurst'] = hurst[index]?.value;
+        c['hurstConfidence'] = hurst[index]?.confidence;
+        c['kurtosis'] = kurtosis100[index];
+        c['skewness'] = skewness50[index];
+        c['efficiencyRatio'] = er10[index];
+
+        // --- MARKET REGIME FLAGS ---
+        c['isTrendingRegimeStart'] = regimeChange['isTrendingRegimeStart'][index];
+        c['isMeanReversionRegimeStart'] = regimeChange['isMeanReversionRegimeStart'][index];
+
+        // --- VOLATILITY EXHAUSTION FLAG ---
+        c['isVolatilityExhaustion'] = volExhaustion['isVolatilityExhaustion'][index];
+
+        // --- SKEW REVERSAL FLAGS ---
+        c['isBullishSkewReversal'] = skewReversal['isBullishSkewReversal'][index];
+        c['isBearishSkewReversal'] = skewReversal['isBearishSkewReversal'][index];
       });
     }
     return data;

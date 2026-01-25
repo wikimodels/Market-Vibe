@@ -8,11 +8,12 @@ import { MatDialog } from '@angular/material/dialog'; // Если нужен д�
 
 import { AnalyticsChartsData } from '../../models/analytics-charts-data.model';
 import { AnalyticsTab } from '../../models/analytics-tab.model';
+import { SignalIntensityTableComponent } from '../signal-intensity-table/signal-intensity-table.component';
 
 @Component({
   selector: 'app-coins-aggregated-analytics-charts',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, NgxEchartsModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatTabsModule, NgxEchartsModule, MatButtonModule, MatIconModule, SignalIntensityTableComponent],
   templateUrl: './coins-aggregated-analytics-charts.html',
   styleUrls: [
     './coins-aggregated-analytics-charts.scss',

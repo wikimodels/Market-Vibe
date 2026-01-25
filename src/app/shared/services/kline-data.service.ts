@@ -29,30 +29,42 @@ export class KlineDataService {
    * ОРКЕСТРАТОР: Получает данные и ГАРАНТИРОВАННО обогащает их корреляцией
    */
   public async getKlines(tf: Timeframe): Promise<MarketData | null> {
+    console.log(`🔵 [Оркестратор] START getKlines for ${tf}`);
     let dataToReturn: MarketData | null = null;
 
     // 1. Проверка RAM
     if (this.memoryCache.has(tf)) {
       dataToReturn = this.memoryCache.get(tf)!;
+      console.log(`💾 [Оркестратор] ${tf}: Found in memory cache, coins: ${dataToReturn.data.length}`);
     }
     // 2. Проверка IndexedDB
     else {
       try {
         const cachedData = await this.cache.getMarketData(tf);
+        console.log(`🗄️ [Оркестратор] ${tf}: IndexedDB lookup result:`, {
+          found: !!cachedData,
+          coinCount: cachedData?.data?.length || 0,
+          timeframe: cachedData?.timeframe
+        });
+
         const isFresh = cachedData ? !this.isDataExpired(cachedData, tf) : false;
+        console.log(`⏰ [Оркестратор] ${tf}: Freshness check: ${isFresh}`);
 
         if (cachedData && isFresh) {
-          console.log(`[Оркестратор] ${tf}: Взят из IDB.`);
+          console.log(`✅ [Оркестратор] ${tf}: Using fresh data from IDB.`);
           this.memoryCache.set(tf, cachedData);
           dataToReturn = cachedData;
+        } else if (cachedData && !isFresh) {
+          console.warn(`⚠️ [Оркестратор] ${tf}: Data found but EXPIRED`);
         }
       } catch (e) {
-        console.warn('Ошибка чтения кэша:', e);
+        console.error(`❌ [Оркестратор] ${tf}: Error reading cache:`, e);
       }
     }
 
     // 3. Если пусто - качаем с API
     if (!dataToReturn) {
+      console.log(`🌐 [Оркестратор] ${tf}: No valid cached data, fetching from API...`);
       dataToReturn = await this.fetchFromApi(tf);
     }
 
@@ -60,11 +72,13 @@ export class KlineDataService {
     // Даже если данные из старого кэша, мы ПРИНУДИТЕЛЬНО обновляем корреляцию
     if (dataToReturn) {
       this.enrichWithRealtimeCorrelation(dataToReturn);
+      console.log(`✅ [Оркестратор] ${tf}: Final data ready, coins: ${dataToReturn.data.length}`);
+    } else {
+      console.error(`❌ [Оркестратор] ${tf}: NO DATA AVAILABLE after all attempts`);
     }
 
     console.log(
-      '[Оркестратор]:',
-      tf,
+      `🔵 [Оркестратор] END getKlines for ${tf}:`,
       dataToReturn?.data[0]?.candles[dataToReturn?.data[0]?.candles.length - 1]
     );
     return dataToReturn;
@@ -92,6 +106,34 @@ export class KlineDataService {
       this.isLoading$.next(false);
     }
     return null;
+  }
+
+  /**
+   * Принудительно перезагружает данные для указанного таймфрейма.
+   * Удаляет из кеша (RAM + IndexedDB) и загружает свежие данные с API.
+   * @param tf Таймфрейм для перезагрузки
+   */
+  public async forceReloadTimeframe(tf: Timeframe): Promise<MarketData | null> {
+    console.warn(`🔄 [ForceReload] Принудительная перезагрузка ${tf}...`);
+
+    // 1. Очистка памяти
+    this.memoryCache.delete(tf);
+
+    // 2. Очистка IndexedDB
+    await this.cache.deleteMarketData(tf);
+
+    // 3. Загрузка с API (с полным пайплайном индикаторов)
+    const freshData = await this.fetchFromApi(tf);
+
+    if (freshData) {
+      // 4. Обогащение корреляцией
+      this.enrichWithRealtimeCorrelation(freshData);
+      console.log(`✅ [ForceReload] ${tf} успешно перезагружен с ${freshData.data.length} монетами`);
+    } else {
+      console.error(`❌ [ForceReload] Не удалось перезагрузить ${tf}`);
+    }
+
+    return freshData;
   }
 
   /**
@@ -158,10 +200,16 @@ export class KlineDataService {
 
   private isDataExpired(data: MarketData, timeframe: Timeframe): boolean {
     try {
-      if (!data || !data.data || data.data.length === 0) return true;
+      if (!data || !data.data || data.data.length === 0) {
+        console.log(`⏰ [Expiry] ${timeframe}: No data or empty data array`);
+        return true;
+      }
 
       const timeframeMs = this.parseTimeframeToMs(timeframe);
-      if (timeframeMs === 0) return false;
+      if (timeframeMs === 0) {
+        console.log(`⏰ [Expiry] ${timeframe}: Unknown timeframe, treating as non-expiring`);
+        return false;
+      }
 
       // Ищем самую свежую свечу
       let maxLastOpenTime = 0;
@@ -173,13 +221,28 @@ export class KlineDataService {
         }
       }
 
-      if (maxLastOpenTime === 0) return true;
+      if (maxLastOpenTime === 0) {
+        console.log(`⏰ [Expiry] ${timeframe}: No valid candles found`);
+        return true;
+      }
 
       const currentTime = Date.now();
       const expiryTime = maxLastOpenTime + 2 * timeframeMs + BUFFER_MS;
+      const isExpired = currentTime > expiryTime;
 
-      return currentTime > expiryTime;
+      console.log(`⏰ [Expiry] ${timeframe}:`, {
+        maxLastOpenTime: new Date(maxLastOpenTime).toISOString(),
+        currentTime: new Date(currentTime).toISOString(),
+        expiryTime: new Date(expiryTime).toISOString(),
+        timeframeMs,
+        bufferMs: BUFFER_MS,
+        isExpired,
+        timeSinceLastCandle: Math.round((currentTime - maxLastOpenTime) / 1000 / 60) + ' minutes'
+      });
+
+      return isExpired;
     } catch (e) {
+      console.error(`⏰ [Expiry] ${timeframe}: Error in expiration check:`, e);
       return true;
     }
   }

@@ -6,17 +6,19 @@ import { MarketData } from '../../models/kline.model';
   providedIn: 'root',
 })
 export class MarketRegimeService {
-  // 🔥 Удален CORR_THRESHOLD
-  private readonly SLOPE_THRESHOLD = 0;
-
   public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
+    console.log(`📈 [MarketRegimeService] getWidgetData called with ${allMarketData.size} timeframes:`,
+      Array.from(allMarketData.keys()));
+
     const charts: Record<string, EChartsOption> = {};
 
     allMarketData.forEach((marketData, timeframe) => {
+      console.log(`📈 [MarketRegimeService] Processing ${timeframe}, coins: ${marketData.data.length}`);
       const history = this.calculateHistorySeries(marketData);
       charts[timeframe] = this.buildHistoryChart(history, timeframe);
     });
 
+    console.log(`📈 [MarketRegimeService] Generated charts for:`, Object.keys(charts));
     return charts;
   }
 
@@ -31,25 +33,10 @@ export class MarketRegimeService {
       return { dates: [], la: [], sa: [], ll: [], sc: [], totalScanned: [] };
 
     for (const coin of data.data) {
-      // 1. УБРАН ФИЛЬТР ПО КОРРЕЛЯЦИИ.
-
       const candles = coin.candles;
       if (!candles) continue;
 
       for (const c of candles) {
-        // 2. ЖЕСТКАЯ ПРОВЕРКА: Если нет наклона OI или Цены — этой точки для монеты не существует.
-        const rawPriceSlope = (c as any).slopeZClose;
-        const rawOiSlope = (c as any).slopeZOi;
-
-        if (
-          rawPriceSlope === undefined ||
-          rawPriceSlope === null ||
-          rawOiSlope === undefined ||
-          rawOiSlope === null
-        ) {
-          continue; // Нет данных — пропускаем
-        }
-
         const time = c.openTime;
         let counts = timeMap.get(time);
         if (!counts) {
@@ -57,24 +44,26 @@ export class MarketRegimeService {
           timeMap.set(time, counts);
         }
 
+        // Используем готовые флаги из бэкенда (рассчитаны в pipeline)
+        const candle = c as any;
+
+        // Проверяем наличие хотя бы одного флага (если нет - пропускаем)
+        if (
+          candle.isLongAccumulation == null &&
+          candle.isShortAccumulation == null &&
+          candle.isLongLiquidation == null &&
+          candle.isShortCovering == null
+        ) {
+          continue; // Нет данных OI для этой свечи
+        }
+
         counts.totalScanned++;
 
-        // 3. Расчет режима
-        const sPrice = rawPriceSlope / 10000;
-        const sOi = rawOiSlope / 10000;
-
-        const isPriceUp = sPrice > this.SLOPE_THRESHOLD;
-        const isPriceDown = sPrice < -this.SLOPE_THRESHOLD;
-        const isOiUp = sOi > this.SLOPE_THRESHOLD;
-        const isOiDown = sOi < -this.SLOPE_THRESHOLD;
-
-        if (isPriceUp && isOiUp)
-          counts.la++; // Long Accumulation
-        else if (isPriceDown && isOiUp)
-          counts.sa++; // Short Accumulation
-        else if (isPriceDown && isOiDown)
-          counts.ll++; // Long Liquidation
-        else if (isPriceUp && isOiDown) counts.sc++; // Short Covering
+        // Считаем монеты в каждом режиме
+        if (candle.isLongAccumulation === true) counts.la++;
+        if (candle.isShortAccumulation === true) counts.sa++;
+        if (candle.isLongLiquidation === true) counts.ll++;
+        if (candle.isShortCovering === true) counts.sc++;
       }
     }
 
