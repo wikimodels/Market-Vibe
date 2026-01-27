@@ -95,58 +95,58 @@ export class AuditStrategyService {
       description: 'Price crossed below KAMA',
     },
     // Breakout Signals
-    lowest50crossedUp: {
-      id: 'lowest50crossedUp',
-      navLabel: 'Lowest50 ↗',
-      title: 'Broke Above Lowest 50',
-      description: 'Price crossed above 50-period low',
+    highest50crossedUp: {
+      id: 'highest50crossedUp',
+      navLabel: 'Highest50 ↗',
+      title: 'Breaking Above Highest 50',
+      description: 'Price crossed above 50-period high',
     },
     lowest50crossedDown: {
       id: 'lowest50crossedDown',
       navLabel: 'Lowest50 ↘',
-      title: 'Broke Below Lowest 50',
+      title: 'Breaking Below Lowest 50',
       description: 'Price crossed below 50-period low',
     },
-    lowest100crossedUp: {
-      id: 'lowest100crossedUp',
-      navLabel: 'Lowest100 ↗',
-      title: 'Broke Above Lowest 100',
-      description: 'Price crossed above 100-period low',
+    highest100crossedUp: {
+      id: 'highest100crossedUp',
+      navLabel: 'Highest100 ↗',
+      title: 'Breaking Above Highest 100',
+      description: 'Price crossed above 100-period high',
     },
     lowest100crossedDown: {
       id: 'lowest100crossedDown',
       navLabel: 'Lowest100 ↘',
-      title: 'Broke Below Lowest 100',
+      title: 'Breaking Below Lowest 100',
       description: 'Price crossed below 100-period low',
     },
     // Price Action Patterns
     doji: {
       id: 'doji',
-      navLabel: 'Doji 🕯',
+      navLabel: 'Doji',
       title: 'Doji Pattern',
       description: 'Indecision candle pattern',
     },
     bullishEngulfing: {
       id: 'bullishEngulfing',
-      navLabel: 'Bull Engulf 📈',
+      navLabel: 'Bull Engulf',
       title: 'Bullish Engulfing',
       description: 'Bullish reversal pattern',
     },
     bearishEngulfing: {
       id: 'bearishEngulfing',
-      navLabel: 'Bear Engulf 📉',
+      navLabel: 'Bear Engulf',
       title: 'Bearish Engulfing',
       description: 'Bearish reversal pattern',
     },
     hammer: {
       id: 'hammer',
-      navLabel: 'Hammer 🔨',
+      navLabel: 'Hammer',
       title: 'Hammer Pattern',
       description: 'Bullish reversal at support',
     },
     pinbar: {
       id: 'pinbar',
-      navLabel: 'Pinbar 📍',
+      navLabel: 'Pinbar',
       title: 'Pin Bar',
       description: 'Rejection candle pattern',
     },
@@ -214,90 +214,90 @@ export class AuditStrategyService {
     // Breaking Ice (EMA Fan Punches)
     bullishPunch: {
       id: 'bullishPunch',
-      navLabel: 'Ice Break 🧊↗',
+      navLabel: 'Bull Punch',
       title: 'Bullish Ice Break',
       description: 'Uptrend but price fell below EMA150 (deep value)',
     },
     bearishPunch: {
       id: 'bearishPunch',
-      navLabel: 'Ice Break 🔥↘',
+      navLabel: 'Bear Punch',
       title: 'Bearish Ice Break',
       description: 'Downtrend but price rose above EMA150 (short squeeze)',
     },
     // RVWAP-RSI Divergence
     bullishRvwapRsiDivergence: {
       id: 'bullishRvwapRsiDivergence',
-      navLabel: 'RVWAP Div 📉↗',
+      navLabel: 'RV-RSI Div ↗',
       title: 'Bullish RVWAP-RSI Divergence',
       description: 'Price falling but RSI rising at RVWAP lower band',
     },
     bearishRvwapRsiDivergence: {
       id: 'bearishRvwapRsiDivergence',
-      navLabel: 'RVWAP Div 📈↘',
+      navLabel: 'RV-RSI Div ↘',
       title: 'Bearish RVWAP-RSI Divergence',
       description: 'Price rising but RSI falling at RVWAP upper band',
     },
     // RVWAP-VZO Divergence
     bullishRvwapVzoDivergence: {
       id: 'bullishRvwapVzoDivergence',
-      navLabel: 'VZO Div 📉↗',
+      navLabel: 'RV-VZO Div ↗',
       title: 'Bullish RVWAP-VZO Divergence',
       description: 'Price falling but VZO rising at RVWAP lower band (volume coming in)',
     },
     bearishRvwapVzoDivergence: {
       id: 'bearishRvwapVzoDivergence',
-      navLabel: 'VZO Div 📈↘',
+      navLabel: 'RV-VZO Div ↘',
       title: 'Bearish RVWAP-VZO Divergence',
       description: 'Price rising but VZO falling at RVWAP upper band (volume leaving)',
     },
     // RVWAP-CMF Divergence
     bullishRvwapCmfDivergence: {
       id: 'bullishRvwapCmfDivergence',
-      navLabel: 'CMF Div 📉↗',
+      navLabel: 'RV-CMF Div ↗',
       title: 'Bullish RVWAP-CMF Divergence',
       description: 'Price falling but CMF rising at RVWAP lower band (money flow increasing)',
     },
     bearishRvwapCmfDivergence: {
       id: 'bearishRvwapCmfDivergence',
-      navLabel: 'CMF Div 📈↘',
+      navLabel: 'RV-CMF Div ↘',
       title: 'Bearish RVWAP-CMF Divergence',
       description: 'Price rising but CMF falling at RVWAP upper band (money flow decreasing)',
     },
     // Order Flow Regime
     longAccumulation: {
       id: 'longAccumulation',
-      navLabel: 'Long Acc 🟢',
+      navLabel: 'Long Acc',
       title: 'Long Accumulation',
       description: 'Price rising + OI rising (longs opening positions)',
     },
     shortAccumulation: {
       id: 'shortAccumulation',
-      navLabel: 'Short Acc 🔴',
+      navLabel: 'Short Acc',
       title: 'Short Accumulation',
       description: 'Price falling + OI rising (shorts opening positions)',
     },
     longLiquidation: {
       id: 'longLiquidation',
-      navLabel: 'Long Liq 🟠',
+      navLabel: 'Long Liq',
       title: 'Long Liquidation',
       description: 'Price falling + OI falling (longs being liquidated)',
     },
     shortCovering: {
       id: 'shortCovering',
-      navLabel: 'Short Cover 🔵',
+      navLabel: 'Short Cover',
       title: 'Short Covering',
       description: 'Price rising + OI falling (shorts closing positions)',
     },
     // RVWAP Momentum Reversal
     topReversalRisk: {
       id: 'topReversalRisk',
-      navLabel: 'Top Risk 🔴',
+      navLabel: 'Top Rev Risk',
       title: 'Top Reversal Risk',
       description: 'Price above RVWAP upper band but MACD weakening (bulls fading)',
     },
     bottomReversalChance: {
       id: 'bottomReversalChance',
-      navLabel: 'Bottom Chance 🟢',
+      navLabel: 'Bottom Rev Risk',
       title: 'Bottom Reversal Chance',
       description: 'Price below RVWAP lower band but MACD strengthening (bears fading)',
     },
@@ -317,33 +317,33 @@ export class AuditStrategyService {
     // Market Regime
     trendingRegimeStart: {
       id: 'trendingRegimeStart',
-      navLabel: 'Trend Start 📈',
+      navLabel: 'Trend Start',
       title: 'Trending Regime Start',
       description: 'Hurst crosses 0.5 upward + Efficiency Ratio rising (trend forming)',
     },
     meanReversionRegimeStart: {
       id: 'meanReversionRegimeStart',
-      navLabel: 'MeanRev Start ↔️',
+      navLabel: 'MeanRev Start',
       title: 'Mean Reversion Regime Start',
       description: 'Hurst crosses 0.5 downward + Efficiency Ratio falling (sideways market)',
     },
     // Volatility Exhaustion
     volatilityExhaustion: {
       id: 'volatilityExhaustion',
-      navLabel: 'Vol Exhaust 💥',
+      navLabel: 'Vol Exhaust',
       title: 'Volatility Exhaustion',
       description: 'High Kurtosis peaking and falling + trend losing steam (reversal signal)',
     },
     // Skew Reversal
     bullishSkewReversal: {
       id: 'bullishSkewReversal',
-      navLabel: 'Skew Rev ⬆️',
+      navLabel: 'Skew Rev ↗',
       title: 'Bullish Skew Reversal',
       description: 'Extreme negative skew at RVWAP lower band (oversold, bounce likely)',
     },
     bearishSkewReversal: {
       id: 'bearishSkewReversal',
-      navLabel: 'Skew Rev ⬇️',
+      navLabel: 'Skew Rev ↘',
       title: 'Bearish Skew Reversal',
       description: 'Extreme positive skew at RVWAP upper band (overbought, pullback likely)',
     },

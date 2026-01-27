@@ -1,18 +1,97 @@
 /* Позиционирование кнопки в правом верхнем углу диалога */
-    .close-fab {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 100; /* Поверх текста */
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Тень для глубины */
+.close-fab {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+
+  // Smaller size
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+
+  // Dark theme
+  background-color: #2a2a2a !important;
+  color: #d0d0d0 !important;
+
+  // Subtle shadow
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+
+  // Smooth transitions
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #333 !important;
+    color: #fff !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  // Icon size
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+}
+
+.dialog-content-wrapper {
+  padding: 32px;
+  /* Внутренние отступы контента */
+  padding-top: 40px;
+  /* Чуть больше сверху, чтобы не липло к кнопке */
+
+  /* На всякий случай задаем цвет текста, если в HTML он не прописан */
+  color: #e0e0e0;
+
+  /* Если контента много, скролл будет внутри этого блока (или внутри диалога Material) */
+  ::ng-deep .explanation-content {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+
+    h3 {
+      color: #fff;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+
+      &:first-child {
+        margin-top: 0;
+      }
     }
 
-    .dialog-content-wrapper {
-      padding: 32px; /* Внутренние отступы контента */
-      padding-top: 40px; /* Чуть больше сверху, чтобы не липло к кнопке */
-
-      /* На всякий случай задаем цвет текста, если в HTML он не прописан */
-      color: #e0e0e0;
-
-      /* Если контента много, скролл будет внутри этого блока (или внутри диалога Material) */
+    p {
+      margin-bottom: 16px;
+      color: #ccc;
     }
+
+    ul {
+      padding-left: 20px;
+      margin-bottom: 16px;
+
+      li {
+        margin-bottom: 8px;
+        color: #ccc;
+
+        strong {
+          color: #e0e0e0;
+        }
+      }
+    }
+
+    .highlight-good {
+      color: #00e676;
+      /* Green */
+      font-weight: 600;
+    }
+
+    .highlight-bad {
+      color: #ff2a2a;
+      /* Red */
+      font-weight: 600;
+    }
+  }
+}

@@ -2,90 +2,155 @@
   display: block;
   min-height: 100vh;
   background-color: var(--surface-bg, #121212);
-  padding-top: 0px;
+  padding: 30px 20px;
 }
 
 .analytics-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px;
-  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* === HEADER SECTION === */
 .header-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
-  margin-top: 10px;
   text-align: center;
+  margin-bottom: 40px;
 
   h2 {
-    margin: 0;
+    margin: 0 0 8px 0;
     font-size: 24px;
     font-weight: 600;
     color: #e0e0e0;
   }
 
   .subtitle {
-    margin: 8px 0 0 0;
+    margin: 0;
     font-size: 14px;
     color: #666;
   }
 }
 
-/* === CONTROLS BAR (Pills Container) === */
-.controls-bar {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  justify-content: center;
+/* === SIGNAL GROUPS === */
+.signal-group {
+  margin-bottom: 32px;
+
+  .group-title {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #9e9e9e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
 }
 
-.metrics-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px; // Чуть больше отступ между стратегиями
+/* === SIGNAL GRID === */
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
 
-  .nav-pill {
-    background: #202028;
-    border: 1px solid #333;
-    color: #9090a0;
-    padding: 8px 20px; // Чуть крупнее, так как это основные кнопки
-    border-radius: 20px;
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+}
+
+/* === SIGNAL CARD === */
+.signal-card {
+  position: relative;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  // Subtle elevation
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+  // Ripple effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+  }
+
+  &:hover {
+    background: #202020;
+    border-color: #3a3a3a;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+
+    .signal-label {
+      color: #e8e8e8;
+    }
+  }
+
+  &:active::before {
+    width: 200px;
+    height: 200px;
+    transition: width 0s, height 0s;
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s;
+  }
+
+  .signal-label {
+    display: block;
     font-size: 13px;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #d0d0d0;
+    text-align: center;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    position: relative;
+    z-index: 1;
+    transition: color 0.2s ease;
+  }
+}
 
-    .arrow {
-      font-size: 10px;
-      opacity: 0.5;
-      transition: transform 0.2s;
+/* === RESPONSIVE === */
+@media (max-width: 1200px) {
+  .signal-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 20px 12px;
+  }
+
+  .header-section {
+    margin-bottom: 28px;
+
+    h2 {
+      font-size: 20px;
     }
 
-    &:hover {
-      border-color: #7c4dff; // Фиолетовая рамка при наведении
-      color: #fff;
-      background: #252530;
-      box-shadow: 0 0 10px rgba(124, 77, 255, 0.2);
-
-      .arrow {
-        opacity: 1;
-        transform: translate(2px, -2px); // Анимация стрелочки
-      }
+    .subtitle {
+      font-size: 13px;
     }
+  }
 
-    &:active {
-      transform: translateY(1px);
+  .signal-group {
+    margin-bottom: 24px;
+
+    .group-title {
+      font-size: 13px;
     }
   }
 }

@@ -17,9 +17,9 @@ export type SignalType =
     | 'kamaCrossedUp'
     | 'kamaCrossedDown'
     // Breakout Signals
-    | 'lowest50crossedUp'
+    | 'highest50crossedUp'
     | 'lowest50crossedDown'
-    | 'lowest100crossedUp'
+    | 'highest100crossedUp'
     | 'lowest100crossedDown'
     // Price Action Patterns
     | 'doji'
@@ -167,7 +167,7 @@ export class SignalDataService {
         const rows: AuditTableRow[] = Array.from(signalMap.entries())
             .map(([openTime, coins]) => ({
                 openTime,
-                coins,
+                coins: coins.sort((a, b) => a.symbol.localeCompare(b.symbol)), // Sort coins alphabetically
             }))
             .sort((a, b) => b.openTime - a.openTime) // Newest first
             .slice(0, 20); // Take last 20
@@ -195,9 +195,9 @@ export class SignalDataService {
             kamaCrossedUp: 'isCrossedUpKama',
             kamaCrossedDown: 'isCrossedDownKama',
             // Breakout Signals
-            lowest50crossedUp: 'isCrossedUpHighest50',
+            highest50crossedUp: 'isCrossedUpHighest50',
             lowest50crossedDown: 'isCrossedDownLowest50',
-            lowest100crossedUp: 'isCrossedUpHighest100',
+            highest100crossedUp: 'isCrossedUpHighest100',
             lowest100crossedDown: 'isCrossedDownLowest100',
             // Price Action Patterns
             doji: 'isDoji',

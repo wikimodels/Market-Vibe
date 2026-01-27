@@ -5,17 +5,124 @@
     <p class="subtitle">Select a strategy to open detailed multi-timeframe analysis</p>
   </div>
 
-  <div class="controls-bar">
-    <div class="metrics-nav">
-
-      @for (strat of strategies; track strat.id) {
-      <button class="nav-pill" (click)="openStrategy(strat)">
-        {{ strat.navLabel }}
-        <span class="arrow">↗</span>
-      </button>
+  <!-- EMA & KAMA Crossovers -->
+  <section class="signal-group">
+    <h3 class="group-title">EMA & KAMA Crossovers</h3>
+    <div class="signal-grid">
+      @for (signal of getEmaCrossoverSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
       }
-
     </div>
-  </div>
+  </section>
+
+  <!-- Breakout Signals -->
+  <section class="signal-group">
+    <h3 class="group-title">Breakout Signals</h3>
+    <div class="signal-grid">
+      @for (signal of getBreakoutSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Price Action Patterns -->
+  <section class="signal-group">
+    <h3 class="group-title">Price Action Patterns</h3>
+    <div class="signal-grid">
+      @for (signal of getPriceActionSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- RVWAP Crossovers -->
+  <section class="signal-group">
+    <h3 class="group-title">RVWAP Crossovers</h3>
+    <div class="signal-grid">
+      @for (signal of getRvwapCrossoverSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Breaking Ice -->
+  <section class="signal-group">
+    <h3 class="group-title">Breaking Ice</h3>
+    <div class="signal-grid">
+      @for (signal of getBreakingIceSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Divergence Signals -->
+  <section class="signal-group">
+    <h3 class="group-title">Divergence Signals</h3>
+    <div class="signal-grid">
+      @for (signal of getDivergenceSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Order Flow Regime -->
+  <section class="signal-group">
+    <h3 class="group-title">Order Flow Regime</h3>
+    <div class="signal-grid">
+      @for (signal of getOrderFlowSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Reversal Risks -->
+  <section class="signal-group">
+    <h3 class="group-title">Reversal Risks</h3>
+    <div class="signal-grid">
+      @for (signal of getReversalSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- CMF & Market Regime -->
+  <section class="signal-group">
+    <h3 class="group-title">CMF & Market Regime</h3>
+    <div class="signal-grid">
+      @for (signal of getCmfRegimeSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Volatility & Skew -->
+  <section class="signal-group">
+    <h3 class="group-title">Volatility & Skew</h3>
+    <div class="signal-grid">
+      @for (signal of getVolatilitySkewSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
 
 </div>

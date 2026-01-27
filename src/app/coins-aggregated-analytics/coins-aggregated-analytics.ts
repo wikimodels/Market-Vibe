@@ -22,7 +22,7 @@ import { BreakingIceService } from './services/breaking-ice.service';
 import { BtcImpulseCorrelationService } from './services/btc-impulse-correlation.service';
 import { VolumeChurnService } from './services/volume-churn.service';
 // RSI Divergence
-import { RvwapSlopeDivergenceService } from './services/rvwap-slope-divergence.service';
+import { RvwapRsiDivergenceService } from './services/rvwap-rsi-divergence.service';
 // ✅ VZO Divergence (New)
 import { RvwapVzoDivergenceService } from './services/rvwap-vzo-divergence.service';
 
@@ -41,7 +41,7 @@ import { ObvBreadthService } from './services/obv-breadth.service';
 // --- 6. CMF Сервисы ---
 import { CmfRegimeService } from './services/cmf-regime.service';
 import { CmfCrossesService } from './services/cmf-crosses.service';
-import { CmfRvwapDivergenceService } from './services/cmf-rvwap-divergence.service';
+import { RvwapCmfDivergenceService } from './services/rvwap-cmf-divergence.service';
 
 // --- 7. DELTA / Z-SCORE Сервисы ---
 import { DeltaRvwapAbsorptionService } from './services/delta-rvwap-absorption.service';
@@ -102,7 +102,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
   private btcImpulseService = inject(BtcImpulseCorrelationService);
   private volumeChurnService = inject(VolumeChurnService);
 
-  private rvwapSlopeDivService = inject(RvwapSlopeDivergenceService); // RSI
+  private rvwapSlopeDivService = inject(RvwapRsiDivergenceService); // RSI
   private rvwapVzoDivService = inject(RvwapVzoDivergenceService); // VZO (New)
 
   private kamaRegimeService = inject(KamaRegimeService);
@@ -116,7 +116,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
 
   private cmfService = inject(CmfRegimeService);
   private cmfCrossesService = inject(CmfCrossesService);
-  private cmfRvwapService = inject(CmfRvwapDivergenceService);
+  private cmfRvwapService = inject(RvwapCmfDivergenceService);
 
   private deltaAbsService = inject(DeltaRvwapAbsorptionService);
   private zScoreService = inject(ZScoreRegimeService);
@@ -165,7 +165,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
     { id: 'vol_churn', label: 'Volume Churn (Effort vs Result)', hasChart: true },
 
     // RSI Divergence
-    { id: 'rvwap_slope_div', label: 'RVWAP Div (RSI Slope)', hasChart: true },
+    { id: 'rvwap_rsi_div', label: 'RVWAP Div (RSI Slope)', hasChart: true },
     // ✅ VZO Divergence
     { id: 'rvwap_vzo_div', label: 'RVWAP Div (VZO Slope)', hasChart: true },
 
@@ -183,7 +183,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
     { id: 'rvwap_reversal', label: 'RVWAP Reversals (Momentum)', hasChart: true },
     { id: 'cmf_regime', label: 'CMF Flow', hasChart: true },
     { id: 'cmf_crosses', label: 'CMF Crosses', hasChart: true },
-    { id: 'cmf_rvwap', label: 'CMF/RVWAP Divergence', hasChart: true },
+    { id: 'rvwap_cmf_div', label: 'RVWAP Div (CMF slope)', hasChart: true },
 
     { id: 'zscore_regime', label: 'Z-Score Anomalies', hasChart: true },
     { id: 'vol_anomaly', label: 'Volatility Anomalies', hasChart: true },
@@ -304,7 +304,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
         };
 
         // RSI Slope
-        this.widgetCache['rvwap_slope_div'] = {
+        this.widgetCache['rvwap_rsi_div'] = {
           charts: this.rvwapSlopeDivService.getWidgetData(this.allMarketData),
           title: 'RVWAP 1SD Divergence (Price vs RSI Slope)',
         };
@@ -370,7 +370,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
           charts: this.cmfCrossesService.getWidgetData(this.allMarketData),
           title: 'CMF Zero Crosses (New Inflow vs New Outflow)',
         };
-        this.widgetCache['cmf_rvwap'] = {
+        this.widgetCache['rvwap_cmf_div'] = {
           charts: this.cmfRvwapService.getWidgetData(this.allMarketData),
           title: 'CMF & RVWAP Divergence',
         };
