@@ -9,9 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 // Custom Components & Services
-
 import { AuditStrategyService } from '../services/audit-strategy.service';
 import { SignalDataService, SignalType, Timeframe } from '../services/signal-data.service';
+import { RvwapExhaustionDetectorService } from '../../coins-aggregated-analytics/services/rvwap-exhaustion-detector.service';
 import { WorkingCoin } from '../../shared/models/working-coin.model';
 import { AuditTable, AuditTableRow } from '../audit-table/audit-table';
 
@@ -29,6 +29,7 @@ export class AuditDetails implements OnInit {
   private titleService = inject(Title);
   private strategyService = inject(AuditStrategyService);
   private signalDataService = inject(SignalDataService);
+  private exhaustionService = inject(RvwapExhaustionDetectorService);
 
   // --- Configuration ---
   public readonly timeframes: AuditTimeframe[] = ['1h', '4h', '8h', '12h', '1d'];
@@ -107,6 +108,8 @@ export class AuditDetails implements OnInit {
     if (signalTypes.includes(id as SignalType)) {
       // Load real signal data
       this.loadSignalData(id as SignalType);
+    } else if (id === 'rvwap_exhaustion_bulls' || id === 'rvwap_exhaustion_bears') {
+      this.loadExhaustionData(id === 'rvwap_exhaustion_bulls' ? 'bulls' : 'bears');
     } else {
       // For other strategies, use mock data
       setTimeout(() => {
@@ -119,14 +122,9 @@ export class AuditDetails implements OnInit {
   // Load Signal Data from API
   private loadSignalData(signalType: SignalType) {
     const newData: Record<AuditTimeframe, AuditTableRow[]> = {
-      '1h': [],
-      '4h': [],
-      '8h': [],
-      '12h': [],
-      '1d': [],
+      '1h': [], '4h': [], '8h': [], '12h': [], '1d': [],
     };
 
-    // Load data for each timeframe
     let completedRequests = 0;
     const totalRequests = this.timeframes.length;
 
@@ -134,25 +132,59 @@ export class AuditDetails implements OnInit {
       this.signalDataService.getSignalData(signalType, tf as Timeframe).subscribe({
         next: (data) => {
           newData[tf] = data;
-          completedRequests++;
-
-          if (completedRequests === totalRequests) {
-            this.auditDataCache.set(newData);
-            this.isLoading.set(false);
-          }
+          this.checkCompletion(++completedRequests, totalRequests, newData);
         },
         error: (err) => {
           console.error(`Failed to load data for ${signalType} ${tf}:`, err);
-          completedRequests++;
-
-          // Even on error, check if all requests completed
-          if (completedRequests === totalRequests) {
-            this.auditDataCache.set(newData);
-            this.isLoading.set(false);
-          }
+          this.checkCompletion(++completedRequests, totalRequests, newData);
         },
       });
     });
+  }
+
+  // Load Exhaustion Data
+  private loadExhaustionData(side: 'bulls' | 'bears') {
+    const newData: Record<AuditTimeframe, AuditTableRow[]> = {
+      '1h': [], '4h': [], '8h': [], '12h': [], '1d': []
+    };
+
+    let completedRequests = 0;
+    const totalRequests = this.timeframes.length;
+
+    this.timeframes.forEach((tf) => {
+      this.exhaustionService.getExhaustionSignals(tf as any, side).subscribe({
+        next: (data) => {
+          const mappedRows: AuditTableRow[] = data.map(row => ({
+            openTime: row.openTime,
+            coins: row.coins.map(c => ({
+              symbol: c.symbol,
+              logoUrl: `${c.symbol.toLowerCase()}.png`,
+              category: 1,
+              exchanges: ['Binance'],
+              categoryStr: 'Unknown',
+              btc_corr_1d_w30: c.fundingRate, // Using btc_corr field to store funding for now or ignored? 
+              // Actually WorkingCoin was extended, so we can pass these:
+              exhaustionScore: c.score,
+              exhaustionReasons: c.reasons
+            } as WorkingCoin))
+          }));
+
+          newData[tf] = mappedRows;
+          this.checkCompletion(++completedRequests, totalRequests, newData);
+        },
+        error: (err) => {
+          console.error(`Failed to load exhaustion ${side} ${tf}:`, err);
+          this.checkCompletion(++completedRequests, totalRequests, newData);
+        }
+      });
+    });
+  }
+
+  private checkCompletion(completed: number, total: number, data: Record<AuditTimeframe, AuditTableRow[]>) {
+    if (completed === total) {
+      this.auditDataCache.set(data);
+      this.isLoading.set(false);
+    }
   }
 
   // --- Mock Data Generator (For non-signal strategies) ---
@@ -161,7 +193,6 @@ export class AuditDetails implements OnInit {
 
     this.timeframes.forEach((tf) => {
       const rows: AuditTableRow[] = [];
-      // Generate 3-8 rows per timeframe
       const rowCount = 3 + Math.floor(Math.random() * 5);
 
       for (let i = 0; i < rowCount; i++) {

@@ -66,6 +66,7 @@ import { MarketRegimeTransitionsService } from './services/market-regime-transit
 import { VolatilityExhaustionTrackerService } from './services/volatility-exhaustion-tracker.service';
 import { SkewExtremesService } from './services/skew-extremes.service';
 import { SignalIntensityHeatmapService } from './services/signal-intensity-heatmap.service';
+import { RvwapExhaustionDetectorService } from './services/rvwap-exhaustion-detector.service';
 
 import { CoinsAggregatedAnalyticsCharts } from './coins-aggregated-analytics-charts/coins-aggregated-analytics-charts';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
@@ -138,6 +139,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
   private volExhaustService = inject(VolatilityExhaustionTrackerService);
   private skewExtremesService = inject(SkewExtremesService);
   private signalHeatmapService = inject(SignalIntensityHeatmapService);
+  private rvwapExhaustionService = inject(RvwapExhaustionDetectorService);
 
   public isLoading = signal<boolean>(true);
   public chartsData = signal<AnalyticsChartsData | null>(null);
@@ -148,55 +150,43 @@ export class CoinsAggregatedAnalytics implements OnInit {
 
   // 🔥 ОБНОВЛЕННЫЙ СПИСОК ТАБОВ
   public tabs: AnalyticsTab[] = [
-    { id: 'orderflow', label: 'Orderflow Regime', hasChart: true },
-    { id: 'composite', label: 'Market Composite', hasChart: true },
-    { id: 'patterns', label: 'Pattern Radar', hasChart: true },
-    { id: 'breakouts', label: 'Extremum Breakouts', hasChart: true },
-
-    { id: 'ema_regime', label: 'EMA Trend', hasChart: true },
-    { id: 'ema_crosses', label: 'EMA Crosses', hasChart: true },
-    { id: 'ema_fan', label: 'EMA Fan Structure', hasChart: true },
-    { id: 'ema_fan_slope', label: 'EMA Fan Reversals', hasChart: true },
-
-    // 🔥 ГРУППА "Smart Money"
-    { id: 'trend_rollover', label: 'Trend Rollover (Exhaustion)', hasChart: true },
+    { id: 'adx_median', label: 'ADX Trend Power', hasChart: true },
     { id: 'breaking_ice', label: 'Breaking Ice (Deep Value)', hasChart: true },
     { id: 'btc_impulse', label: 'BTC Impulse Reaction', hasChart: true },
-    { id: 'vol_churn', label: 'Volume Churn (Effort vs Result)', hasChart: true },
-
-    // RSI Divergence
-    { id: 'rvwap_rsi_div', label: 'RVWAP Div (RSI Slope)', hasChart: true },
-    // ✅ VZO Divergence
-    { id: 'rvwap_vzo_div', label: 'RVWAP Div (VZO Slope)', hasChart: true },
-
-    { id: 'kama_regime', label: 'KAMA Trend', hasChart: true },
+    { id: 'cmf_crosses', label: 'CMF Crosses', hasChart: true },
+    { id: 'cmf_regime', label: 'CMF Flow', hasChart: true },
+    { id: 'rvwap_cmf_div', label: 'CMF & RVWAP Divergence', hasChart: true },
+    { id: 'ema_crosses', label: 'EMA Crosses', hasChart: true },
+    { id: 'ema_fan_slope', label: 'EMA Fan Reversals', hasChart: true },
+    { id: 'ema_fan', label: 'EMA Fan Structure', hasChart: true },
+    { id: 'ema_regime', label: 'EMA Trend', hasChart: true },
+    { id: 'breakouts', label: 'Extremum Breakouts', hasChart: true },
     { id: 'kama_crosses', label: 'KAMA Crosses', hasChart: true },
-
-    { id: 'adx_median', label: 'ADX Trend Power', hasChart: true },
+    { id: 'kama_regime', label: 'KAMA Trend', hasChart: true },
     { id: 'macd_impulse', label: 'MACD Impulse', hasChart: true },
-
-    { id: 'phases', label: 'Market Phase Matrix', hasChart: true },
+    { id: 'composite', label: 'Market Composite', hasChart: true },
+    { id: 'entropy', label: 'Market Entropy', hasChart: true },
     { id: 'gravity', label: 'Market Gravity', hasChart: true },
-
-    { id: 'rvwap_regime', label: 'RVWAP Structure', hasChart: true },
+    { id: 'phases', label: 'Market Phase Matrix', hasChart: true },
+    { id: 'regime_trans', label: 'Market Regime Transitions', hasChart: true },
+    { id: 'orderflow', label: 'Orderflow Regime', hasChart: true },
+    { id: 'patterns', label: 'Pattern Radar', hasChart: true },
+    { id: 'rsi_median', label: 'RSI Median', hasChart: true },
+    { id: 'rvwap_rsi_div', label: 'RVWAP Div (RSI Slope)', hasChart: true },
+    { id: 'rvwap_vzo_div', label: 'RVWAP Div (VZO Slope)', hasChart: true },
+    { id: 'rvwap_exhaustion', label: 'RVWAP Exhaustion Detector', hasChart: true },
     { id: 'rvwap_crosses', label: 'RVWAP Impulses', hasChart: true },
     { id: 'rvwap_reversal', label: 'RVWAP Reversals (Momentum)', hasChart: true },
-    { id: 'cmf_regime', label: 'CMF Flow', hasChart: true },
-    { id: 'cmf_crosses', label: 'CMF Crosses', hasChart: true },
-    { id: 'rvwap_cmf_div', label: 'RVWAP Div (CMF slope)', hasChart: true },
-
-    { id: 'zscore_regime', label: 'Z-Score Anomalies', hasChart: true },
-    { id: 'vol_anomaly', label: 'Volatility Anomalies', hasChart: true },
-
-    { id: 'rsi_median', label: 'RSI Median', hasChart: true },
-    { id: 'vzo_median', label: 'VZO Median', hasChart: true },
-
-    // 🔥 STATISTICAL METRICS
-    { id: 'stat_regime', label: 'Statistical Regime Map', hasChart: true },
-    { id: 'regime_trans', label: 'Market Regime Transitions', hasChart: true },
-    { id: 'vol_exhaust', label: 'Volatility Exhaustion', hasChart: true },
-    { id: 'skew_extremes', label: 'Skewness Extremes', hasChart: true },
+    { id: 'rvwap_regime', label: 'RVWAP Structure', hasChart: true },
     { id: 'signal_heatmap', label: 'Signal Intensity Heatmap', hasChart: true },
+    { id: 'skew_extremes', label: 'Skewness Extremes', hasChart: true },
+    { id: 'stat_regime', label: 'Statistical Regime Map', hasChart: true },
+    { id: 'trend_rollover', label: 'Trend Rollover (Exhaustion)', hasChart: true },
+    { id: 'vol_anomaly', label: 'Volatility Anomalies', hasChart: true },
+    { id: 'vol_exhaust', label: 'Volatility Exhaustion', hasChart: true },
+    { id: 'vol_churn', label: 'Volume Churn (Effort vs Result)', hasChart: true },
+    { id: 'vzo_median', label: 'VZO Median', hasChart: true },
+    { id: 'zscore_regime', label: 'Z-Score Anomalies', hasChart: true },
   ];
 
   public activeTab = signal<AnalyticsTab>(this.tabs[0]);
@@ -394,6 +384,10 @@ export class CoinsAggregatedAnalytics implements OnInit {
           charts: this.vzoMedianService.getWidgetData(this.allMarketData),
           title: 'Market VZO Median',
         };
+        this.widgetCache['entropy'] = {
+          charts: this.entropyService.getWidgetData(this.allMarketData),
+          title: 'Market Entropy Index (Chaos vs Order)',
+        };
 
         // 🔥 STATISTICAL METRICS
         this.widgetCache['stat_regime'] = {
@@ -415,6 +409,10 @@ export class CoinsAggregatedAnalytics implements OnInit {
         this.widgetCache['signal_heatmap'] = {
           charts: this.signalHeatmapService.getWidgetData(this.allMarketData),
           title: 'Signal Intensity Heatmap (Normalized, Last 20 Candles)',
+        };
+        this.widgetCache['rvwap_exhaustion'] = {
+          charts: this.rvwapExhaustionService.getWidgetData(this.allMarketData),
+          title: 'RVWAP Exhaustion (Bulls vs Bears)',
         };
       }
     } catch (err) {

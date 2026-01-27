@@ -201,6 +201,7 @@ export interface Candle {
   kurtosis?: number | null;        // Kurtosis (excess)
   skewness?: number | null;        // Skewness
   efficiencyRatio?: number | null; // Kaufman's ER (0-1)
+  entropy20?: number | null;       // Market Entropy (20 candles)
 
   // === Market Regime Signals ===
   isTrendingRegimeStart?: boolean | null;

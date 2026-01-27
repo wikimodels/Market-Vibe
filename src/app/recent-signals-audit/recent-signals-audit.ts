@@ -125,4 +125,11 @@ export class RecentSignalsAudit {
       { id: 'bearishSkewReversal', label: 'Skew Rev ↘' },
     ];
   }
+
+  public getExhaustionSignals(): SignalItem[] {
+    return [
+      { id: 'rvwap_exhaustion_bulls', label: 'Weak Bulls (Highs)' },
+      { id: 'rvwap_exhaustion_bears', label: 'Weak Bears (Lows)' },
+    ];
+  }
 }

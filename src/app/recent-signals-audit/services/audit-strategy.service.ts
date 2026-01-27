@@ -347,6 +347,19 @@ export class AuditStrategyService {
       title: 'Bearish Skew Reversal',
       description: 'Extreme positive skew at RVWAP upper band (overbought, pullback likely)',
     },
+    // 🔥 RVWAP EXHAUSTION
+    rvwap_exhaustion_bulls: {
+      id: 'rvwap_exhaustion_bulls',
+      navLabel: 'Weak Bulls',
+      title: 'Weak Bulls (Exhaustion at Highs)',
+      description: 'Coins at RVWAP Upper Band with Divs, High Entropy or Funding',
+    },
+    rvwap_exhaustion_bears: {
+      id: 'rvwap_exhaustion_bears',
+      navLabel: 'Weak Bears',
+      title: 'Weak Bears (Exhaustion at Lows)',
+      description: 'Coins at RVWAP Lower Band with Divs, High Entropy or Funding',
+    },
   };
 
   /**

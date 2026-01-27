@@ -125,4 +125,16 @@
     </div>
   </section>
 
+  <!-- RVWAP Exhaustion -->
+  <section class="signal-group">
+    <h3 class="group-title">RVWAP Exhaustion</h3>
+    <div class="signal-grid">
+      @for (signal of getExhaustionSignals(); track signal.id) {
+      <div class="signal-card" (click)="openStrategy(signal)">
+        <span class="signal-label">{{ signal.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
 </div>

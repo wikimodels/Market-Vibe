@@ -21,6 +21,7 @@ export const environment = {
     '8h': bizzarUrl + '/api/cache/8h',
     '12h': bazzarUrl + '/api/cache/12h',
     D: bazzarUrl + '/api/cache/D',
+    '1d': bazzarUrl + '/api/cache/D', // Alias for D
   },
   firebaseConfig: {
     apiKey: 'AIzaSyDxLJ_y7fcn-bGA0Ls9Xn3u8YRzz9pD7RQ',
@@ -36,5 +37,6 @@ export const environment = {
     '8h': bizzarUrl,
     '12h': bazzarUrl,
     D: bazzarUrl,
+    '1d': bazzarUrl,
   } as Record<string, string>, // Type casting для удобства в
 };

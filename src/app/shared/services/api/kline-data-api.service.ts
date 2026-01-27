@@ -24,14 +24,21 @@ export class KlineDataApiService {
   private klineUrls = environment.klineDataUrls;
   private token = environment.token;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Получает "сырые" klines для одного таймфрейма.
    * (БЕЗ .pipe(map(...)) - это "сырой" ответ)
    */
   getKlines(timeframe: Timeframe): Observable<KlineApiResponse> {
-    const url = this.klineUrls[timeframe];
+    // Mapping for mismatch '1d' vs 'D'
+    const tfKey = (timeframe as string) === '1d' ? 'D' : timeframe;
+    const url = this.klineUrls[tfKey as keyof typeof this.klineUrls];
+
+    if (!url) {
+      console.error(`❌ [API] URL not found for timeframe: ${timeframe} (key: ${tfKey})`);
+    }
+
     const headers = this.createAuthHeaders();
 
     // 🚀 ЛОГИКА: Добавляем параметры запроса
