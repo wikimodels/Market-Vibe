@@ -3,6 +3,8 @@
   min-height: 100vh;
   background-color: var(--surface-bg);
   padding-top: 0px;
+  overflow-x: hidden;
+  /* Убираем горизонтальный скролл на уровне компонента */
 }
 
 .analytics-container {
@@ -11,6 +13,8 @@
   align-items: center;
   padding: 30px;
   width: 100%;
+  overflow-x: hidden;
+  /* Убираем горизонтальный скролл */
 }
 
 /* === HEADER SECTION === */
@@ -76,6 +80,8 @@
 .content-area {
   width: 100%;
   max-width: 1200px;
+  overflow-x: hidden;
+  /* Убираем горизонтальный скролл */
 }
 
 /* === LOADING STATE === */
