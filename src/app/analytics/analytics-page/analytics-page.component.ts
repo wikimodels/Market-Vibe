@@ -10,6 +10,7 @@ import { BtcScannerComponent } from '../btc-scanner/btc-scanner.component';
 import { DocViewerComponent } from '../doc-viewer/doc-viewer.component';
 import { UniversalScannerComponent } from '../universal-scanner/universal-scanner.component';
 import { CoinsDataService } from '../../shared/services/coin-data.service';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-analytics-page',
@@ -20,6 +21,7 @@ import { CoinsDataService } from '../../shared/services/coin-data.service';
     UniversalScannerComponent,
     BtcScannerComponent,
     DocViewerComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './analytics-page.component.html',
   styleUrls: ['./analytics-page.component.scss'],

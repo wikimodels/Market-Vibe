@@ -35,7 +35,7 @@
     border: 1px solid rgba(0, 188, 212, 0.3);
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.6em;
     vertical-align: middle;
   }
@@ -52,16 +52,19 @@
 
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Контент сверху */
+  align-items: flex-start;
+  /* Контент сверху */
 
-  padding: 20px; /* Внутренний отступ */
+  padding: 20px;
+  /* Внутренний отступ */
   box-sizing: border-box;
   position: relative;
 }
 
 /* === ТАБЛИЦА ВНУТРИ === */
 .audit-table {
-  width: 100%; /* Растягиваем таблицу внутри chart-wrapper */
+  width: 100%;
+  /* Растягиваем таблицу внутри chart-wrapper */
   display: flex;
   flex-direction: column;
   border: 1px solid #333;
@@ -93,15 +96,31 @@
   padding: 16px 24px;
   transition: background 0.2s;
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: rgba(255, 255, 255, 0.03); }
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
 }
 
 .col-time {
   display: flex;
   flex-direction: column;
-  .date { font-size: 14px; color: #e0e0e0; font-weight: 500; }
-  .time { font-size: 13px; color: #888; margin-top: 2px; font-family: monospace; }
+
+  .date {
+    font-size: 14px;
+    color: #e0e0e0;
+    font-weight: 500;
+  }
+
+  .time {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+    font-family: monospace;
+  }
 }
 
 .col-signals {
@@ -111,11 +130,20 @@
 }
 
 /* === СОСТОЯНИЯ === */
-.loading-state, .no-data {
+.loading-state {
+  width: 100%;
+  margin-top: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-data {
   width: 100%;
   margin-top: 100px;
   text-align: center;
-  color: #666;
-  font-style: italic;
+  color: #E0E0E0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
+  font-weight: 400;
 }

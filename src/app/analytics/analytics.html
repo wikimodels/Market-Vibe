@@ -4,7 +4,9 @@
     <div class="title-row">
       <h1>Analytics</h1>
       @if (isLoading$ | async) {
-      <span class="loading-badge">Updating Data...</span>
+      <div class="loading-indicator">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
       }
     </div>
 

@@ -27,21 +27,36 @@
   // --- HEADER SECTION ---
   .coins-header {
     flex: 0 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 34px; gap: 16px; padding: 0 16px; margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 34px;
+    gap: 16px;
+    padding: 0 16px;
+    margin-bottom: 30px;
     position: relative;
     z-index: 2;
   }
 
   .header-title {
-    flex: 1 1 auto; text-align: center; margin: 0;
-    font-size: 1.5rem; font-weight: 400; color: #fff;
+    flex: 1 1 auto;
+    text-align: center;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #fff;
 
     // Цвет счетчика зависит от темы
-    span { color: $accent-text; }
+    span {
+      color: $accent-text;
+    }
   }
 
-  .header-actions { flex: 0 0 auto; display: flex; gap: 8px; }
+  .header-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 8px;
+  }
 
   // --- TABLE WRAPPER (Внутренний скролл) ---
   .table-wrapper {
@@ -54,7 +69,10 @@
     // Скрываем скроллбары
     scrollbar-width: none;
     -ms-overflow-style: none;
-    &::-webkit-scrollbar { display: none; }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   // --- TABLE STYLES ---
@@ -67,7 +85,8 @@
     .mat-mdc-header-row {
       height: 40px;
       background: transparent;
-      padding: 0; border: none;
+      padding: 0;
+      border: none;
     }
 
     // HEADER CELLS (STICKY + COLOR)
@@ -80,47 +99,82 @@
       background-color: $theme-color;
 
       color: #fff;
-      font-size: 0.8rem; font-weight: 200;
-      text-transform: uppercase; border-bottom: none; padding: 0 16px;
+      font-size: 0.8rem;
+      font-weight: 200;
+      text-transform: uppercase;
+      border-bottom: none;
+      padding: 0 16px;
       font-family: 'Roboto', sans-serif;
 
       // Тень
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
-      ::ng-deep .mat-sort-header-arrow { color: rgba(255,255,255,0.7) !important; }
+      ::ng-deep .mat-sort-header-arrow {
+        color: rgba(255, 255, 255, 0.7) !important;
+      }
     }
 
     // ROWS
     .mat-mdc-row {
-      height: 40px; background-color: #1e1e1e; transition: background 0.2s;
-      &:hover { background-color: rgba(255,255,255,0.08) !important; }
+      height: 40px;
+      background-color: #1e1e1e;
+      transition: background 0.2s;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
     }
 
     // CELLS
     .mat-mdc-cell {
-      color: #e0e0e0; font-size: 0.9rem; font-weight: 300;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding: 0 16px; font-family: Roboto, sans-serif;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0 16px;
+      font-family: 'Inter', sans-serif;
     }
 
     // --- COLUMNS ---
     .col-symbol {
-      width: 20%; font-family: 'Roboto Mono', monospace; color: #fff; font-size: 0.85em;
+      width: 15%;
+      padding: 0 16px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.9em;
+
       // 🔥 ЦВЕТ ТИКЕРА
-      .symbol-text { color: $accent-text; font-weight: 500; }
+      .symbol-text {
+        color: $accent-text;
+        font-weight: 500;
+      }
     }
 
-    .col-target { width: 20%; font-family: 'Roboto Mono', monospace; color: #fff; font-size: 0.85em; }
+    .col-entry {
+      width: 20%;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+      font-size: 0.85em;
+    }
+
+    .col-target {
+      width: 20%;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+      font-size: 0.85em;
+    }
 
     .col-type {
       width: 15%;
+
       // 👇 ДОБАВЛЕНО: Стиль "пилюли" для линков, использующий цвет темы
       .links-pill {
-        display: inline-flex;         // Чтобы "обнимать" контент
+        display: inline-flex; // Чтобы "обнимать" контент
         align-items: center;
         justify-content: center;
-        padding: 4px 10px;           // Отступы внутри капсулы
-        border-radius: 99px;         // Форма пилюли
+        padding: 4px 10px; // Отступы внутри капсулы
+        border-radius: 99px; // Форма пилюли
 
         // Магия цвета: берем цвет шапки ($theme-color)
         border: 1px solid rgba($theme-color, 0.4); // Полупрозрачная рамка
@@ -135,16 +189,47 @@
           box-shadow: 0 0 8px rgba($theme-color, 0.3); // Легкое свечение
         }
       }
-      .type-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; color: #ccc; }
+
+      .type-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        color: #ccc;
+      }
     }
 
-    .col-note { color: #888; font-style: italic; }
-    .col-actions { width: 60px; text-align: right; padding-right: 24px !important; }
+    .col-note {
+      color: #888;
+      font-style: italic;
+    }
+
+    .col-actions {
+      width: 60px;
+      text-align: right;
+      padding-right: 24px !important;
+    }
 
     .delete-icon-btn {
-      background: transparent; border: none; color: #757575; cursor: pointer; display: inline-flex; padding: 6px; border-radius: 50%;
-      &:hover { color: #ff5252; background: rgba(255,82,82,0.1); }
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      background: transparent;
+      border: none;
+      color: #757575;
+      cursor: pointer;
+      display: inline-flex;
+      padding: 6px;
+      border-radius: 50%;
+
+      &:hover {
+        color: #ff5252;
+        background: rgba(255, 82, 82, 0.1);
+      }
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
     }
 
     // --- 🔥 TOGGLE STYLES (добавлено в миксин) ---
@@ -234,29 +319,68 @@
 
   // --- PAGINATOR (FIXED BOTTOM) ---
   .pagination-footer {
-    flex: 0 0 auto; margin: 0 16px 16px 16px;
+    flex: 0 0 auto;
+    margin: 0 16px 16px 16px;
     background-color: #1e1e1e;
     border-radius: 0 0 8px 8px;
     overflow: hidden;
-    position: relative; z-index: 2;
+    position: relative;
+    z-index: 2;
 
     ::ng-deep {
-      .mat-mdc-paginator { background: transparent; color: #ccc; font-size: 12px !important; }
-      .mat-mdc-select-value { color: #ccc; font-size: 12px !important; }
-      .mat-mdc-paginator-icon { fill: #ccc; }
-      .mat-mdc-select-arrow { color: #ccc; }
-      .mat-mdc-form-field-outline { color: #555; }
+      .mat-mdc-paginator {
+        background: transparent;
+        color: #ccc;
+        font-size: 12px !important;
+      }
+
+      .mat-mdc-select-value {
+        color: #ccc;
+        font-size: 12px !important;
+      }
+
+      .mat-mdc-paginator-icon {
+        fill: #ccc;
+      }
+
+      .mat-mdc-select-arrow {
+        color: #ccc;
+      }
+
+      .mat-mdc-form-field-outline {
+        color: #555;
+      }
     }
   }
 
   // --- DROPDOWN FIXES ---
-  ::ng-deep .mat-mdc-select-panel { padding: 4px 0 !important; }
-  ::ng-deep .mat-mdc-option {
-    font-size: 12px !important; min-height: 32px !important; height: 32px !important;
-    line-height: 32px !important; padding: 0 10px !important;
-    .mdc-list-item__primary-text { font-size: 12px !important; }
+  ::ng-deep .mat-mdc-select-panel {
+    padding: 4px 0 !important;
   }
 
-  .loading-overlay { display: flex; justify-content: center; align-items: center; height: 100vh; }
-  .empty-cell { text-align: center; padding: 40px; color: #666; font-style: italic; }
+  ::ng-deep .mat-mdc-option {
+    font-size: 12px !important;
+    min-height: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 10px !important;
+
+    .mdc-list-item__primary-text {
+      font-size: 12px !important;
+    }
+  }
+
+  .loading-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .empty-cell {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+  }
 }

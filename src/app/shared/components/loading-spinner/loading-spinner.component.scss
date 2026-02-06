@@ -3,9 +3,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   100% {
     opacity: 1;
   }
@@ -16,34 +18,38 @@
   0% {
     opacity: 0.2;
   }
+
   20% {
     opacity: 1;
   }
+
   100% {
     opacity: 0.2;
   }
 }
 
-// --- 🚀 ИЗМЕНЕНО ---
+// --- LOADING SPINNER - Charcoal + Emerald Theme ---
 // Контейнер загрузчика
 .pulsing-loader {
-  // 1. Размер шрифта уменьшен
-  font-size: 0.8rem; // (был 1.5rem)
+  // Font - Inter for consistency
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  // Size
+  font-size: 0.9rem;
   font-weight: 100;
 
-  // 2. Цвет и стиль
-  $indicator-color: #9090a0;
-  color: $indicator-color;
+  // Color - Off-White (matches theme)
+  color: #E0E0E0;
 
-  // 3. Текст в нижнем регистре
-  text-transform: none; // (был uppercase)
-  letter-spacing: 1px;  // (был 1.5px)
+  // Styling
+  text-transform: none;
+  letter-spacing: 0.5px;
 
-  // 4. Эффект свечения, соответствующий цвету
-  text-shadow: 0 0 4px rgba(224, 0, 176, 0.7),
-               0 0 8px rgba(224, 0, 176, 0.5);
+  // Emerald Green glow (matches new theme)
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.6),
+    0 0 12px rgba(16, 185, 129, 0.3);
 
-  // 5. Сохраненная анимация пульсации
+  // Pulse animation
   animation: pulse 1.5s ease-in-out infinite;
 }
 

@@ -11,6 +11,7 @@ import { UniversalScannerComponent } from './universal-scanner/universal-scanner
 import { CoinsDataService } from '../shared/services/coin-data.service';
 import { ANALYTICS_REGISTRY, AnalyticsRegistryItem } from './data/analytics.registry';
 import { ScrollToTopDirective } from '../shared/directives/scroll-to-top.directive';
+import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-analytics',
@@ -22,6 +23,7 @@ import { ScrollToTopDirective } from '../shared/directives/scroll-to-top.directi
     BtcScannerComponent,
     DocViewerComponent,
     ScrollToTopDirective,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss', '../../styles/scanner-theme.scss'],

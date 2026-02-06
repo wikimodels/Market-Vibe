@@ -14,7 +14,9 @@
       <div class="chart-wrapper">
 
         @if (isLoading()) {
-        <div class="loading-state">Analyzing historical data...</div>
+        <div class="loading-state">
+          <app-loading-spinner></app-loading-spinner>
+        </div>
         }
 
         @if (!isLoading()) {

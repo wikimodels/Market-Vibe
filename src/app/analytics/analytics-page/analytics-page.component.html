@@ -18,7 +18,9 @@
     <header class="content-header">
       <h1>{{ currentItem.label }}</h1>
       @if (isLoading$ | async) {
-      <div class="loading-badge">Updating...</div>
+      <div class="loading-indicator">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
       }
     </header>
 

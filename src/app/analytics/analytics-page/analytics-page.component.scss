@@ -3,13 +3,15 @@
 :host {
   display: block;
   height: 100vh;
-  overflow: hidden; /* Скроллим только контент */
+  overflow: hidden;
+  /* Скроллим только контент */
 }
 
 .analytics-layout {
   display: flex;
   height: 100%;
-  background-color: #0b0b0e; /* Глобальный фон */
+  background-color: #0b0b0e;
+  /* Глобальный фон */
   color: #e0e0e0;
 }
 
@@ -25,7 +27,13 @@
   .sidebar-header {
     padding: 20px;
     border-bottom: 1px solid #2a2a35;
-    h3 { margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+    h3 {
+      margin: 0;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
   }
 
   .sidebar-nav {
@@ -39,7 +47,7 @@
       text-align: left;
       background: transparent;
       border: none;
-      color: #9090a0;
+      color: #A3A3A3; // Soft Grey from theme
       padding: 12px 15px;
       cursor: pointer;
       font-size: 14px;
@@ -53,7 +61,8 @@
       }
 
       &.active {
-        background: #2979ff; /* Активный цвет (синий) */
+        background: #2979ff;
+        /* Активный цвет (синий) */
         color: #fff;
         font-weight: bold;
       }
@@ -77,15 +86,16 @@
     align-items: center;
     justify-content: space-between;
 
-    h1 { margin: 0; font-size: 24px; font-weight: 300; }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 300;
+    }
 
-    .loading-badge {
-      background: #ff9100;
-      color: #000;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
+    .loading-indicator {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 12px;
     }
   }
 }
@@ -109,7 +119,7 @@
 
   /* Text Color */
   .mat-mdc-tab .mdc-tab__text-label {
-    color: #9090a0 !important;
+    color: #A3A3A3 !important; // Soft Grey from theme
   }
 
   .mat-mdc-tab--active .mdc-tab__text-label {
@@ -125,7 +135,8 @@
 
 .tab-body {
   height: 100%;
-  overflow-y: auto; /* Скроллим только тело таба */
+  overflow-y: auto;
+  /* Скроллим только тело таба */
   padding: 0;
 }
 

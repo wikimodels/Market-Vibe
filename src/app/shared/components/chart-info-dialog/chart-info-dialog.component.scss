@@ -46,7 +46,7 @@
 
   /* Если контента много, скролл будет внутри этого блока (или внутри диалога Material) */
   ::ng-deep .explanation-content {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.6;
 
     h3 {

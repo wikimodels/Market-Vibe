@@ -14,13 +14,14 @@ import { SignalDataService, SignalType, Timeframe } from '../services/signal-dat
 import { RvwapExhaustionDetectorService } from '../../coins-aggregated-analytics/services/rvwap-exhaustion-detector.service';
 import { WorkingCoin } from '../../shared/models/working-coin.model';
 import { AuditTable, AuditTableRow } from '../audit-table/audit-table';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 export type AuditTimeframe = '1h' | '4h' | '8h' | '12h' | '1d';
 
 @Component({
   selector: 'app-audit-details',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatButtonModule, MatIconModule, AuditTable],
+  imports: [CommonModule, MatTabsModule, MatButtonModule, MatIconModule, AuditTable, LoadingSpinnerComponent],
   templateUrl: './audit-details.html',
   styleUrls: ['./audit-details.scss'],
 })
