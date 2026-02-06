@@ -1,0 +1,194 @@
+// ============================================
+// MIXINS - Reusable styling patterns
+// ============================================
+@use 'sass:map';
+@use 'variables' as vars;
+
+// ============================================
+// RESPONSIVE BREAKPOINTS
+// ============================================
+
+@mixin mobile {
+    @media (max-width: #{map.get(vars.$breakpoints, mobile)}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: #{map.get(vars.$breakpoints, mobile) + 1}) and (max-width: #{map.get(vars.$breakpoints, tablet)}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: #{map.get(vars.$breakpoints, tablet) + 1}) {
+        @content;
+    }
+}
+
+@mixin wide {
+    @media (min-width: #{map.get(vars.$breakpoints, wide)}) {
+        @content;
+    }
+}
+
+// ============================================
+// FOCUS STATES (Accessibility)
+// ============================================
+
+@mixin focus-ring($color: primary-500) {
+    outline: 2px solid var(--focus-ring, map.get(vars.$colors, $color));
+    outline-offset: 2px;
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+@mixin focus-visible {
+    &:focus-visible {
+        @include focus-ring();
+    }
+}
+
+// ============================================
+// TRANSITIONS (Respects prefers-reduced-motion)
+// ============================================
+
+@mixin transition($properties...) {
+    transition-property: $properties;
+    transition-duration: map.get(vars.$transitions, base);
+    transition-timing-function: ease-in-out;
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+@mixin transition-fast($properties...) {
+    transition-property: $properties;
+    transition-duration: map.get(vars.$transitions, fast);
+    transition-timing-function: ease-in-out;
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+// ============================================
+// SURFACES (Theme-aware backgrounds)
+// ============================================
+
+@mixin surface-bg {
+    background-color: var(--surface-bg, map.get(vars.$colors, neutral-900));
+}
+
+@mixin surface-card {
+    background-color: var(--surface-card, map.get(vars.$colors, neutral-700));
+}
+
+@mixin surface-elevated {
+    background-color: var(--surface-elevated, map.get(vars.$colors, neutral-600));
+}
+
+// ============================================
+// ELEVATION (Shadow + Background)
+// ============================================
+
+@mixin elevation($level: md) {
+    @include surface-elevated;
+    box-shadow: map.get(vars.$shadows, $level);
+}
+
+// ============================================
+// GLASSMORPHISM
+// ============================================
+
+@mixin glass($opacity: 0.1, $blur: 10px) {
+    background: rgba(map.get(vars.$colors, neutral-50), $opacity);
+    backdrop-filter: blur($blur);
+    -webkit-backdrop-filter: blur($blur);
+    border: 1px solid rgba(map.get(vars.$colors, neutral-100), 0.1);
+}
+
+// ============================================
+// TEXT STYLES (Theme-aware)
+// ============================================
+
+@mixin text-primary {
+    color: var(--text-primary, map.get(vars.$colors, neutral-50));
+}
+
+@mixin text-secondary {
+    color: var(--text-secondary, map.get(vars.$colors, neutral-100));
+}
+
+@mixin text-muted {
+    color: var(--text-muted, map.get(vars.$colors, neutral-200));
+}
+
+@mixin text-disabled {
+    color: var(--text-disabled, map.get(vars.$colors, neutral-400));
+}
+
+// ============================================
+// TRUNCATE TEXT
+// ============================================
+
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// ============================================
+// SCROLLBAR STYLING
+// ============================================
+
+@mixin custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--surface-bg, map.get(vars.$colors, neutral-900));
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--surface-elevated, map.get(vars.$colors, neutral-600));
+        border-radius: map.get(vars.$border-radius, md);
+
+        &:hover {
+            background: var(--border-default, map.get(vars.$colors, neutral-500));
+        }
+    }
+}
+
+// ============================================
+// FLEXBOX UTILITIES
+// ============================================
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin flex-col {
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,136 @@
+// ============================================
+// THEME MAPS - Dark & Light themes
+// ============================================
+@use 'sass:map';
+@use 'variables' as vars;
+
+// ============================================
+// DARK THEME - Premium & Elegant
+// Charcoal + Emerald Green - Sophisticated minimalism
+// ============================================
+$theme-dark: (
+    // Toolbar (Minimalist dark with emerald accents)
+    toolbar-bg: #1A1A1A,
+    // Soft Black - elegant, minimal
+    toolbar-text: #E0E0E0,
+    // Off-White
+
+    // Surfaces (Charcoal gradation - sophisticated depth)
+    surface-bg: #0E0E0E,
+    // Charcoal - Main background
+    surface-card: #1A1A1A,
+    // Soft Black - Cards, panels
+    surface-elevated: #242424,
+    // Lighter Charcoal - Modals
+
+    // Text (Off-white for comfort, soft grays for hierarchy)
+    text-primary: #E0E0E0,
+    // Off-White - Main text
+    text-secondary: #A3A3A3,
+    // Soft Grey - Secondary
+    text-muted: #6b7280,
+    // Muted Grey - Subtle
+    text-disabled: #4b5563,
+    // Disabled state
+
+    // Borders (Subtle greys for elegant hierarchy)
+    border-subtle: #242424,
+    border-default: #374151,
+    border-strong: #4b5563,
+
+    // Interactive states (Emerald green tint)
+    hover-bg: rgba(16, 185, 129, 0.1),
+    // Emerald tint
+    active-bg: rgba(16, 185, 129, 0.2),
+    focus-ring: #10b981,
+    // Emerald
+
+    // Semantic colors (Professional, accessible)
+    success: #10b981,
+    // Emerald Green
+    success-dark: #059669,
+    warning: #f59e0b,
+    // Amber
+    warning-dark: #d97706,
+    error: #ef4444,
+    // Soft Red
+    error-dark: #dc2626,
+    info: #3b82f6,
+    // Soft Blue
+    info-dark: #2563eb,
+
+    // Chart colors (High contrast, professional)
+    chart-bullish: #10b981,
+    // Emerald
+    chart-bearish: #ef4444,
+    // Soft Red
+    chart-neutral: #6b7280,
+    // Muted Grey
+);
+
+// ============================================
+// LIGHT THEME (Future)
+// ============================================
+$theme-light: (
+    // Toolbar
+    toolbar-bg: map.get(vars.$colors, primary-600),
+    toolbar-text: map.get(vars.$colors, neutral-50),
+
+    // Surfaces
+    surface-bg: map.get(vars.$colors, neutral-50),
+    surface-card: #ffffff,
+    surface-elevated: map.get(vars.$colors, neutral-100),
+
+    // Text
+    text-primary: map.get(vars.$colors, neutral-950),
+    text-secondary: map.get(vars.$colors, neutral-800),
+    text-muted: map.get(vars.$colors, neutral-600),
+    text-disabled: map.get(vars.$colors, neutral-400),
+
+    // Borders
+    border-subtle: map.get(vars.$colors, neutral-200),
+    border-default: map.get(vars.$colors, neutral-300),
+    border-strong: map.get(vars.$colors, neutral-400),
+
+    // Interactive states
+    hover-bg: rgba(map.get(vars.$colors, neutral-950), 0.05),
+    active-bg: rgba(map.get(vars.$colors, neutral-950), 0.1),
+    focus-ring: map.get(vars.$colors, primary-500),
+
+    // Semantic colors (same as dark)
+    success: map.get(vars.$colors, success-dark),
+    success-dark: map.get(vars.$colors, success),
+    warning: map.get(vars.$colors, warning-dark),
+    warning-dark: map.get(vars.$colors, warning),
+    error: map.get(vars.$colors, error-dark),
+    error-dark: map.get(vars.$colors, error),
+    info: map.get(vars.$colors, info-dark),
+    info-dark: map.get(vars.$colors, info),
+
+    // Chart colors
+    chart-bullish: map.get(vars.$colors, success-dark),
+    chart-bearish: map.get(vars.$colors, error-dark),
+    chart-neutral: map.get(vars.$colors, neutral-600),
+);
+
+// ============================================
+// APPLY THEME (Generate CSS Custom Properties)
+// ============================================
+@mixin apply-theme($theme-map) {
+    @each $key, $value in $theme-map {
+        --#{$key}: #{$value};
+    }
+}
+
+// ============================================
+// THEME CLASSES
+// ============================================
+.theme-dark {
+    @include apply-theme($theme-dark);
+    color-scheme: dark;
+}
+
+.theme-light {
+    @include apply-theme($theme-light);
+    color-scheme: light;
+}
