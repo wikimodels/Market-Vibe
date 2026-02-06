@@ -1,0 +1,30 @@
+<div class="mobile-container">
+  <!-- Header -->
+  <div class="header">
+
+    <h3 style="text-align: center;">Signal Heatmap</h3>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-state">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+  }
+
+  <!-- Content -->
+  @if (!isLoading() && chartsData()) {
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)"
+    animationDuration="0ms" class="custom-tabs">
+
+    @for (tf of timeframes; track tf) {
+    <mat-tab [label]="tf">
+      <div class="tab-content">
+        <!-- Use chartsData() signal - data is already transformed for active tab -->
+        <app-signal-intensity-table [data]="chartsData()"></app-signal-intensity-table>
+      </div>
+    </mat-tab>
+    }
+  </mat-tab-group>
+  }
+</div>

@@ -276,6 +276,15 @@ export class SignalIntensityTableComponent implements OnChanges {
   sortAsc: boolean = true;
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('🔍 [SignalTable] ngOnChanges called:', {
+      hasData: !!this.data,
+      dataKeys: this.data ? Object.keys(this.data) : [],
+      signalsLength: this.data?.signals?.length,
+      rawDataLength: this.data?.rawData?.length,
+      timestampsLength: this.data?.timestamps?.length,
+      firstRawData: this.data?.rawData?.[0]
+    });
+
     if (changes['data'] && this.data) {
       this.processData();
       this.sortData();
@@ -283,6 +292,14 @@ export class SignalIntensityTableComponent implements OnChanges {
   }
 
   private processData() {
+    console.log('🔄 [SignalTable] processData START:', {
+      hasData: !!this.data,
+      signals: this.data?.signals?.length,
+      rawData: this.data?.rawData?.length,
+      yAxis: this.data?.yAxis?.length,
+      timestamps: this.data?.timestamps?.length
+    });
+
     this.rows = [];
 
     // Создаём labels для колонок из timestamps
@@ -331,6 +348,12 @@ export class SignalIntensityTableComponent implements OnChanges {
         values: values
       });
     }
+
+    console.log('✅ [SignalTable] processData DONE:', {
+      rowsCreated: this.rows.length,
+      firstRow: this.rows[0],
+      columnLabels: this.columnLabels.length
+    });
   }
 
   sortByName() {

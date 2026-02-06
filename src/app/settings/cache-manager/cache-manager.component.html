@@ -1,136 +1,256 @@
-<mat-card appearance="outlined" class="cache-card">
-  <mat-card-header>
-    <div mat-card-avatar>
-      <mat-icon class="header-icon">storage</mat-icon>
+<div class="dashboard-container">
+
+  <!-- HEADER: System Status -->
+  <header class="sys-header">
+    <div class="sys-title">
+      <h1>Data Sync Hub</h1>
+      <p>Developer Control Panel</p>
     </div>
-    <mat-card-title>Data Sync Center</mat-card-title>
-    <mat-card-subtitle>Manage IndexDb and Render synchronization jobs</mat-card-subtitle>
-  </mat-card-header>
 
-  <mat-divider></mat-divider>
-
-  <mat-card-content>
-    <div class="master-stats-container">
-      <div class="stat-box">
-        <div class="stat-label">Master Coin List (IndexedDB)</div>
-        <div class="stat-value-row">
-
-          <div class="count-wrapper">
-            <ng-container
-              *ngIf="isUpdatingMaster || isCheckingLocal || (coinsService.isLoading$ | async); else countTpl">
-              <mat-spinner diameter="20"></mat-spinner>
-              <span class="loading-text">
-                {{ isCheckingLocal ? 'Checking DB...' : 'Updating...' }}
-              </span>
-            </ng-container>
-
-            <ng-template #countTpl>
-              <span class="count" [class.empty]="masterCoinCount === 0">{{ masterCoinCount }}</span>
-              <span class="count-unit">coins</span>
-            </ng-template>
+    <!-- Master List Status -->
+    <mat-card class="master-card" appearance="outlined">
+      <div class="master-content">
+        <div class="master-icon">
+          <mat-icon>dns</mat-icon>
+        </div>
+        <div class="master-info">
+          <span class="label">Master Coin List (Global)</span>
+          <div class="value-row">
+            <span class="value" [class.zero]="masterCoinCount === 0">
+              {{ masterCoinCount }}
+            </span>
+            <span class="unit">coins</span>
           </div>
-
-          <div class="actions">
-            <button mat-icon-button color="accent" (click)="forceRefreshMasterList()"
-              matTooltip="Download coins from Render" matTooltipPosition="above" [disabled]="isUpdatingMaster">
-              <mat-icon>cloud_download</mat-icon>
-            </button>
-            <button mat-icon-button (click)="refreshLocalStats()" matTooltip="Check IndexDB Stats"
-              matTooltipPosition="above" [disabled]="isCheckingLocal"> <mat-icon
-                [class.spin-icon]="isCheckingLocal">refresh</mat-icon>
-            </button>
+          <div class="status-indicator">
+            <span class="dot" [class.active]="masterCoinCount > 0"></span>
+            {{ masterCoinCount > 0 ? 'List Loaded' : 'Empty List' }}
           </div>
         </div>
 
-        <mat-progress-bar *ngIf="isUpdatingMaster" mode="indeterminate" class="master-progress"></mat-progress-bar>
-      </div>
-    </div>
-
-    <div class="table-container">
-      <table mat-table [dataSource]="rows" class="sync-table">
-
-        <ng-container matColumnDef="timeframe">
-          <th mat-header-cell *matHeaderCellDef> Timeframe </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-chip-set>
-              <mat-chip class="tf-chip">{{ row.label }}</mat-chip>
-            </mat-chip-set>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="localCount">
-          <th mat-header-cell *matHeaderCellDef> Local Cache </th>
-          <td mat-cell *matCellDef="let row">
-
-            <div *ngIf="isCheckingLocal; else localCountValue" class="db-loading">
-              <mat-spinner diameter="16"></mat-spinner>
-              <span>Checking...</span>
-            </div>
-
-            <ng-template #localCountValue>
-              <div class="local-info">
-                <span class="num">{{ row.localCount }}</span>
-                <span class="sub-text">records</span>
-              </div>
-            </ng-template>
-
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef> Operations </th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-flat-button class="sync-btn" (click)="runJob(row)" [disabled]="row.isLoading">
-
-              <ng-container *ngIf="row.isLoading; else runText">
-                <mat-spinner diameter="18" mode="indeterminate"></mat-spinner>
-                <span>Processing...</span>
-              </ng-container>
-
-              <ng-template #runText>
-                <mat-icon>play_arrow</mat-icon>
-                <span>Start Sync</span>
-              </ng-template>
+        <div class="master-actions-col">
+          <!-- Update Master List -->
+          <div class="action-item">
+            <button mat-mini-fab color="primary" [disabled]="isUpdatingMaster" (click)="forceRefreshMasterList()">
+              <mat-icon [class.pulse-icon]="isUpdatingMaster">cloud_download</mat-icon>
             </button>
-          </td>
-        </ng-container>
+            <span class="action-desc">Download List <br> from Server</span>
+          </div>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef> Status </th>
-          <td mat-cell *matCellDef="let row" class="status-cell">
+          <!-- Check Local DB -->
+          <div class="action-item">
+            <button mat-mini-fab color="accent" [disabled]="isCheckingLocal || isUpdatingMaster"
+              (click)="refreshLocalStats()">
+              <mat-icon [class.pulse-icon]="isCheckingLocal">search</mat-icon>
+            </button>
+            <span class="action-desc">Check <br> Local DB</span>
+          </div>
+        </div>
+      </div>
+      <mat-progress-bar *ngIf="isUpdatingMaster || isCheckingLocal" mode="indeterminate"
+        class="master-progress"></mat-progress-bar>
+    </mat-card>
+  </header>
 
-            <span *ngIf="row.status === 'idle'" class="status-idle">—</span>
-
-            <div *ngIf="row.status === 'running'" class="status-running">
-              <span class="pulse"></span> Running
-            </div>
-
-            <div *ngIf="row.status === 'success'" class="status-success">
-              <mat-icon>check_circle</mat-icon>
-              <div class="text-group">
-                <span class="bold">OK: {{ row.serverCount }}</span>
-                <span class="timestamp">{{ row.lastUpdated | date:'HH:mm:ss' }}</span>
-              </div>
-            </div>
-
-            <div *ngIf="row.status === 'stale'" class="status-stale">
-              <mat-icon>warning_amber</mat-icon>
-              <div class="text-group">
-                <span class="bold">STALE DATA</span>
-                <span class="lag-info">Lag: {{ row.errorMessage }}</span>
-              </div>
-            </div>
-
-            <div *ngIf="row.status === 'error'" class="status-error">
-              <mat-icon>error_outline</mat-icon>
-              <span>Failed</span>
-            </div>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+  <!-- SYSTEM OVERVIEW & HELP -->
+  <div class="system-overview-card">
+    <div class="overview-section">
+      <h3><mat-icon>hub</mat-icon> Architecture & Data Flow</h3>
+      <p>
+        The system relies on a distributed architecture. Data is aggregated from two primary backend nodes:
+        <span class="highlight bazzar">Bazzar</span> (handling 1h, 12h, 1d) and
+        <span class="highlight bizzar">Bizzar</span> (handling 4h, 8h).
+      </p>
+      <p>
+        When you trigger a <b>Full Sync</b>, the following pipeline executes:
+        <br>
+        <code>Server Job</code> (Fetch Prices + Calculate Indicators)
+        <span class="arrow">→</span>
+        <code>JSON Payload</code>
+        <span class="arrow">→</span>
+        <code>Client Download</code>
+        <span class="arrow">→</span>
+        <code>IndexedDB Save</code>.
+      </p>
     </div>
-  </mat-card-content>
-</mat-card>
+
+    <div class="v-divider"></div>
+
+    <div class="overview-section">
+      <h3><mat-icon>tune</mat-icon> Controls & Indicators</h3>
+      <ul class="legend-list">
+        <li>
+          <span class="legend-term"><mat-icon inline class="legend-icon">cloud_download</mat-icon> Download List</span>
+          Updates the <b>Master Coin List</b> from the server. Use this if the "Coins" count is 0 or outdated.
+        </li>
+        <li>
+          <span class="legend-term"><mat-icon inline class="legend-icon">search</mat-icon> Check Local DB</span>
+          Scans your browser's <b>IndexedDB</b> storage to verify how many coins are actually cached offline.
+        </li>
+        <li>
+          <span class="legend-term">Start Full Sync</span>
+          Triggers the complete cycle: remote data fetch, indicator calculation, and local cache update.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <mat-divider class="section-divider"></mat-divider>
+
+  <!-- GRID: Timeframe Cards -->
+  <div class="tf-grid">
+    @for (row of rows; track row.label) {
+    <mat-card class="tf-card" appearance="raised">
+
+      <!-- CARD HEADER -->
+      <div class="tf-header">
+        <div class="tf-badge">{{ row.label }}</div>
+        <div class="server-badge" [class.bazzar]="row.serverName === 'Bazzar'"
+          [class.bizzar]="row.serverName === 'Bizzar'">
+          <mat-icon class="server-icon">storage</mat-icon>
+          {{ row.serverName }}
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- CARD BODY -->
+      <mat-card-content class="tf-body">
+
+        <!-- Local DB Stat -->
+        <div class="stat-row">
+          <span class="stat-label">Local Cache:</span>
+          <span class="stat-val" [class.ok]="row.localCount === masterCoinCount && masterCoinCount > 0"
+            [class.warn]="row.localCount > 0 && row.localCount < masterCoinCount" [class.error]="row.localCount === 0">
+            {{ row.localCount }}
+            <span class="stat-total">/ {{ masterCoinCount }}</span>
+          </span>
+        </div>
+
+        <!-- Description of Action -->
+        <div class="action-explainer">
+          <mat-icon>info</mat-icon>
+          <p>Syncs ~{{ masterCoinCount }} coins for {{ row.label }} <br> Including RVWAP & Indicators</p>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="status-row">
+          <ng-container [ngSwitch]="row.status">
+
+            <div *ngSwitchCase="'idle'" class="status-badge idle">
+              <mat-icon>hourglass_empty</mat-icon> Ready to Sync
+            </div>
+
+            <div *ngSwitchCase="'running'" class="status-badge running">
+              <mat-spinner diameter="16"></mat-spinner>
+              <span class="pulse-text">Running Job... (~3 min)</span>
+            </div>
+
+            <div *ngSwitchCase="'success'" class="status-badge success">
+              <mat-icon>check_circle</mat-icon>
+              <div>
+                <div>Sync Complete</div>
+                <span class="time">Updated: {{ row.lastUpdated | date:'HH:mm' }}</span>
+              </div>
+            </div>
+
+            <div *ngSwitchCase="'stale'" class="status-badge stale">
+              <mat-icon>warning</mat-icon>
+              <div>
+                <div>Data Stale</div>
+                <span class="lag">Lag: {{ row.errorMessage }}</span>
+              </div>
+            </div>
+
+            <div *ngSwitchCase="'error'" class="status-badge error">
+              <mat-icon>error</mat-icon> Sync Failed
+            </div>
+
+          </ng-container>
+        </div>
+
+      </mat-card-content>
+
+      <!-- CARD ACTIONS -->
+      <div class="tf-actions">
+        <button mat-raised-button color="primary" class="run-btn" (click)="runJob(row)"
+          [disabled]="row.isLoading || isUpdatingMaster || isCheckingLocal">
+
+          <span class="btn-content" *ngIf="!row.isLoading">
+            <mat-icon>play_circle_filled</mat-icon>
+            <span>START FULL SYNC</span>
+          </span>
+
+          <span class="btn-content" *ngIf="row.isLoading">
+            <mat-spinner diameter="20" color="accent"></mat-spinner>
+            <span>Processing...</span>
+          </span>
+
+        </button>
+      </div>
+
+      <!-- Progress Overlay -->
+      <mat-progress-bar *ngIf="row.isLoading" mode="indeterminate" class="card-progress"></mat-progress-bar>
+
+    </mat-card>
+    }
+  </div>
+
+  <mat-divider class="section-divider"></mat-divider>
+
+  <!-- STORAGE CLEANUP SECTION -->
+  <div class="cleanup-section">
+    <div class="sys-title">
+      <h3>Storage Management</h3>
+      <p>Danger Zone</p>
+    </div>
+
+    <div class="cleanup-grid">
+      <!-- TF Deletion Cards -->
+      @for (row of rows; track row.label) {
+      <mat-card class="cleanup-card">
+        <div class="cleanup-header">
+          <span>{{ row.label }} Data</span>
+          <mat-icon class="trash-icon">delete_outline</mat-icon>
+        </div>
+        <button mat-stroked-button color="warn" class="cleanup-btn"
+          [disabled]="isDeletingMap[row.label] || isCheckingLocal || isUpdatingMaster"
+          (click)="deleteTfData(row.label)">
+          <span *ngIf="!isDeletingMap[row.label]">DELETE {{ row.label }}</span>
+          <mat-spinner *ngIf="isDeletingMap[row.label]" diameter="16" color="warn"></mat-spinner>
+        </button>
+      </mat-card>
+      }
+
+      <!-- Delete ALL Klines -->
+      <mat-card class="cleanup-card danger">
+        <div class="cleanup-header">
+          <span>All Kline Data</span>
+          <mat-icon class="trash-icon">folder_delete</mat-icon>
+        </div>
+        <button mat-flat-button color="warn" class="cleanup-btn"
+          [disabled]="isDeletingAllKlines || isCheckingLocal || isUpdatingMaster" (click)="deleteAllKlines()">
+          <ng-container *ngIf="!isDeletingAllKlines">
+            DELETE ALL DATA
+          </ng-container>
+          <mat-spinner *ngIf="isDeletingAllKlines" diameter="16" class="white-spinner"></mat-spinner>
+        </button>
+      </mat-card>
+
+      <!-- Delete Coins -->
+      <mat-card class="cleanup-card danger">
+        <div class="cleanup-header">
+          <span>Master Coins</span>
+          <mat-icon class="trash-icon">list_alt_off</mat-icon>
+        </div>
+        <button mat-flat-button color="warn" class="cleanup-btn"
+          [disabled]="isDeletingCoins || isCheckingLocal || isUpdatingMaster" (click)="deleteCoinsList()">
+          <ng-container *ngIf="!isDeletingCoins">
+            DELETE LIST
+          </ng-container>
+          <mat-spinner *ngIf="isDeletingCoins" diameter="16" class="white-spinner"></mat-spinner>
+        </button>
+      </mat-card>
+    </div>
+  </div>
+
+</div>

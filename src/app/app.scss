@@ -1,37 +1,54 @@
-// :host - это сам <app-root>
-:host {
-  display: flex;
-  flex-direction: column;
-  // Занимаем 100% высоты окна браузера
-  height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
-  // (Берем переменные из твоего styles.scss)
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #121212;
+  /* Global dark background */
+  font-family: 'Inter', sans-serif;
+  color: #e0e0e0;
+}
+
+/* Scrollbar Styles (Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e24;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .main-content {
-  // Занимает все оставшееся место (после <app-navbar>)
-  flex: 1;
-  // !!! Это главный скроллбар твоего приложения !!!
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* Занимает всю высоту за вычетом навбара (если он есть) */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-wrapper {
-  // --- Центрирование ---
-  // Контент никогда не будет шире 1400px
-  max-width: 1400px;
-  // (0 - сверху/снизу, auto - слева/справа)
-  margin: 10px auto;
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  /* Default padding for desktop */
+  box-sizing: border-box;
+}
 
-  // --- "Равные отступы" ---
-  // 24px сверху/снизу, 32px слева/справа
-  padding: 24px 12px;
-
-  // Адаптивность для мобильных:
-  @media (max-width: 768px) {
-    // На маленьких экранах отступы меньше
-    padding: 16px;
-  }
+/* Mobile Wrapper Override */
+.content-wrapper.mobile-wrapper {
+  padding: 0 !important;
+  max-width: 100%;
 }

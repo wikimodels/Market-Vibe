@@ -113,6 +113,18 @@ export class KlineCacheService {
     }
   }
 
+  /**
+   * Удаляет мастер-список монет из IndexedDB.
+   */
+  public async clearCoinsData(): Promise<void> {
+    try {
+      await this.db.coinsData.delete(COIN_DATA_KEY);
+      console.warn('🗑️ Cache: Удален мастер-список монет из IndexedDB');
+    } catch (error) {
+      console.error('❌ Cache: Ошибка удаления мастер-списка', error);
+    }
+  }
+
   // ========================================
   // --- Утилиты (По вашему запросу) ---
   // ========================================

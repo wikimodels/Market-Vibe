@@ -14,6 +14,8 @@ export interface StaleDataError {
   serverTime: number;
 }
 
+import { IndicatorPipelineService } from '../../shared/services/pipeline/indicator-pipeline.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,8 +25,9 @@ export class DataSyncService {
 
   private coinsService = inject(CoinsDataService);
   private cacheService = inject(KlineCacheService);
+  private pipeline = inject(IndicatorPipelineService);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -75,8 +78,13 @@ export class DataSyncService {
               throw staleCheck;
             }
 
-            // 3. Сохраняем в базу
-            return from(this.cacheService.saveMarketData(marketData)).pipe(map(() => count));
+            // 3. Прогоняем через Pipeline (расчет индикаторов)
+            return from(this.pipeline.process(marketData)).pipe(
+              switchMap((processedData) => {
+                // 4. Сохраняем в базу уже обогащенные данные
+                return from(this.cacheService.saveMarketData(processedData)).pipe(map(() => count));
+              })
+            );
           }
           return throwError(() => new Error('Invalid cache response or empty data'));
         }),

@@ -25,14 +25,14 @@ mat-toolbar {
   font-size: 14px !important;
 
   // Лого/заголовок
-  > span:first-child {
+  >span:first-child {
     font-size: 16px;
     font-weight: 500;
     white-space: nowrap;
   }
 
   // Все вложенные компоненты (app-line-alert-menu, app-vwap-alert-menu)
-  > * {
+  >* {
     display: flex !important;
     align-items: center !important;
     height: 48px !important;
@@ -75,10 +75,18 @@ mat-toolbar {
     height: 20px !important;
     fill: var(--toolbar-text, #ffffff) !important;
   }
+
+  // Remove gap on mobile to bring elements closer
+  @media (max-width: 768px) {
+    gap: 4px !important; // Reduced from 12px
+  }
 }
 
 .spacer {
   flex: 1 1 auto !important;
+
+  // On mobile: spacer pushes user-profile to the right edge
+  // (Logo stays left, user-profile goes right)
 }
 
 // User profile section
@@ -91,14 +99,20 @@ mat-toolbar {
   margin-left: 8px !important;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
 
+  // Push to right edge on mobile using absolute positioning
+  @media (max-width: 768px) {
+    position: absolute !important;
+    right: 8px !important;
+    margin-left: 0 !important;
+    border-left: none !important;
+    padding-left: 0 !important;
+  }
+
   .user-name {
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
-
-    @media (max-width: 480px) {
-      display: none;
-    }
+    // Removed mobile hiding - show user name on all devices
   }
 
   .user-avatar {
@@ -155,5 +169,34 @@ mat-toolbar {
       font-weight: 500 !important;
       white-space: nowrap !important;
     }
+  }
+}
+
+// --- MOBILE OVERRIDES (Global / Strict) ---
+@media (max-width: 768px) {
+
+  // 1. Hide Buttons inside toolbar specifically
+  mat-toolbar {
+
+    .mat-mdc-icon-button,
+    button[mat-icon-button]:not(.menu-trigger) {
+      display: none !important;
+    }
+
+    // EXCEPTION: Show login/logout buttons inside user-profile
+    .user-profile .mat-mdc-icon-button,
+    .user-profile button[mat-icon-button] {
+      display: flex !important;
+    }
+  }
+
+  // 2. User Profile - VISIBLE ON MOBILE (login restored)
+  // Removed display:none rules to show login/logout on mobile
+
+  // 3. Ensure Logo/Title is Visible (but don't stretch it)
+  mat-toolbar>span:first-child {
+    display: flex !important;
+    align-items: center !important;
+    // Removed flex: 1 to allow spacer to work correctly
   }
 }

@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 // ❌ toSignal больше не нужен, так как мы управляем isLoading вручную
 // import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -10,7 +10,7 @@ import { Candle } from './models/kline.model';
 // --- ПАЙПЫ ---
 
 // --- СЕРВИСЫ (с правильными путями) ---
-// (Сервисы данных лежат в /services, а не /shared/services)
+import { MobileDetectionService } from './shared/services/mobile-detection.service';
 
 // --- АНИМАЦИИ ---
 import { fadeDataAnimation, fadeSpinnerAnimation } from './shared/animations/fade.animation';
@@ -27,6 +27,14 @@ import { Navbar } from './navbar/navbar';
     fadeDataAnimation, // (Импорты из fade.animation.ts)
   ],
 })
-export class App {
-  // --- Внедрение сервисов ---
+export class App implements OnInit {
+  public mobileService = inject(MobileDetectionService);
+  private router = inject(Router);
+
+  ngOnInit() {
+    // If mobile, force redirect to mobile-heatmap and lock it there (layout hides navbar)
+    if (this.mobileService.isMobile()) {
+      this.router.navigate(['/mobile-heatmap']);
+    }
+  }
 }

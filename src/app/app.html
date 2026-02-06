@@ -1,5 +1,5 @@
 <!-- 1. Навбар (прибит к верху, не скроллится) -->
-<!-- (Предполагается, что у тебя есть компонент <app-navbar>) -->
+<!-- Скрываем на мобильных -- NO, showing always, handling via CSS -->
 <app-navbar></app-navbar>
 
 <!--
@@ -14,18 +14,14 @@
     3. <div class="content-wrapper">
     Он центрует сам себя (margin: auto) и
     дает "равные отступы" (padding) со всех сторон.
+    Для мобильных убираем паддинги (или это уже в стилях, но wrapper тоже можно убрать если мешает)
   -->
-  <div class="content-wrapper">
+  <div class="content-wrapper" [class.mobile-wrapper]="mobileService.isMobile()">
 
     <!--
       4. <router-outlet>
       Это "окно", куда Angular будет вставлять
       твои страницы (с графиками, таблицами и т.д.).
-
-      Весь твой тестовый код (кнопки, таблицы, спиннер)
-      теперь должен "переехать" в отдельный компонент
-      (например, DashboardComponent), который будет
-      загружаться через этот <router-outlet>.
     -->
     <router-outlet></router-outlet>
 

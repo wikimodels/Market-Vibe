@@ -19,6 +19,9 @@ const privateGuard = () => {
   );
 };
 
+// Import Mobile Service for the guard
+import { MobileDetectionService } from './shared/services/mobile-detection.service';
+
 // Пропускает только гостей. Авторизованных шлет домой (чтобы не видели форму логина зря)
 const publicGuard = () => {
   const auth = inject(Auth);
@@ -71,6 +74,10 @@ export const routes: Routes = [
         loadComponent: () => import('./settings/settings').then((m) => m.Settings),
       },
       {
+        path: 'mobile-heatmap',
+        loadComponent: () => import('./coins-aggregated-analytics/mobile-heatmap/mobile-heatmap.component').then((m) => m.MobileHeatmapComponent),
+      },
+      {
         path: 'coins',
         loadComponent: () => import('./coins/coins').then((m) => m.Coins),
       },
@@ -79,8 +86,22 @@ export const routes: Routes = [
         loadComponent: () => import('./analytics/analytics').then((m) => m.Analytics),
       },
 
-      // Дефолтный редирект для залогиненного юзера (например, на сработавшие алерты)
-      { path: '', redirectTo: 'analytics', pathMatch: 'full' },
+      // Дефолтный редирект (внутри privateGuard)
+      {
+        path: '',
+        pathMatch: 'full',
+        canActivate: [() => {
+          const mobile = inject(MobileDetectionService);
+          const router = inject(Router);
+
+          if (mobile.isMobile()) {
+            console.log('🔀 Redirecting to Mobile Heatmap');
+            return router.createUrlTree(['/mobile-heatmap']);
+          }
+          return router.createUrlTree(['/analytics']);
+        }],
+        children: [] // Satisfy Angular validation
+      },
     ],
   },
 

@@ -1,0 +1,214 @@
+.mobile-container {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+// Header - UNIFIED STYLE (matches analytics pattern)
+.header {
+  background: #15151a;
+  border-bottom: 1px solid #2a2a35;
+  padding: 50px 10px 0 20px; // Increased top padding from 40px to 50px
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Center horizontally
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center; // Center content
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #9090a0;
+    line-height: 1.3;
+    text-align: center;
+    padding-bottom: 20px;
+  }
+}
+
+.status-badge {
+  font-size: 12px;
+  background: rgba(105, 240, 174, 0.15);
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: #69f0ae;
+  font-weight: 600;
+  border: 1px solid rgba(105, 240, 174, 0.3);
+
+  &.ready {
+    background: rgba(105, 240, 174, 0.2);
+    color: #69f0ae;
+  }
+}
+
+// Loading State (matches desktop) - FIXED CENTERING
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 400px; // Reduced from calc(100vh - 100px)
+  width: 100%;
+  text-align: center;
+}
+
+// Material Tabs Customization - IMPROVED MOBILE
+::ng-deep .mat-mdc-tab-group {
+  flex-shrink: 0; // Prevent tabs from shrinking
+}
+
+::ng-deep .mat-mdc-tab-labels {
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+::ng-deep .mat-mdc-tab {
+  min-width: 60px !important; // Ensure tabs are wide enough
+  padding: 0 12px !important;
+}
+
+::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  color: #888 !important;
+  font-weight: 600;
+  font-size: 15px !important; // Increased from 14px
+  letter-spacing: 0.5px;
+}
+
+::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #69f0ae !important;
+  font-weight: 700;
+}
+
+::ng-deep .mat-mdc-tab-indicator__content--underline {
+  border-color: #69f0ae !important;
+  border-width: 3px !important; // Increased from 2px
+}
+
+// Tab Content
+.tab-content {
+  padding: 0;
+  background: #0a0a0a;
+  flex: 1; // Take remaining space
+  overflow: hidden;
+}
+
+// Ensure table component fits mobile
+::ng-deep app-signal-intensity-table {
+  display: block;
+  width: 100%;
+
+  .signal-table-container {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .table-wrapper {
+    max-height: calc(100vh - 200px);
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  // Mobile-specific table adjustments
+  .signal-table {
+    font-size: 9px;
+
+    th,
+    td {
+      padding: 4px 1px;
+    }
+
+    .signal-name-header,
+    .signal-name {
+      width: 80px !important;
+      min-width: 80px;
+      max-width: 80px;
+      font-size: 8px;
+      padding: 4px 4px 4px 10px !important; // Increased left padding to 10px
+    }
+
+    th:not(.signal-name-header),
+    td:not(.signal-name) {
+      min-width: 28px;
+      width: 28px;
+      font-size: 8px;
+    }
+
+    th span {
+      font-size: 7px;
+      line-height: 1.1;
+    }
+  }
+}
+
+// Extra narrow screens (phones in portrait)
+@media (max-width: 380px) {
+  ::ng-deep app-signal-intensity-table {
+    .signal-table {
+      font-size: 8px;
+
+      .signal-name-header,
+      .signal-name {
+        width: 70px !important;
+        min-width: 70px;
+        max-width: 70px;
+        font-size: 7px;
+        padding: 3px 3px 3px 8px !important; // Increased left padding to 8px
+      }
+
+      th:not(.signal-name-header),
+      td:not(.signal-name) {
+        min-width: 24px;
+        width: 24px;
+        font-size: 7px;
+        padding: 3px 1px;
+      }
+
+      th span {
+        font-size: 6px;
+      }
+    }
+  }
+}
+
+// Scrollbar styling for mobile
+::ng-deep .table-wrapper::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::ng-deep .table-wrapper::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::ng-deep .table-wrapper::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+::ng-deep .table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
