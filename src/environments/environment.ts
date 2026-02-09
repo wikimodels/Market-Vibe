@@ -50,5 +50,5 @@ export const environment = {
     D: 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D',
     '1d': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D', // Alias for D
   },
-  defaultDataSource: 'render' as 'render' | 'ngrok', // Default to Render servers
+  defaultDataSource: 'ngrok' as 'render' | 'ngrok', // Default to Ngrok servers
 };

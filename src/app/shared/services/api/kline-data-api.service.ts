@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 // 🚀 ИМПОРТ: Добавляем HttpParams
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 // --- ИМПОРТ МОДЕЛЕЙ ---
 // (Этот сервис знает только о моделях API-ответов)
 import { TF, KlineApiResponse, KlineApiAllResponse } from '../../../models/kline.model';
+import { DataSourceService } from '../data-source.service';
 
 // Экспортируем тип таймфрейма для использования в других компонентах
 export type Timeframe = TF;
@@ -21,8 +22,8 @@ export type Timeframe = TF;
   providedIn: 'root',
 })
 export class KlineDataApiService {
-  private klineUrls = environment.klineDataUrls;
   private token = environment.token;
+  private dataSourceService = inject(DataSourceService);
 
   constructor(private http: HttpClient) { }
 
@@ -33,7 +34,8 @@ export class KlineDataApiService {
   getKlines(timeframe: Timeframe): Observable<KlineApiResponse> {
     // Mapping for mismatch '1d' vs 'D'
     const tfKey = (timeframe as string) === '1d' ? 'D' : timeframe;
-    const url = this.klineUrls[tfKey as keyof typeof this.klineUrls];
+    // Use DataSourceService to get the URL dynamically
+    const url = this.dataSourceService.getKlineUrl(tfKey as TF);
 
     if (!url) {
       console.error(`❌ [API] URL not found for timeframe: ${timeframe} (key: ${tfKey})`);
@@ -60,7 +62,8 @@ export class KlineDataApiService {
    * (БЕЗ .pipe(map(...)) - это "сырой" ответ)
    */
   getAllKlines(): Observable<KlineApiAllResponse> {
-    const baseUrl = this.klineUrls['1h'].replace('/api/cache/1h', '');
+    const url1h = this.dataSourceService.getKlineUrl('1h');
+    const baseUrl = url1h.replace('/api/cache/1h', '');
     const url = `${baseUrl}/api/cache/all`;
     const headers = this.createAuthHeaders();
 
@@ -74,6 +77,7 @@ export class KlineDataApiService {
   private createAuthHeaders(): HttpHeaders {
     return new HttpHeaders({
       Authorization: `Bearer ${this.token}`,
+      'ngrok-skip-browser-warning': 'true', // Add this to support ngrok
     });
   }
 }
