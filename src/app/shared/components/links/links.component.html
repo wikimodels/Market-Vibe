@@ -1,25 +1,25 @@
 <div class="coin-links">
 
   @if (hasBinance()) {
-  <div class="circle-btn" (click)="clickBinance($event)" title="Open in Binance">
+  <div class="circle-btn" (click)="clickBinance($event)" matTooltip="Open in Binance" matTooltipPosition="above">
     <img [src]="binanceLogo()" alt="Binance">
   </div>
   }
 
   @if (hasBybit()) {
-  <div class="circle-btn" (click)="clickBybit($event)" title="Open in Bybit">
+  <div class="circle-btn" (click)="clickBybit($event)" matTooltip="Open in Bybit" matTooltipPosition="above">
     <img [src]="bybitLogo()" alt="Bybit">
   </div>
   }
 
   @if (tvLink()) {
-  <div class="circle-btn" (click)="clickTv($event)" title="Open in TradingView">
+  <div class="circle-btn" (click)="clickTv($event)" matTooltip="Open in TradingView" matTooltipPosition="above">
     <img [src]="tvLogo()" alt="TradingView">
   </div>
   }
 
   @if (cgLink()) {
-  <div class="circle-btn" (click)="clickCg($event)" title="Open in Coinglass">
+  <div class="circle-btn" (click)="clickCg($event)" matTooltip="Open in Coinglass" matTooltipPosition="above">
     <img [src]="cgLogo()" alt="Coinglass">
   </div>
   }

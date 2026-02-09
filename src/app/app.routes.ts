@@ -81,11 +81,6 @@ export const routes: Routes = [
         path: 'coins',
         loadComponent: () => import('./coins/coins').then((m) => m.Coins),
       },
-      {
-        path: 'analytics',
-        loadComponent: () => import('./analytics/analytics').then((m) => m.Analytics),
-      },
-
       // Дефолтный редирект (внутри privateGuard)
       {
         path: '',
@@ -98,7 +93,7 @@ export const routes: Routes = [
             console.log('🔀 Redirecting to Mobile Heatmap');
             return router.createUrlTree(['/mobile-heatmap']);
           }
-          return router.createUrlTree(['/analytics']);
+          return router.createUrlTree(['/coins']);
         }],
         children: [] // Satisfy Angular validation
       },

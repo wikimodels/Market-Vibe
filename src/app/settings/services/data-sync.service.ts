@@ -15,6 +15,7 @@ export interface StaleDataError {
 }
 
 import { IndicatorPipelineService } from '../../shared/services/pipeline/indicator-pipeline.service';
+import { DataSourceService } from '../../shared/services/data-source.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,74 +27,103 @@ export class DataSyncService {
   private coinsService = inject(CoinsDataService);
   private cacheService = inject(KlineCacheService);
   private pipeline = inject(IndicatorPipelineService);
+  private dataSourceService = inject(DataSourceService);
 
   constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({
-      Authorization: `Bearer ${this.token}`,
+      'Authorization': `Bearer ${this.token}`,
+      'ngrok-skip-browser-warning': 'true', // Bypass ngrok warning page
     });
   }
 
   public runSyncCycle(tf: TF): Observable<number> {
-    const baseUrl = this.serverMap[tf];
+    const currentSource = this.dataSourceService.getCurrentSource();
+    console.log(`🚀 [DataSync] Starting sync for ${tf} using ${currentSource.toUpperCase()} source`);
 
-    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-    // API для JOB требует '1d'
-    const jobTf = tf === 'D' ? '1d' : tf;
-    const runUrl = `${baseUrl}/api/jobs/run/${jobTf}`;
+    if (currentSource === 'ngrok') {
+      // Ngrok: Direct fetch, no job triggering needed
+      return this.fetchAndProcessData(tf);
+    } else {
+      // Render: Trigger job, wait, then fetch
+      return this.triggerJobAndFetch(tf);
+    }
+  }
 
-    // API для CACHE требует 'D' (согласно environment.ts и валидации сервера)
-    // Поэтому для URL кэша используем оригинальный TF (где 'D' это 'D')
-    const cacheTf = tf;
-    const cacheUrl = `${baseUrl}/api/cache/${cacheTf}`;
-    // --------------------------
+  /**
+   * Ngrok flow: Direct data fetch (data is always fresh)
+   */
+  private fetchAndProcessData(tf: TF): Observable<number> {
+    const cacheUrl = this.dataSourceService.getKlineUrl(tf);
+    console.log(`📥 [DataSync] Fetching from ${cacheUrl}...`);
 
-    console.log(`🚀 [DataSync] Starting job for ${tf} (Job: ${jobTf}, Cache: ${cacheTf})`);
+    return this.http.get<KlineApiResponse>(cacheUrl, { headers: this.getAuthHeaders() }).pipe(
+      switchMap((response) => this.processResponse(response, tf)),
+      catchError((err) => {
+        console.error(`❌ [DataSync] Fetch failed for ${tf}`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  /**
+   * Render flow: Trigger job, wait 3 min, then fetch
+   */
+  private triggerJobAndFetch(tf: TF): Observable<number> {
+    const jobUrl = this.dataSourceService.getJobUrl(tf);
+    const cacheUrl = this.dataSourceService.getKlineUrl(tf);
+
+    if (!jobUrl) {
+      return throwError(() => new Error('Job URL not available for current source'));
+    }
+
+    console.log(`🔨 [DataSync] Triggering job at ${jobUrl}...`);
 
     return this.http
-      .post<{ success: boolean; message: string }>(runUrl, {}, { headers: this.getAuthHeaders() })
+      .post<{ success: boolean; message: string }>(jobUrl, {}, { headers: this.getAuthHeaders() })
       .pipe(
-        tap((res) => console.log(`cw [DataSync] Job triggered:`, res)),
-
-        delay(180000), // Ждем 3 минуты
-
+        tap((res) => console.log(`✅ [DataSync] Job triggered:`, res)),
+        delay(180000), // Wait 3 minutes
         switchMap(() => {
-          console.log(`cw [DataSync] Checking server cache at ${cacheUrl}...`);
+          console.log(`📥 [DataSync] Checking cache at ${cacheUrl}...`);
           return this.http.get<KlineApiResponse>(cacheUrl, { headers: this.getAuthHeaders() });
         }),
-
-        switchMap((response) => {
-          if (response && response.success && response.data && Array.isArray(response.data.data)) {
-            const marketData = response.data;
-            const count = marketData.data.length;
-
-            // 1. Проверяем на потери
-            this.checkForMissingCoins(marketData.data, tf);
-
-            // 2. Проверяем на свежесть
-            const staleCheck = this.checkStaleStatus(marketData, tf);
-            if (staleCheck.isStale) {
-              console.warn(`⚠️ [DataSync] Data for ${tf} is STALE! Lag: ${staleCheck.lagMs}ms`);
-              throw staleCheck;
-            }
-
-            // 3. Прогоняем через Pipeline (расчет индикаторов)
-            return from(this.pipeline.process(marketData)).pipe(
-              switchMap((processedData) => {
-                // 4. Сохраняем в базу уже обогащенные данные
-                return from(this.cacheService.saveMarketData(processedData)).pipe(map(() => count));
-              })
-            );
-          }
-          return throwError(() => new Error('Invalid cache response or empty data'));
-        }),
-
+        switchMap((response) => this.processResponse(response, tf)),
         catchError((err) => {
           console.error(`❌ [DataSync] Cycle failed for ${tf}`, err);
           return throwError(() => err);
         })
       );
+  }
+
+  /**
+   * Common processing logic for both sources
+   */
+  private processResponse(response: KlineApiResponse, tf: TF): Observable<number> {
+    if (response && response.success && response.data && Array.isArray(response.data.data)) {
+      const marketData = response.data;
+      const count = marketData.data.length;
+
+      // 1. Check for missing coins
+      this.checkForMissingCoins(marketData.data, tf);
+
+      // 2. Check for stale data
+      const staleCheck = this.checkStaleStatus(marketData, tf);
+      if (staleCheck.isStale) {
+        console.warn(`⚠️ [DataSync] Data for ${tf} is STALE! Lag: ${staleCheck.lagMs}ms`);
+        throw staleCheck;
+      }
+
+      // 3. Process through pipeline (calculate indicators)
+      return from(this.pipeline.process(marketData)).pipe(
+        switchMap((processedData) => {
+          // 4. Save enriched data to IndexedDB
+          return from(this.cacheService.saveMarketData(processedData)).pipe(map(() => count));
+        })
+      );
+    }
+    return throwError(() => new Error('Invalid cache response or empty data'));
   }
 
   private checkForMissingCoins(incomingData: any[], tf: TF) {

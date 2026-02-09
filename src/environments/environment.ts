@@ -1,6 +1,7 @@
 // environment.ts (Разработка)
 const bizzarUrl = 'https://bizzar-kline-data-fetcher.onrender.com';
 const bazzarUrl = 'https://bazzar-kline-data-fetcher.onrender.com';
+
 const coinSifterUrl = 'https://coin-sifter-server.onrender.com';
 //const alertsHubUrl = 'https://alert-hub-server.onrender.com';
 const alertsHubUrl = 'https://alerts-superhub-deno.deno.dev';
@@ -39,4 +40,15 @@ export const environment = {
     D: bazzarUrl,
     '1d': bazzarUrl,
   } as Record<string, string>, // Type casting для удобства в
+  // Ngrok unified data source configuration
+  ngrokBaseUrl: 'https://loyal-yearly-jawfish.ngrok-free.app',
+  ngrokKlineDataUrls: {
+    '1h': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/1h',
+    '4h': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/4h',
+    '8h': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/8h',
+    '12h': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/12h',
+    D: 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D',
+    '1d': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D', // Alias for D
+  },
+  defaultDataSource: 'render' as 'render' | 'ngrok', // Default to Render servers
 };

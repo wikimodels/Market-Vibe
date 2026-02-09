@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { TF } from '../../models/kline.model';
 import { KlineCacheService } from '../../shared/services/cache/kline-cache.service';
@@ -20,6 +21,7 @@ import { CoinsDataService } from '../../shared/services/coin-data.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DataSyncService, StaleDataError } from '../services/data-sync.service';
 import { ConfirmationDialogComponent } from '../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { DataSourceService, DataSource } from '../../shared/services/data-source.service';
 
 interface TfRow {
   label: TF;
@@ -46,7 +48,8 @@ interface TfRow {
     MatChipsModule,
     MatProgressSpinnerModule,
     MatDividerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSlideToggleModule
   ],
   templateUrl: './cache-manager.component.html',
   styleUrls: ['./cache-manager.component.scss'],
@@ -58,12 +61,18 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
   public coinsService = inject(CoinsDataService);
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
+  private dataSourceService = inject(DataSourceService);
 
   public masterCoinCount = 0;
 
   // Global Loading States
   public isUpdatingMaster = false;
   public isCheckingLocal = false;
+  public isSwitchingSource = false;
+
+  // Data Source
+  public currentDataSource: DataSource = 'render';
+  public dataSourceConfig = { render: 'Render Servers', ngrok: 'Ngrok Unified' };
 
   private sub = new Subscription();
 
@@ -83,6 +92,17 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.isUpdatingMaster = true;
     this.cdr.markForCheck(); // Trigger UI
+
+    // Initialize current data source
+    this.currentDataSource = this.dataSourceService.getCurrentSource();
+
+    // Subscribe to source changes
+    this.sub.add(
+      this.dataSourceService.getSource$().subscribe((source) => {
+        this.currentDataSource = source;
+        this.cdr.markForCheck();
+      })
+    );
 
     await this.coinsService.init();
 
@@ -281,6 +301,73 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
       this.notification.error('Failed to delete Coins list');
     } finally {
       this.isDeletingCoins = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Handle data source toggle change
+   */
+  async onSourceToggleChange(event: any) {
+    const newSource: DataSource = event.checked ? 'ngrok' : 'render';
+
+    if (newSource === this.currentDataSource) return;
+
+    const sourceName = this.dataSourceConfig[newSource];
+    const confirmed = await firstValueFrom(
+      this.dialog
+        .open(ConfirmationDialogComponent, {
+          data: {
+            title: `Switch to ${sourceName}?`,
+            message: `This will delete all cached timeframe data from IndexedDB and reload fresh data from ${sourceName}. This action cannot be undone.`,
+            confirmLabel: 'SWITCH SOURCE',
+            isDanger: true,
+          },
+        })
+        .afterClosed()
+    );
+
+    if (!confirmed) {
+      // Revert toggle if user cancels
+      event.source.checked = this.currentDataSource === 'ngrok';
+      return;
+    }
+
+    await this.switchDataSource(newSource);
+  }
+
+  /**
+   * Switch data source and reload all data
+   */
+  private async switchDataSource(newSource: DataSource) {
+    this.isSwitchingSource = true;
+    this.cdr.markForCheck();
+
+    try {
+      // 1. Delete all timeframe data from IndexedDB
+      this.notification.info('Clearing all cached data...');
+      const tfs: TF[] = ['1h', '4h', '8h', '12h', 'D'];
+      await Promise.all(tfs.map((tf) => this.cacheService.deleteMarketData(tf)));
+
+      // 2. Update data source
+      this.dataSourceService.setSource(newSource);
+      this.currentDataSource = newSource;
+
+      // 3. Reset row states
+      this.rows.forEach((row) => {
+        row.localCount = 0;
+        row.serverCount = null;
+        row.status = 'idle';
+        row.lastUpdated = null;
+      });
+
+      this.notification.success(`Switched to ${this.dataSourceConfig[newSource]}!`);
+      await this.refreshLocalStats();
+    } catch (e) {
+      console.error('Failed to switch data source', e);
+      this.notification.error('Failed to switch data source');
+    } finally {
+      this.isSwitchingSource = false;
       this.cdr.markForCheck();
     }
   }

@@ -6,8 +6,8 @@ $neon-color: #E000B0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 36px;
+  width: 46px; // 🚀 ИЗМЕНЕНО: +10% (было 42px)
+  height: 36px; // 🚀 ИЗМЕНЕНО: +10% (было 32px)
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 4px;
   background-color: transparent;
@@ -21,7 +21,7 @@ $neon-color: #E000B0;
 
   // 🚀 ИСПРАВЛЕНО: Стили ТОЛЬКО для MatIcon (шрифтовых)
   ::ng-deep .font-icon {
-    font-size: 1.2rem;
+    font-size: 1.2rem; // 🚀 ИЗМЕНЕНО: +10% (было 1.1)
     width: 1.2rem;
     height: 1.2rem;
     color: rgba(255, 255, 255, 0.7);
@@ -31,8 +31,8 @@ $neon-color: #E000B0;
 
   // Стили для SVG (из)
   ::ng-deep .svg-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px; // 🚀 ИЗМЕНЕНО: +10% (было 20px)
+    height: 22px;
     /* 🚀 ИСПРАВЛЕНО: УБИРАЕМ ОТСТУПЫ */
     /* margin-bottom: 3px; */
     /* margin-right: 3px; */
@@ -56,7 +56,7 @@ $neon-color: #E000B0;
 
     // 🚀 ДОБАВЛЕНО: Эффект Hover для SVG
     ::ng-deep .svg-icon {
-        filter: brightness(2); // ПРИНУДИТЕЛЬНО ДЕЛАЕМ СВЕТЛЕЕ (Подсветка)
+      filter: brightness(2); // ПРИНУДИТЕЛЬНО ДЕЛАЕМ СВЕТЛЕЕ (Подсветка)
     }
   }
 

@@ -11,8 +11,8 @@
 
 /* Контейнер: Черный круг */
 .circle-btn {
-  width: 28px;
-  height: 28px;
+  width: 20px; // 🚀 ИЗМЕНЕНО: Компактный размер (было 28px)
+  height: 20px; // 🚀 ИЗМЕНЕНО: Компактный размер (было 28px)
   background-color: #000000;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -27,8 +27,8 @@
 
 /* Изображение внутри круга */
 .circle-btn img {
-  width: 18px;
-  height: 18px;
+  width: 12px; // 🚀 ИЗМЕНЕНО: Компактный размер (было 18px)
+  height: 12px; // 🚀 ИЗМЕНЕНО: Компактный размер (было 18px)
   object-fit: contain;
 
   /* 🚀 ИЗМЕНЕНО: Ставим 0.7 (было 1), чтобы при наведении был контраст */

@@ -1,91 +1,9 @@
 /* --- ШАПКА --- */
-.coins-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 34px;
-  gap: 16px;
-  padding: 0 16px;
-}
-
-.header-title {
-  flex: 1 1 auto;
-  text-align: center;
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: #fff;
-}
+/* Использует глобальные стили .page-header, .page-title из styles.scss */
 
 /* --- КНОПКИ СПРАВА --- */
 $neon-color: #E000B0;
-
-$neon-color: #E000B0;
-
-.header-actions {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 8px;
-
-  .action-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 58px; // ← Вытянул в длину (было 40px)
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    background-color: transparent;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); // ← Плавная анимация
-    padding: 0;
-
-    mat-icon {
-      font-size: 1.2rem;
-      width: 1.2rem;
-      height: 1.2rem;
-      color: rgba(255, 255, 255, 0.7);
-      line-height: 1.2rem;
-      transition: color 0.25s ease; // ← Плавная смена цвета иконки
-    }
-
-    // Hover
-    &:hover {
-      border-color: rgba(255, 255, 255, 0.6);
-      background-color: rgba(255, 255, 255, 0.08);
-      transform: translateY(-1px); // ← Плавный подъём
-
-      mat-icon {
-        color: #fff;
-      }
-    }
-
-    // Active (клик)
-    &:active {
-      transform: translateY(0) scale(0.96); // ← Плавное нажатие
-      transition: all 0.1s ease; // ← Быстрый отклик при клике
-    }
-
-    // Disabled
-    &:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-
-      &:hover {
-        border-color: rgba(255, 255, 255, 0.3);
-        background-color: transparent;
-        transform: none;
-      }
-    }
-
-    // Focus (для доступности)
-    &:focus-visible {
-      outline: none;
-      border-color: $neon-color;
-      box-shadow: 0 0 8px rgba($neon-color, 0.6);
-    }
-  }
-}
+/* Стили кнопок теперь глобальные или внутри компонентов */
 
 
 /* --- КОНТЕЙНЕР КАПСУЛ --- */
@@ -107,7 +25,7 @@ $neon-color: #E000B0;
   color: rgba(255, 255, 255, 0.5);
 }
 
-.svg-icon{
+.svg-icon {
   width: 24px;
   height: 24px;
   margin-bottom: 3px;

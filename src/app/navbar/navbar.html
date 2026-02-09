@@ -4,39 +4,38 @@
   <!-- <app-line-alert-menu></app-line-alert-menu>
   <app-vwap-alert-menu></app-vwap-alert-menu> -->
   <span class="spacer"></span>
-  <button mat-icon-button aria-label="Coins" routerLink="/coins">
+  <button mat-icon-button aria-label="Coins" routerLink="/coins" matTooltip="Coins Market" matTooltipPosition="above">
     <mat-icon svgIcon="dollar"></mat-icon>
   </button>
-  <button mat-icon-button aria-label="Working Coins" routerLink="/analytics">
+
+  <button mat-icon-button routerLink="/coins-aggregated-analytics" matTooltip="Aggregated Analytics"
+    matTooltipPosition="above">
     <mat-icon svgIcon="analytics"></mat-icon>
   </button>
-  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/coins-aggregated-analytics">
-    <mat-icon svgIcon="hammer-white"></mat-icon>
-  </button>
 
-  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/recent-signals-audit">
+  <button mat-icon-button routerLink="/recent-signals-audit" matTooltip="Signals Audit" matTooltipPosition="above">
     <mat-icon svgIcon="report"></mat-icon>
   </button>
 
-  <button mat-icon-button aria-label="Coins Aggregated Analytics" routerLink="/settings">
+  <button mat-icon-button routerLink="/settings" matTooltip="Settings" matTooltipPosition="above">
     <mat-icon svgIcon="settings"></mat-icon>
   </button>
 
 
-  <button mat-icon-button aria-label="Clear Cache" routerLink="/working-coins">
+  <!-- <button mat-icon-button aria-label="Clear Cache" routerLink="/working-coins">
     <mat-icon svgIcon="delete" (click)="clearIndexDbCache()"></mat-icon>
-  </button>
+  </button> -->
 
   @if (user$ | async; as currentUser) {
   <div class="user-profile">
     <span class="user-name">Hi, {{ currentUser.displayName?.split(' ')?.[0] }}!</span>
     <img [src]="getGravatarUrl(currentUser.email)" alt="Avatar" class="user-avatar">
-    <button mat-icon-button (click)="logout()">
+    <button mat-icon-button (click)="logout()" matTooltip="Logout" matTooltipPosition="above">
       <mat-icon svgIcon="logout"></mat-icon>
     </button>
   </div>
   } @else {
-  <button mat-icon-button (click)="login()">
+  <button mat-icon-button (click)="login()" matTooltip="Login" matTooltipPosition="above">
     <mat-icon svgIcon="login"></mat-icon>
   </button>
   }

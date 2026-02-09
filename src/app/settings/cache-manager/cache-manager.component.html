@@ -7,6 +7,37 @@
       <p>Developer Control Panel</p>
     </div>
 
+    <!-- Data Source Toggle Card -->
+    <mat-card class="source-toggle-card" appearance="outlined">
+      <div class="source-content">
+        <div class="source-icon">
+          <mat-icon>{{ currentDataSource === 'ngrok' ? 'cloud' : 'dns' }}</mat-icon>
+        </div>
+        <div class="source-info">
+          <span class="label">Data Source</span>
+          <div class="value-row">
+            <span class="value">{{ dataSourceConfig[currentDataSource] }}</span>
+          </div>
+          <div class="status-indicator">
+            <span class="dot active"></span>
+            {{ currentDataSource === 'ngrok' ? 'Unified Endpoint' : 'Distributed Servers' }}
+          </div>
+        </div>
+
+        <div class="source-toggle-col">
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Render</span>
+            <mat-slide-toggle color="primary" [checked]="currentDataSource === 'ngrok'"
+              [disabled]="isSwitchingSource || isUpdatingMaster || isCheckingLocal"
+              (change)="onSourceToggleChange($event)">
+            </mat-slide-toggle>
+            <span class="toggle-label">Ngrok</span>
+          </div>
+        </div>
+      </div>
+      <mat-progress-bar *ngIf="isSwitchingSource" mode="indeterminate" class="source-progress"></mat-progress-bar>
+    </mat-card>
+
     <!-- Master List Status -->
     <mat-card class="master-card" appearance="outlined">
       <div class="master-content">

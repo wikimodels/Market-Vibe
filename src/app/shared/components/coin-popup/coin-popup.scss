@@ -1,6 +1,7 @@
 :host {
   display: block;
-  position: fixed; /* Позиционируется директивой */
+  position: fixed;
+  /* Позиционируется директивой */
   z-index: 10000;
   pointer-events: auto;
 }
@@ -56,7 +57,7 @@
 
     &:hover {
       transform: scale(1.2);
-      filter: brightness(1.1);
+      filter: brightness(1.35); // 🚀 ИЗМЕНЕНО: Еще светлее (+5%)
     }
   }
 }

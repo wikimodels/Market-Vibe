@@ -4,11 +4,11 @@
 </div>
 } @else {
 
-<div class="coins-header">
+<div class="page-header">
 
   <app-search-filter (searchChange)="onFilterChange($event)"></app-search-filter>
 
-  <h2 class="header-title">Coins <span class="navbar-color">({{selectionCount() > 0 ? selectionCount():
+  <h2 class="page-title">Coins <span class="navbar-color">({{selectionCount() > 0 ? selectionCount():
       '0'}}/{{coins().length}})</span></h2>
 
   <div class="header-actions">
@@ -30,19 +30,19 @@
       [tooltipText]="'График BTC'">
     </app-panel-button>
 
-    <app-panel-button [iconPath]="'assets/icons/coin-analytics.svg'" (actionClick)="goToCoinAnalytics()"
+    <!-- <app-panel-button [iconPath]="'assets/icons/coin-analytics.svg'" (actionClick)="goToCoinAnalytics()"
       [tooltipText]="'Coin Analytics'">
-    </app-panel-button>
+    </app-panel-button> -->
 
     <app-panel-button [iconPath]="sortIcon()" (actionClick)="sortOut()" [tooltipText]="'Сортировка'">
     </app-panel-button>
 
-    <app-panel-button [iconPath]="'candlestick_chart'" (actionClick)="goToVwapAlertCharts()"
+    <!-- <app-panel-button [iconPath]="'candlestick_chart'" (actionClick)="goToVwapAlertCharts()"
       [tooltipText]="'VWAP Alerts'">
     </app-panel-button>
 
     <app-panel-button [iconPath]="'show_chart'" (actionClick)="goToLineAlertCharts()" [tooltipText]="'Line Alerts'">
-    </app-panel-button>
+    </app-panel-button> -->
 
     <app-panel-button [iconPath]="'close'" (actionClick)="closeWindows()" [tooltipText]="'Закрыть все'">
     </app-panel-button>

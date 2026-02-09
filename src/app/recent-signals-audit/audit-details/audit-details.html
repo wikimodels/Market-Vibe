@@ -1,10 +1,8 @@
 <div class="analytics-container">
 
-  <h2 class="chart-header">
-    <div class="title-group">
-      <span>{{ activeConfig().title }}</span>
-    </div>
-  </h2>
+  <header class="page-header">
+    <h1 class="page-title">{{ activeConfig().title }}</h1>
+  </header>
 
   <mat-tab-group mat-stretch-tabs="true" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
 

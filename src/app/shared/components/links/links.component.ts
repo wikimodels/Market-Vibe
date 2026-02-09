@@ -9,10 +9,12 @@ import { CoinLinksService } from '../../services/coin-links.service';
 // 🚀 ИЗМЕНЕНИЕ №2: Универсальный тип, который может быть любым из трех
 type LinkableObject = WorkingCoin | LineAlert | VwapAlert;
 
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @Component({
   selector: 'app-links', // <app-links>
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   templateUrl: './links.component.html',
   styleUrls: ['./links.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
