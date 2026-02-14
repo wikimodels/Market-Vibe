@@ -1,5 +1,8 @@
 /* --- ШАПКА --- */
 /* Использует глобальные стили .page-header, .page-title из styles.scss */
+.page-header {
+  margin-top: 45px;
+}
 
 /* --- КНОПКИ СПРАВА --- */
 $neon-color: #E000B0;

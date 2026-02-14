@@ -25,7 +25,7 @@ export class CoinWindowService {
 
     const urls = coins
       .map((coin) => this.linksService.tradingViewLink(coin.symbol, coin.exchanges))
-      .filter((url): url is string => url !== null);
+      .filter((url): url is string => !!url);
 
     await this.windowManager.openMultiple(urls);
   }
@@ -38,7 +38,7 @@ export class CoinWindowService {
 
     const urls = coins
       .map((coin) => this.linksService.coinglassLink(coin.symbol, coin.exchanges))
-      .filter((url): url is string => url !== null);
+      .filter((url): url is string => !!url);
 
     await this.windowManager.openMultiple(urls);
   }

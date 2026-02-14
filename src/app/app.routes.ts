@@ -84,18 +84,8 @@ export const routes: Routes = [
       // Дефолтный редирект (внутри privateGuard)
       {
         path: '',
+        redirectTo: 'coins',
         pathMatch: 'full',
-        canActivate: [() => {
-          const mobile = inject(MobileDetectionService);
-          const router = inject(Router);
-
-          if (mobile.isMobile()) {
-            console.log('🔀 Redirecting to Mobile Heatmap');
-            return router.createUrlTree(['/mobile-heatmap']);
-          }
-          return router.createUrlTree(['/coins']);
-        }],
-        children: [] // Satisfy Angular validation
       },
     ],
   },
