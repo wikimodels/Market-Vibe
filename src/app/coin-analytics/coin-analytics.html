@@ -2,12 +2,12 @@
 
   @if (!notFound()) {
   <header class="header-section">
-    @if (coin(); as c) {
     <img [src]="'assets/logo/' + symbol().toLowerCase() + '.svg'" (error)="img.src='assets/logo/no-name.svg'" #img
       class="coin-logo" alt="logo">
 
     <h1>{{ symbol() }}</h1>
 
+    @if (coin(); as c) {
     <div class="external-links">
 
       @if (tvLink) {

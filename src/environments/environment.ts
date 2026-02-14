@@ -1,5 +1,5 @@
 // environment.ts (Разработка)
-const bizzarUrl = 'https://bizzar-kline-data-fetcher.onrender.com';
+const bizzarUrl = 'https://bizzar-kline-data-fetcher.deno.dev';
 const bazzarUrl = 'https://bazzar-kline-data-fetcher.onrender.com';
 
 const coinSifterUrl = 'https://coin-sifter-server.onrender.com';

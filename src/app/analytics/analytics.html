@@ -3,11 +3,6 @@
   <header class="analytics-header">
     <div class="title-row">
       <h1>Analytics</h1>
-      @if (isLoading$ | async) {
-      <div class="loading-indicator">
-        <app-loading-spinner></app-loading-spinner>
-      </div>
-      }
     </div>
 
     <nav class="metrics-nav">
@@ -20,6 +15,12 @@
   </header>
 
   <main class="analytics-content">
+    @if (isLoading$ | async) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    }
+
     <mat-tab-group animationDuration="0ms" class="analytics-tabs">
 
       <mat-tab label="Scanner Matrix">
