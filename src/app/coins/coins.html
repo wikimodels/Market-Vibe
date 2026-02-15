@@ -31,6 +31,9 @@
     <app-panel-button [iconPath]="sortIcon()" (actionClick)="sortOut()" [tooltipText]="'Сортировка'">
     </app-panel-button>
 
+    <app-panel-button [iconPath]="'download'" (actionClick)="downloadList()" [tooltipText]="'Скачать список'">
+    </app-panel-button>
+
     <!-- <app-panel-button [iconPath]="'candlestick_chart'" (actionClick)="goToVwapAlertCharts()"
       [tooltipText]="'VWAP Alerts'">
     </app-panel-button>

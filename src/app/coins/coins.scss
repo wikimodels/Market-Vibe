@@ -1,7 +1,55 @@
+/* --- HOST (Layout Fixes) --- */
+:host {
+  display: block;
+  /* Instead of margin-top on the sticky element, we use padding on the host */
+  padding-top: 24px;
+}
+
+/* --- ШАПКА --- */
+/* Использует глобальные стили .page-header, .page-title из styles.scss */
 /* --- ШАПКА --- */
 /* Использует глобальные стили .page-header, .page-title из styles.scss */
 .page-header {
-  margin-top: 45px;
+  /* Reset margins causing jumpiness */
+  margin-top: 0;
+  margin-bottom: 24px;
+
+  /* Sticky Header Implementation */
+  position: sticky;
+  top: 60px;
+  /* 48px navbar + 12px gap */
+  z-index: 999;
+  overflow: visible;
+  /* Allow "curtain" to extend outside */
+
+  /* Visual Excellence */
+  /* Force SOLID background to prevent transparency issues */
+  background: #121212 !important;
+
+  /* Border/Shadow */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+  /* Layout */
+  padding: 12px 20px;
+  will-change: transform;
+  /* Hint for smoother scrolling */
+
+  /* "Curtain" to hide content scrolling in the gap above */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    /* Matches the gap size + slight overlap */
+    left: 0;
+    width: 100%;
+    height: 14px;
+    background: #121212;
+    /* Match page background exactly */
+    z-index: -1;
+    /* Behind the header visual, covering scroll content */
+  }
 }
 
 /* --- КНОПКИ СПРАВА --- */

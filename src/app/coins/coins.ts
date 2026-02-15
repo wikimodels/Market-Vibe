@@ -199,4 +199,31 @@ export class Coins {
     this.workingCoinsService.addCoinsBatchAsync(this.selectionSignal());
     this.selectionService.clear();
   }
+
+  public downloadList(): void {
+    const coins = this.filteredCoins();
+    const specificTickers = coins
+      .map((c) => {
+        const hasBybit = c.exchanges.some((ex) => ex.toLowerCase().includes('bybit'));
+        const hasBinance = c.exchanges.some((ex) => ex.toLowerCase().includes('binance'));
+
+        if (hasBybit) {
+          return `BYBIT:${c.symbol}USDT.P`;
+        }
+        if (hasBinance) {
+          return `BINANCE:${c.symbol}USDT.P`;
+        }
+        return null;
+      })
+      .filter((t): t is string => !!t);
+
+    const text = specificTickers.join(', ');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'coins_list.txt';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
