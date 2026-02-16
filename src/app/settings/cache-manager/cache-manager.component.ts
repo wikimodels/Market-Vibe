@@ -109,7 +109,8 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.coinsService.coins$.subscribe((coins) => {
         if (coins.length > 0) {
-          this.refreshLocalStats();
+          // this.refreshLocalStats(); // Disable automatic check
+          this.masterCoinCount = coins.length;
           this.isUpdatingMaster = false;
           this.cdr.markForCheck();
         }
@@ -117,7 +118,7 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
     );
 
     // Initial check
-    await this.refreshLocalStats();
+    // await this.refreshLocalStats();
 
     // Safety timeout
     setTimeout(() => {
@@ -157,8 +158,9 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
 
       this.rows = [...this.rows]; // Array reset
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking local DB', error);
+      this.notification.error(`Error checking local database: ${error?.message || JSON.stringify(error)}`);
     } finally {
       this.isCheckingLocal = false;
       this.cdr.markForCheck(); // Release UI
@@ -197,7 +199,7 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
           console.error(err);
           row.status = 'error';
           row.errorMessage = 'Failed';
-          this.notification.error(`Sync failed for ${row.label}`);
+          this.notification.error(`Sync failed for ${row.label}: ${err?.message || JSON.stringify(err)}`);
         }
         this.cdr.markForCheck();
       },
@@ -235,8 +237,8 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
       await this.cacheService.deleteMarketData(tf);
       this.notification.success(`Deleted ${tf} Kline Data from IndexedDB`);
       await this.refreshLocalStats();
-    } catch (e) {
-      this.notification.error(`Failed to delete ${tf} data`);
+    } catch (e: any) {
+      this.notification.error(`Failed to delete ${tf} data: ${e?.message || JSON.stringify(e)}`);
       console.error(e);
     } finally {
       this.isDeletingMap[tf] = false;
@@ -267,8 +269,8 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
 
       this.notification.success('All Kline cache deleted!');
       await this.refreshLocalStats();
-    } catch (e) {
-      this.notification.error('Failed to clear Kline database');
+    } catch (e: any) {
+      this.notification.error(`Failed to clear Kline database: ${e?.message || JSON.stringify(e)}`);
     } finally {
       this.isDeletingAllKlines = false;
       this.cdr.markForCheck();
@@ -297,8 +299,8 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
       this.masterCoinCount = 0;
       this.notification.success('Master Coin List deleted.');
       await this.refreshLocalStats();
-    } catch (e) {
-      this.notification.error('Failed to delete Coins list');
+    } catch (e: any) {
+      this.notification.error(`Failed to delete Coins list: ${e?.message || JSON.stringify(e)}`);
     } finally {
       this.isDeletingCoins = false;
       this.cdr.markForCheck();
@@ -363,9 +365,9 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
 
       this.notification.success(`Switched to ${this.dataSourceConfig[newSource]}!`);
       await this.refreshLocalStats();
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to switch data source', e);
-      this.notification.error('Failed to switch data source');
+      this.notification.error(`Failed to switch data source: ${e?.message || JSON.stringify(e)}`);
     } finally {
       this.isSwitchingSource = false;
       this.cdr.markForCheck();

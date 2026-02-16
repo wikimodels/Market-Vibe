@@ -4,6 +4,7 @@ import { tap, catchError, finalize } from 'rxjs/operators';
 import { CoinData } from '../../models/coin-data.model';
 import { CoinsApiService } from './api/coins-api.service';
 import { KlineCacheService } from './cache/kline-cache.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,11 @@ export class CoinsDataService {
 
   private isInitialized = false;
 
-  constructor(private apiService: CoinsApiService, private cacheService: KlineCacheService) {}
+  constructor(
+    private apiService: CoinsApiService,
+    private cacheService: KlineCacheService,
+    private notification: NotificationService
+  ) { }
 
   /**
    * Логика: Кеш -> Если пусто, то Сервер.
@@ -71,8 +76,9 @@ export class CoinsDataService {
             await this.cacheService.saveCoinsData(freshCoins);
           }
         }),
-        catchError((err) => {
+        catchError((err: any) => {
           console.error('❌ CoinsDataService: Ошибка сети', err);
+          this.notification.error(`Failed to load coins list from server: ${err?.message || JSON.stringify(err)}`);
           return [];
         }),
         finalize(() => {

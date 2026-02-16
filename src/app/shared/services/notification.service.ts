@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 /**
  * Типы уведомлений для NotificationService
@@ -24,7 +25,7 @@ export class NotificationService {
     [NotificationType.Info]: 3000,
   };
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) { }
 
   /**
    * Показывает кастомизированный SnackBar
