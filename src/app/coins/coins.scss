@@ -82,3 +82,15 @@ $neon-color: #E000B0;
   margin-bottom: 3px;
   margin-right: 3px;
 }
+
+/* --- LOADING SPINNER --- */
+.loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  /* Below header (999), above background */
+  pointer-events: none;
+  /* Let clicks pass through if needed */
+}

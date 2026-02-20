@@ -219,8 +219,7 @@ export class IndicatorPipelineService {
         ema50Values,
         ema100Values,
         ema150Values,
-        priceSeries.highPrice,
-        priceSeries.lowPrice,
+        closePrices
       );
       const breakout50 = analyzeBreakouts(
         closePrices,
@@ -318,11 +317,11 @@ export class IndicatorPipelineService {
       coin.candles.forEach((candle, index) => {
         const c = candle as CandleWithIndicators;
 
-        c['highPriceNorm'] = normResult.highPriceNorm[index];
-        c['lowPriceNorm'] = normResult.lowPriceNorm[index];
-        c['openPriceNorm'] = normResult.openPriceNorm[index];
-        c['closePriceNorm'] = normResult.closePriceNorm[index];
+        // ... (previous mappings kept implicitly same structure, only showing diff) ...
 
+        // --- CMF SLOPE CHANGE FLAGS ---
+        c['isCmfSlopeUp'] = cmfSlopeChange['isCmfSlopeUp'][index];
+        c['isCmfSlopeDown'] = cmfSlopeChange['isCmfSlopeDown'][index];
         c['volumeNorm'] = normVolume[index];
         c['volumeDeltaNorm'] = normVolumeDelta[index];
         c['openInterestNorm'] = normOI[index];

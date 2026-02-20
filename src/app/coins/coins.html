@@ -52,10 +52,8 @@
 <div class="loading-spinner">
   <app-loading-spinner></app-loading-spinner>
 </div>
-}
-
+} @else {
 <div class="coin-pills-container">
-  @if (!isLoading()) {
   @for (coin of filteredCoins(); track coin.symbol) {
   <app-coin-item [coin]="coin" />
   } @empty {
@@ -69,5 +67,5 @@
     </span>
   </div>
   }
-  }
 </div>
+}

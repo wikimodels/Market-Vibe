@@ -122,7 +122,7 @@ export class CmfCrossesService {
         },
       },
       legend: {
-        data: ['CMF Slope Up (Strengthening Inflow)', 'CMF Slope Down (Strengthening Outflow)'],
+        data: ['Slope Turn Up (Strengthening)', 'Slope Turn Down (Weakening)'],
         top: 0,
         left: 'center',
         textStyle: { color: '#ccc', fontSize: 11 },
@@ -145,7 +145,7 @@ export class CmfCrossesService {
       },
       series: [
         {
-          name: 'CMF Slope Up (Strengthening Inflow)',
+          name: 'Slope Turn Up (Strengthening)',
           type: 'bar',
           stack: 'total',
           data: data.up,
@@ -153,7 +153,7 @@ export class CmfCrossesService {
           emphasis: { focus: 'series' },
         },
         {
-          name: 'CMF Slope Down (Strengthening Outflow)',
+          name: 'Slope Turn Down (Weakening)',
           type: 'bar',
           stack: 'total',
           data: data.down,

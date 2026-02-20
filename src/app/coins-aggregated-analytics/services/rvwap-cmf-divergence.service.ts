@@ -6,8 +6,6 @@ import { MarketData } from '../../models/kline.model';
     providedIn: 'root',
 })
 export class RvwapCmfDivergenceService {
-    // Lookback = 5 свечей для расчета наклона линии
-    private readonly LOOKBACK = 5;
 
     public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
         const charts: Record<string, EChartsOption> = {};
@@ -21,6 +19,7 @@ export class RvwapCmfDivergenceService {
     }
 
     private calculateStats(data: MarketData) {
+        // Map: openTime -> { bearDiv, bullDiv, totalScanned }
         const timeMap = new Map<number, { bearDiv: number; bullDiv: number; totalScanned: number }>();
 
         if (!data.data || data.data.length === 0) {
@@ -28,88 +27,34 @@ export class RvwapCmfDivergenceService {
         }
 
         for (const coin of data.data) {
-            // Нужен запас истории
-            if (!coin.candles || coin.candles.length < this.LOOKBACK + 1) continue;
+            if (!coin.candles) continue;
 
-            // Бежим по истории
-            for (let i = this.LOOKBACK; i < coin.candles.length; i++) {
-                const c = coin.candles[i];
+            for (const c of coin.candles) {
                 const time = c.openTime;
 
                 if (!timeMap.has(time)) {
                     timeMap.set(time, { bearDiv: 0, bullDiv: 0, totalScanned: 0 });
                 }
+
                 const counts = timeMap.get(time)!;
+                const candle = c as any;
 
-                // 1. Считаем монету
-                counts.totalScanned++;
-
-                // Кастим к any, так как cmf может не быть в базовом интерфейсе Candle
-                const ca = c as any;
-
-                // Проверка данных
-                if (c.rvwapUpperBand1 == null || c.rvwapLowerBand1 == null || ca.cmf == null) {
+                // Проверяем наличие флагов из пайплайна
+                if (
+                    candle.isBullishRvwapCmfDivergence === undefined &&
+                    candle.isBearishRvwapCmfDivergence === undefined
+                ) {
                     continue;
                 }
 
-                // Собираем массивы за последние 5 свечей для регрессии
-                const prices: number[] = [];
-                const cmfs: number[] = [];
-                let hasNulls = false;
+                counts.totalScanned++;
 
-                for (let k = 0; k < this.LOOKBACK; k++) {
-                    const candle = coin.candles[i - k]; // i, i-1, i-2...
-                    const candleAny = candle as any;
-
-                    if (candleAny.cmf == null) {
-                        hasNulls = true;
-                        break;
-                    }
-                    prices.push(Number(candle.closePrice));
-                    cmfs.push(Number(candleAny.cmf));
-                }
-
-                if (hasNulls) continue;
-
-                // Массивы сейчас [t, t-1, t-2...]. Для регрессии нужно [t-4, t-3... t]
-                prices.reverse();
-                cmfs.reverse();
-
-                // 2. СЧИТАЕМ LINREG SLOPE
-                const priceSlope = this.linearRegressionSlope(prices);
-                const cmfSlope = this.linearRegressionSlope(cmfs);
-
-                const upper1 = Number(c.rvwapUpperBand1);
-                const lower1 = Number(c.rvwapLowerBand1);
-                const high = Number(c.highPrice);
-                const low = Number(c.lowPrice);
-                const cmf = Number(ca.cmf);
-
-                // --- ЛОГИКА CMF SLOPE DIVERGENCE ---
-
-                // BEARISH: На хаях (Band 1), Цена смотрит вверх, CMF смотрит вниз
-                const isHigh = high >= upper1;
-                const divBear = priceSlope > 0 && cmfSlope < 0;
-                // Фильтр: CMF все еще положителен, но падает
-                const cmfContext = cmf > 0;
-
-                if (isHigh && divBear && cmfContext) {
-                    counts.bearDiv++;
-                }
-
-                // BULLISH: На дне (Band 1), Цена смотрит вниз, CMF смотрит вверх
-                const isLow = low <= lower1;
-                const divBull = priceSlope < 0 && cmfSlope > 0;
-                // Фильтр: CMF все еще отрицателен, но растет
-                const cmfContextLow = cmf < 0;
-
-                if (isLow && divBull && cmfContextLow) {
-                    counts.bullDiv++;
-                }
+                // Читаем готовые флаги из пайплайна (calculations/rvwap-cmf-divergence.ts)
+                if (candle.isBearishRvwapCmfDivergence === true) counts.bearDiv++;
+                if (candle.isBullishRvwapCmfDivergence === true) counts.bullDiv++;
             }
         }
 
-        // Упаковка данных для графика (стандартная)
         const sortedTimes = Array.from(timeMap.keys()).sort((a, b) => a - b);
         const result = {
             dates: [] as string[],
@@ -129,34 +74,11 @@ export class RvwapCmfDivergenceService {
             if (c.totalScanned > 0) {
                 result.dates.push(fmt.format(new Date(t)));
                 result.bearDiv.push(c.bearDiv);
-                result.bullDiv.push(-c.bullDiv);
+                result.bullDiv.push(-c.bullDiv); // Отрицательные — вниз на графике
                 result.totalScanned.push(c.totalScanned);
             }
         }
         return result;
-    }
-
-    // --- МАТЕМАТИКА ЛИНЕЙНОЙ РЕГРЕССИИ ---
-    private linearRegressionSlope(y: number[]): number {
-        const n = y.length;
-        let sumX = 0;
-        let sumY = 0;
-        let sumXY = 0;
-        let sumXX = 0;
-
-        for (let x = 0; x < n; x++) {
-            const val = y[x];
-            sumX += x;
-            sumY += val;
-            sumXY += x * val;
-            sumXX += x * x;
-        }
-
-        const numerator = n * sumXY - sumX * sumY;
-        const denominator = n * sumXX - sumX * sumX;
-
-        if (denominator === 0) return 0;
-        return numerator / denominator;
     }
 
     private buildChart(data: any, tf: string): EChartsOption {
@@ -218,7 +140,6 @@ export class RvwapCmfDivergenceService {
                     type: 'bar',
                     stack: 'total',
                     data: data.bearDiv,
-                    // Темно-красный/Бордовый для Оттока денег
                     itemStyle: { color: '#b71c1c' },
                 },
                 {
@@ -226,7 +147,6 @@ export class RvwapCmfDivergenceService {
                     type: 'bar',
                     stack: 'total',
                     data: data.bullDiv,
-                    // Лайм/Зеленый для Притока
                     itemStyle: { color: '#64dd17' },
                 },
             ],

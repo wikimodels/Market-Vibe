@@ -6,8 +6,6 @@ import { MarketData } from '../../models/kline.model';
   providedIn: 'root',
 })
 export class RvwapVzoDivergenceService {
-  // Lookback = 5 свечей (анализируем микро-тренд)
-  private readonly LOOKBACK = 5;
 
   public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
     const charts: Record<string, EChartsOption> = {};
@@ -21,6 +19,7 @@ export class RvwapVzoDivergenceService {
   }
 
   private calculateStats(data: MarketData) {
+    // Map: openTime -> { bearDiv, bullDiv, totalScanned }
     const timeMap = new Map<number, { bearDiv: number; bullDiv: number; totalScanned: number }>();
 
     if (!data.data || data.data.length === 0) {
@@ -28,86 +27,31 @@ export class RvwapVzoDivergenceService {
     }
 
     for (const coin of data.data) {
-      if (!coin.candles || coin.candles.length < this.LOOKBACK + 1) continue;
+      if (!coin.candles) continue;
 
-      for (let i = this.LOOKBACK; i < coin.candles.length; i++) {
-        const c = coin.candles[i];
+      for (const c of coin.candles) {
         const time = c.openTime;
 
         if (!timeMap.has(time)) {
           timeMap.set(time, { bearDiv: 0, bullDiv: 0, totalScanned: 0 });
         }
+
         const counts = timeMap.get(time)!;
+        const candle = c as any;
 
-        counts.totalScanned++;
-
-        // Проверка данных: VZO, RVWAP Band 1
+        // Проверяем наличие флагов из пайплайна
         if (
-          c.rvwapUpperBand1 == null ||
-          c.rvwapLowerBand1 == null ||
-          c.vzo == null // <-- Используем VZO
+          candle.isBullishRvwapVzoDivergence === undefined &&
+          candle.isBearishRvwapVzoDivergence === undefined
         ) {
           continue;
         }
 
-        // Собираем массивы для регрессии
-        const prices: number[] = [];
-        const vzos: number[] = [];
-        let hasNulls = false;
+        counts.totalScanned++;
 
-        for (let k = 0; k < this.LOOKBACK; k++) {
-          const candle = coin.candles[i - k];
-          if (candle.vzo == null) {
-            hasNulls = true;
-            break;
-          }
-          prices.push(Number(candle.closePrice));
-          vzos.push(Number(candle.vzo));
-        }
-
-        if (hasNulls) continue;
-
-        // Разворачиваем для хронологии [t-4 ... t]
-        prices.reverse();
-        vzos.reverse();
-
-        // СЧИТАЕМ LINREG SLOPE
-        const priceSlope = this.linearRegressionSlope(prices);
-        const vzoSlope = this.linearRegressionSlope(vzos);
-
-        const upper1 = Number(c.rvwapUpperBand1);
-        const lower1 = Number(c.rvwapLowerBand1);
-        const high = Number(c.highPrice);
-        const low = Number(c.lowPrice);
-        const vzo = Number(c.vzo);
-
-        // --- ЛОГИКА VZO SLOPE DIVERGENCE ---
-
-        // 1. BEARISH DIV (На хаях)
-        // Цена выше RVWAP Band 1
-        // Цена растет (Slope > 0)
-        // VZO падает (Slope < 0) — "Объем уходит"
-        const isHigh = high >= upper1;
-        const divBear = priceSlope > 0 && vzoSlope < 0;
-        // Фильтр: VZO > 0 (мы все еще в позитивной зоне, но теряем силу)
-        const vzoContext = vzo > 0;
-
-        if (isHigh && divBear && vzoContext) {
-          counts.bearDiv++;
-        }
-
-        // 2. BULLISH DIV (На дне)
-        // Цена ниже RVWAP Band 1
-        // Цена падает (Slope < 0)
-        // VZO растет (Slope > 0) — "Объем заходит"
-        const isLow = low <= lower1;
-        const divBull = priceSlope < 0 && vzoSlope > 0;
-        // Фильтр: VZO < 0
-        const vzoContextLow = vzo < 0;
-
-        if (isLow && divBull && vzoContextLow) {
-          counts.bullDiv++;
-        }
+        // Читаем готовые флаги из пайплайна (calculations/rvwap-vzo-divergence.ts)
+        if (candle.isBearishRvwapVzoDivergence === true) counts.bearDiv++;
+        if (candle.isBullishRvwapVzoDivergence === true) counts.bullDiv++;
       }
     }
 
@@ -130,29 +74,11 @@ export class RvwapVzoDivergenceService {
       if (c.totalScanned > 0) {
         result.dates.push(fmt.format(new Date(t)));
         result.bearDiv.push(c.bearDiv);
-        result.bullDiv.push(-c.bullDiv);
+        result.bullDiv.push(-c.bullDiv); // Отрицательные — вниз на графике
         result.totalScanned.push(c.totalScanned);
       }
     }
     return result;
-  }
-
-  private linearRegressionSlope(y: number[]): number {
-    const n = y.length;
-    let sumX = 0,
-      sumY = 0,
-      sumXY = 0,
-      sumXX = 0;
-    for (let x = 0; x < n; x++) {
-      const val = y[x];
-      sumX += x;
-      sumY += val;
-      sumXY += x * val;
-      sumXX += x * x;
-    }
-    const numerator = n * sumXY - sumX * sumY;
-    const denominator = n * sumXX - sumX * sumX;
-    return denominator === 0 ? 0 : numerator / denominator;
   }
 
   private buildChart(data: any, tf: string): EChartsOption {
@@ -214,14 +140,14 @@ export class RvwapVzoDivergenceService {
           type: 'bar',
           stack: 'total',
           data: data.bearDiv,
-          itemStyle: { color: '#ff3d00' }, // Глубокий оранжевый/красный
+          itemStyle: { color: '#ff3d00' },
         },
         {
           name: 'Bullish VZO Div (Price↘ VZO↗)',
           type: 'bar',
           stack: 'total',
           data: data.bullDiv,
-          itemStyle: { color: '#00bcd4' }, // Циан/Бирюзовый
+          itemStyle: { color: '#00bcd4' },
         },
       ],
     };

@@ -6,8 +6,6 @@ import { MarketData } from '../../models/kline.model';
     providedIn: 'root',
 })
 export class RvwapRsiDivergenceService {
-    // Lookback = 5 свечей для расчета наклона линии
-    private readonly LOOKBACK = 5;
 
     public getWidgetData(allMarketData: Map<string, MarketData>): Record<string, EChartsOption> {
         const charts: Record<string, EChartsOption> = {};
@@ -21,6 +19,7 @@ export class RvwapRsiDivergenceService {
     }
 
     private calculateStats(data: MarketData) {
+        // Map: openTime -> { bearDiv, bullDiv, totalScanned }
         const timeMap = new Map<number, { bearDiv: number; bullDiv: number; totalScanned: number }>();
 
         if (!data.data || data.data.length === 0) {
@@ -28,83 +27,34 @@ export class RvwapRsiDivergenceService {
         }
 
         for (const coin of data.data) {
-            // Нужен запас истории
-            if (!coin.candles || coin.candles.length < this.LOOKBACK + 1) continue;
+            if (!coin.candles) continue;
 
-            // Бежим по истории
-            for (let i = this.LOOKBACK; i < coin.candles.length; i++) {
-                const c = coin.candles[i];
+            for (const c of coin.candles) {
                 const time = c.openTime;
 
                 if (!timeMap.has(time)) {
                     timeMap.set(time, { bearDiv: 0, bullDiv: 0, totalScanned: 0 });
                 }
+
                 const counts = timeMap.get(time)!;
+                const candle = c as any;
 
-                // 1. Считаем монету (n=131)
-                counts.totalScanned++;
-
-                // Проверка данных
-                if (c.rvwapUpperBand1 == null || c.rvwapLowerBand1 == null || c.rsi == null) {
+                // Проверяем наличие флагов из пайплайна
+                if (
+                    candle.isBullishRvwapRsiDivergence === undefined &&
+                    candle.isBearishRvwapRsiDivergence === undefined
+                ) {
                     continue;
                 }
 
-                // Собираем массивы за последние 5 свечей для регрессии
-                const prices: number[] = [];
-                const rsis: number[] = [];
-                let hasNulls = false;
+                counts.totalScanned++;
 
-                for (let k = 0; k < this.LOOKBACK; k++) {
-                    const candle = coin.candles[i - k]; // i, i-1, i-2...
-                    if (candle.rsi == null) {
-                        hasNulls = true;
-                        break;
-                    }
-                    prices.push(Number(candle.closePrice));
-                    rsis.push(Number(candle.rsi));
-                }
-
-                if (hasNulls) continue;
-
-                // Массивы сейчас [t, t-1, t-2...]. Для регрессии нужно [t-4, t-3... t]
-                prices.reverse();
-                rsis.reverse();
-
-                // 2. СЧИТАЕМ LINREG SLOPE
-                const priceSlope = this.linearRegressionSlope(prices);
-                const rsiSlope = this.linearRegressionSlope(rsis);
-
-                const upper1 = Number(c.rvwapUpperBand1);
-                const lower1 = Number(c.rvwapLowerBand1);
-                const high = Number(c.highPrice);
-                const low = Number(c.lowPrice);
-                const rsi = Number(c.rsi);
-
-                // --- ЛОГИКА SLOPE DIVERGENCE ---
-
-                // BEARISH: На хаях (Band 1), Цена смотрит вверх, RSI смотрит вниз
-                const isHigh = high >= upper1;
-                const divBear = priceSlope > 0 && rsiSlope < 0;
-                // Фильтр: RSI все еще "горячий" (> 50), чтобы не ловить шум на дне
-                const rsiHot = rsi > 50;
-
-                if (isHigh && divBear && rsiHot) {
-                    counts.bearDiv++;
-                }
-
-                // BULLISH: На дне (Band 1), Цена смотрит вниз, RSI смотрит вверх
-                const isLow = low <= lower1;
-                const divBull = priceSlope < 0 && rsiSlope > 0;
-                // Фильтр: RSI "холодный" (< 50)
-                const rsiCold = rsi < 50;
-
-                if (isLow && divBull && rsiCold) {
-                    counts.bullDiv++;
-                }
+                // Читаем готовые флаги из пайплайна (calculations/rvwap-rsi-divergence.ts)
+                if (candle.isBearishRvwapRsiDivergence === true) counts.bearDiv++;
+                if (candle.isBullishRvwapRsiDivergence === true) counts.bullDiv++;
             }
         }
 
-        // Упаковка данных для графика (стандартная)
         const sortedTimes = Array.from(timeMap.keys()).sort((a, b) => a - b);
         const result = {
             dates: [] as string[],
@@ -124,35 +74,11 @@ export class RvwapRsiDivergenceService {
             if (c.totalScanned > 0) {
                 result.dates.push(fmt.format(new Date(t)));
                 result.bearDiv.push(c.bearDiv);
-                result.bullDiv.push(-c.bullDiv);
+                result.bullDiv.push(-c.bullDiv); // Отрицательные — вниз на графике
                 result.totalScanned.push(c.totalScanned);
             }
         }
         return result;
-    }
-
-    // --- МАТЕМАТИКА ЛИНЕЙНОЙ РЕГРЕССИИ ---
-    // Считает "m" в уравнении y = mx + c
-    private linearRegressionSlope(y: number[]): number {
-        const n = y.length;
-        let sumX = 0;
-        let sumY = 0;
-        let sumXY = 0;
-        let sumXX = 0;
-
-        for (let x = 0; x < n; x++) {
-            const val = y[x];
-            sumX += x;
-            sumY += val;
-            sumXY += x * val;
-            sumXX += x * x;
-        }
-
-        const numerator = n * sumXY - sumX * sumY;
-        const denominator = n * sumXX - sumX * sumX;
-
-        if (denominator === 0) return 0;
-        return numerator / denominator;
     }
 
     private buildChart(data: any, tf: string): EChartsOption {
@@ -214,14 +140,14 @@ export class RvwapRsiDivergenceService {
                     type: 'bar',
                     stack: 'total',
                     data: data.bearDiv,
-                    itemStyle: { color: '#ff1744' }, // Ярко-красный
+                    itemStyle: { color: '#ff1744' },
                 },
                 {
                     name: 'Bullish Slope Div (Price↘ RSI↗)',
                     type: 'bar',
                     stack: 'total',
                     data: data.bullDiv,
-                    itemStyle: { color: '#00e676' }, // Ярко-зеленый
+                    itemStyle: { color: '#00e676' },
                 },
             ],
         };

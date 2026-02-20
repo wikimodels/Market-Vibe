@@ -153,8 +153,8 @@ export class SignalDataService {
                     const workingCoin = this.coinDataToWorkingCoin(coinData);
                     signalMap.get(openTime)!.push(workingCoin);
 
-                    // Break after finding first signal for this coin
-                    // (we only want to count each coin once per time)
+                    // Intentionally NO break: a coin can appear in multiple rows
+                    // if it triggered the signal on multiple candles (full signal history)
                 }
             }
         }

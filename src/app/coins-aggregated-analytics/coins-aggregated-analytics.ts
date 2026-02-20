@@ -153,7 +153,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
     { id: 'adx_median', label: 'ADX Trend Power', hasChart: true },
     { id: 'breaking_ice', label: 'Breaking Ice (Deep Value)', hasChart: true },
     { id: 'btc_impulse', label: 'BTC Impulse Reaction', hasChart: true },
-    { id: 'cmf_crosses', label: 'CMF Crosses', hasChart: true },
+    { id: 'cmf_crosses', label: 'CMF Slope Reversals', hasChart: true },
     { id: 'cmf_regime', label: 'CMF Flow', hasChart: true },
     { id: 'rvwap_cmf_div', label: 'CMF & RVWAP Divergence', hasChart: true },
     { id: 'ema_crosses', label: 'EMA Crosses', hasChart: true },
@@ -358,7 +358,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
         };
         this.widgetCache['cmf_crosses'] = {
           charts: this.cmfCrossesService.getWidgetData(this.allMarketData),
-          title: 'CMF Zero Crosses (New Inflow vs New Outflow)',
+          title: 'CMF Slope Reversals (Momentum Turns)',
         };
         this.widgetCache['rvwap_cmf_div'] = {
           charts: this.cmfRvwapService.getWidgetData(this.allMarketData),
