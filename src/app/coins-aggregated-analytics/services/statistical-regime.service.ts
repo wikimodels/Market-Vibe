@@ -32,27 +32,6 @@ export class StatisticalRegimeService {
             return points;
         }
 
-        console.log(`🔍 [Statistical Regime] Processing ${data.data.length} coins for ${data.timeframe}`);
-
-        // 🔍 DEBUG: Проверяем первую монету
-        if (data.data.length > 0 && data.data[0].candles && data.data[0].candles.length > 0) {
-            const firstCoin = data.data[0];
-            const lastCandle = firstCoin.candles[firstCoin.candles.length - 1] as any;
-            console.log('🔍 [Statistical Regime] First coin sample:', {
-                symbol: firstCoin.symbol,
-                totalCandles: firstCoin.candles.length,
-                hasHurst: lastCandle.hurst != null,
-                hasER: lastCandle.efficiencyRatio != null,
-                hasKurtosis: lastCandle.kurtosis != null,
-                hasSkewness: lastCandle.skewness != null,
-                hurst: lastCandle.hurst,
-                hurstConf: lastCandle.hurstConfidence,
-                er: lastCandle.efficiencyRatio,
-                kurtosis: lastCandle.kurtosis,
-                skewness: lastCandle.skewness,
-            });
-        }
-
         let coinsWithAllMetrics = 0;
         let coinsWithoutHurst = 0;
         let coinsWithoutER = 0;
@@ -93,15 +72,6 @@ export class StatisticalRegimeService {
             });
         }
 
-        console.log('📊 [Statistical Regime] Results:', {
-            totalCoins: data.data.length,
-            coinsWithAllMetrics,
-            coinsWithoutHurst,
-            coinsWithoutER,
-            coinsWithoutKurtosis,
-            coinsWithoutSkewness,
-            pointsGenerated: points.length,
-        });
 
         return points;
     }

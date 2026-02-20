@@ -80,7 +80,6 @@ export class CmfRegimeService {
     for (const t of sortedTimes) {
       const counts = timeMap.get(t)!;
       result.dates.push(fmt.format(new Date(t)));
-
       result.inflow.push(counts.inflow);
       result.outflow.push(counts.outflow);
       result.neutral.push(counts.neutral);

@@ -28,22 +28,6 @@ export class MarketRegimeTransitionsService {
             return { dates: [], trendingStart: [], meanRevStart: [], totalScanned: [] };
         }
 
-        // 🔍 DEBUG: Проверяем первую монету
-        if (data.data.length > 0 && data.data[0].candles && data.data[0].candles.length > 0) {
-            const firstCandle = data.data[0].candles[data.data[0].candles.length - 1] as any;
-            console.log('🔍 [Regime Transitions] First coin last candle:', {
-                symbol: data.data[0].symbol,
-                hasHurst: firstCandle.hurst != null,
-                hasER: firstCandle.efficiencyRatio != null,
-                hasTrendingFlag: firstCandle.isTrendingRegimeStart != null,
-                hasMeanRevFlag: firstCandle.isMeanReversionRegimeStart != null,
-                hurst: firstCandle.hurst,
-                er: firstCandle.efficiencyRatio,
-                trendingFlag: firstCandle.isTrendingRegimeStart,
-                meanRevFlag: firstCandle.isMeanReversionRegimeStart,
-            });
-        }
-
         let coinsWithData = 0;
         let coinsWithoutData = 0;
 
@@ -86,12 +70,6 @@ export class MarketRegimeTransitionsService {
             }
         }
 
-        console.log('📊 [Regime Transitions] Stats:', {
-            totalCoins: data.data.length,
-            coinsWithData,
-            coinsWithoutData,
-            timePoints: timeMap.size,
-        });
 
         const sortedTimes = Array.from(timeMap.keys()).sort((a, b) => a - b);
 

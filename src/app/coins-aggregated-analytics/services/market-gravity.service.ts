@@ -29,8 +29,8 @@ export class MarketGravityService {
 
       const zScore = validCandle.closePriceZScore!;
 
-      // Защита от NaN в энтропии
-      let entropy = validCandle.entropy;
+      // Берём entropy20 — именно так назван ключ в пайплайне
+      let entropy = validCandle.entropy20;
       if (typeof entropy !== 'number' || isNaN(entropy)) {
         entropy = 0;
       }

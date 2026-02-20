@@ -153,8 +153,6 @@ export class SignalIntensityHeatmapService {
             result.yAxis.push(this.SIGNAL_LABELS[signalType]);
         }
 
-        console.log(`📊 [Heatmap] Processed ${result.signals.length} signals for ${marketData.timeframe}`);
-
         return result;
     }
 

@@ -246,7 +246,7 @@ export class RvwapExhaustionDetectorService {
         targetTime: number
     ): { score: number, reasons: string[] } {
 
-        // Find target candle index
+        // Find target candle
         const index = candles.findIndex(c => c.openTime === targetTime);
         if (index < 5) return { score: 0, reasons: [] };
 
@@ -254,8 +254,8 @@ export class RvwapExhaustionDetectorService {
         let totalScore = 0;
         const allReasons: string[] = [];
 
-        // 1. DIVERGENCES
-        const divs = this.detectDivergences(candles, index, side);
+        // 1. DIVERGENCES — читаем готовые флаги из пайплайна
+        const divs = this.readDivergenceFlags(candle, side);
         if (divs.rsi) { totalScore += 0.30; allReasons.push('🔴 RSI Div'); }
         if (divs.cmf) { totalScore += 0.25; allReasons.push('🔴 CMF Div'); }
         if (divs.vzo) { totalScore += 0.25; allReasons.push('🔴 VZO Div'); }
@@ -381,76 +381,30 @@ export class RvwapExhaustionDetectorService {
     }
 
 
-    // --- DIVERGENCE MATH ---
+    // --- DIVERGENCE FLAGS (читаем из пайплайна) ---
 
-    private linearRegressionSlope(y: number[]): number {
-        const n = y.length;
-        let sumX = 0;
-        let sumY = 0;
-        let sumXY = 0;
-        let sumXX = 0;
-
-        for (let x = 0; x < n; x++) {
-            const val = y[x];
-            sumX += x;
-            sumY += val;
-            sumXY += x * val;
-            sumXX += x * x;
-        }
-
-        const numerator = n * sumXY - sumX * sumY;
-        const denominator = n * sumXX - sumX * sumX;
-
-        if (denominator === 0) return 0;
-        return numerator / denominator;
-    }
-
-    private detectDivergences(candles: any[], searchIndex: number, side: 'upper' | 'lower') {
-        const LOOKBACK = 5;
-        if (searchIndex < LOOKBACK) return { rsi: false, cmf: false, vzo: false };
-
-        const prices: number[] = [];
-        const rsis: number[] = [];
-        const cmfs: number[] = [];
-        const vzos: number[] = [];
-
-        for (let k = 0; k < LOOKBACK; k++) {
-            const c = candles[searchIndex - k];
-            prices.push(c.closePrice);
-            rsis.push(c.rsi ?? 50);
-            cmfs.push(c.cmf ?? 0);
-            vzos.push(c.vzo ?? 0);
-        }
-
-        // Reverse so index 0 is oldest (t-4), index 4 is newest (t)
-        prices.reverse(); rsis.reverse(); cmfs.reverse(); vzos.reverse();
-
-        const priceSlope = this.linearRegressionSlope(prices);
-        const rsiSlope = this.linearRegressionSlope(rsis);
-        const cmfSlope = this.linearRegressionSlope(cmfs);
-        const vzoSlope = this.linearRegressionSlope(vzos);
-
-        const res = { rsi: false, cmf: false, vzo: false };
-        const currentRsi = candles[searchIndex].rsi ?? 50;
-
+    /**
+     * Читает готовые флаги дивергенции RVWAP из candle (записаны пайплайном).
+     * side='upper' → медвежья дивергенция (isBearishRvwap*)
+     * side='lower' → бычья дивергенция (isBullishRvwap*)
+     */
+    private readDivergenceFlags(
+        candle: any,
+        side: 'upper' | 'lower'
+    ): { rsi: boolean; cmf: boolean; vzo: boolean } {
         if (side === 'upper') {
-            // BEARISH DIV: Price UP, Indicator DOWN
-            if (priceSlope > 0) {
-                // RSI Bear Div (Overbought zone > 50 typically, or just Div)
-                if (rsiSlope < 0 && currentRsi > 50) res.rsi = true;
-                if (cmfSlope < 0) res.cmf = true;
-                if (vzoSlope < 0) res.vzo = true;
-            }
+            return {
+                rsi: !!candle.isBearishRvwapRsiDivergence,
+                cmf: !!candle.isBearishRvwapCmfDivergence,
+                vzo: !!candle.isBearishRvwapVzoDivergence,
+            };
         } else {
-            // BULLISH DIV: Price DOWN, Indicator UP
-            if (priceSlope < 0) {
-                // RSI Bull Div (Oversold zone < 50)
-                if (rsiSlope > 0 && currentRsi < 50) res.rsi = true;
-                if (cmfSlope > 0) res.cmf = true;
-                if (vzoSlope > 0) res.vzo = true;
-            }
+            return {
+                rsi: !!candle.isBullishRvwapRsiDivergence,
+                cmf: !!candle.isBullishRvwapCmfDivergence,
+                vzo: !!candle.isBullishRvwapVzoDivergence,
+            };
         }
-        return res;
     }
 
     private emptyState(timeframe: string): MarketExhaustionState {

@@ -317,11 +317,12 @@ export class IndicatorPipelineService {
       coin.candles.forEach((candle, index) => {
         const c = candle as CandleWithIndicators;
 
-        // ... (previous mappings kept implicitly same structure, only showing diff) ...
+        // --- PRICE NORMALIZATION (Min-Max за 50 свечей) ---
+        c['highPriceNorm'] = normResult.highPriceNorm[index];
+        c['lowPriceNorm'] = normResult.lowPriceNorm[index];
+        c['openPriceNorm'] = normResult.openPriceNorm[index];
+        c['closePriceNorm'] = normResult.closePriceNorm[index];
 
-        // --- CMF SLOPE CHANGE FLAGS ---
-        c['isCmfSlopeUp'] = cmfSlopeChange['isCmfSlopeUp'][index];
-        c['isCmfSlopeDown'] = cmfSlopeChange['isCmfSlopeDown'][index];
         c['volumeNorm'] = normVolume[index];
         c['volumeDeltaNorm'] = normVolumeDelta[index];
         c['openInterestNorm'] = normOI[index];
@@ -363,7 +364,6 @@ export class IndicatorPipelineService {
 
         // --- RVWAP Values ---
         c['rvwap'] = rVwwapResult['rvwap'][index];
-        // Используем правильные ключи из результатов calculateRVWAP
         c['rvwapUpperBand1'] = rVwwapResult['rvwap_upper_band_1'][index];
         c['rvwapUpperBand2'] = rVwwapResult['rvwap_upper_band_2'][index];
         c['rvwapLowerBand1'] = rVwwapResult['rvwap_lower_band_1'][index];
@@ -423,24 +423,15 @@ export class IndicatorPipelineService {
         c['isBelowRvwapLowerBand1'] = rvwapBandsAnalysis.isBelowRvwapLowerBand1[index];
         c['isBelowRvwapLowerBand2'] = rvwapBandsAnalysis.isBelowRvwapLowerBand2[index];
 
-        // --- RVWAP FLAGS (CROSSES) - Full 10 flags ---
-        // 1. Main RVWAP
+        // --- RVWAP FLAGS (CROSSES) ---
         c['isCrossedUpRvwap'] = rvwapCrossAnalysis.isCrossedUpRvwap[index];
         c['isCrossedDownRvwap'] = rvwapCrossAnalysis.isCrossedDownRvwap[index];
-
-        // 2. Upper Band 1 (Breakout vs Return)
         c['isCrossedUpRvwapUpperBand1'] = rvwapCrossAnalysis.isCrossedUpRvwapUpperBand1[index];
         c['isCrossedDownRvwapUpperBand1'] = rvwapCrossAnalysis.isCrossedDownRvwapUpperBand1[index];
-
-        // 3. Upper Band 2 (FOMO vs Cooling)
         c['isCrossedUpRvwapUpperBand2'] = rvwapCrossAnalysis.isCrossedUpRvwapUpperBand2[index];
         c['isCrossedDownRvwapUpperBand2'] = rvwapCrossAnalysis.isCrossedDownRvwapUpperBand2[index];
-
-        // 4. Lower Band 1 (Recovery vs Breakdown)
         c['isCrossedUpRvwapLowerBand1'] = rvwapCrossAnalysis.isCrossedUpRvwapLowerBand1[index];
         c['isCrossedDownRvwapLowerBand1'] = rvwapCrossAnalysis.isCrossedDownRvwapLowerBand1[index];
-
-        // 5. Lower Band 2 (Bounce vs Panic)
         c['isCrossedUpRvwapLowerBand2'] = rvwapCrossAnalysis.isCrossedUpRvwapLowerBand2[index];
         c['isCrossedDownRvwapLowerBand2'] = rvwapCrossAnalysis.isCrossedDownRvwapLowerBand2[index];
 

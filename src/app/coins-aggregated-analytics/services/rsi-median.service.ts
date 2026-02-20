@@ -34,15 +34,8 @@ export class RsiMedianService {
         const rsiVal = ca.rsi;
         const normClose = ca.closePriceNorm ?? ca.normalizedClose;
 
-        if (
-          rsiVal === undefined ||
-          rsiVal === null ||
-          Number.isNaN(rsiVal) ||
-          normClose === undefined ||
-          normClose === null ||
-          Number.isNaN(normClose)
-        )
-          continue;
+        // Пропускаем свечу только если RSI недоступен
+        if (rsiVal === undefined || rsiVal === null || Number.isNaN(rsiVal)) continue;
 
         const time = ca.openTime;
         if (!timeMap.has(time)) {
@@ -50,7 +43,11 @@ export class RsiMedianService {
         }
         const entry = timeMap.get(time)!;
         entry.rsi.push(rsiVal);
-        entry.price.push(normClose);
+
+        // normClose добавляем только если доступен (не блокирует RSI)
+        if (normClose !== undefined && normClose !== null && !Number.isNaN(normClose)) {
+          entry.price.push(normClose);
+        }
       }
     }
 
@@ -59,7 +56,7 @@ export class RsiMedianService {
     const result = {
       dates: [] as string[],
       rsi: [] as number[],
-      price: [] as number[],
+      price: [] as (number | null)[],  // null = нет данных → ECharts рисует разрыв
       counts: [] as number[],
     };
 
@@ -72,11 +69,12 @@ export class RsiMedianService {
 
     for (const t of sortedTimes) {
       const entry = timeMap.get(t)!;
-      // Нужен кворум хотя бы 1 монета
+      // Нужен кворум хотя бы 1 монета по RSI
       if (entry.rsi.length > 0) {
         result.dates.push(fmt.format(new Date(t)));
         result.rsi.push(this.getMedian(entry.rsi));
-        result.price.push(this.getMedian(entry.price));
+        // Если нет нормализованной цены — null (разрыв), но не 0
+        result.price.push(entry.price.length > 0 ? this.getMedian(entry.price) : null);
         result.counts.push(entry.rsi.length);
       }
     }
@@ -86,9 +84,9 @@ export class RsiMedianService {
 
   private getMedian(values: number[]): number {
     if (values.length === 0) return 0;
-    values.sort((a, b) => a - b);
-    const mid = Math.floor(values.length / 2);
-    const med = values.length % 2 !== 0 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
+    const sorted = [...values].sort((a, b) => a - b); // копия — не мутируем оригинал
+    const mid = Math.floor(sorted.length / 2);
+    const med = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
     return parseFloat(med.toFixed(2));
   }
 
@@ -195,6 +193,7 @@ export class RsiMedianService {
           data: data.price,
           smooth: true,
           showSymbol: false,
+          connectNulls: false, // null → разрыв на графике, не ноль
           lineStyle: { width: 1.5, color: '#aaa', type: 'dashed', opacity: 0.6 },
           areaStyle: {
             color: {
