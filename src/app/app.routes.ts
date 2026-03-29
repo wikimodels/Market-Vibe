@@ -81,6 +81,10 @@ export const routes: Routes = [
         path: 'coins',
         loadComponent: () => import('./coins/coins').then((m) => m.Coins),
       },
+      {
+        path: 'calculator',
+        loadComponent: () => import('./calculator/calculator').then((m) => m.CalculatorComponent),
+      },
       // Дефолтный редирект (внутри privateGuard)
       {
         path: '',

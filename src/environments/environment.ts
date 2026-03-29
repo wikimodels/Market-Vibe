@@ -5,7 +5,7 @@ const bazzarUrl = 'https://bazzardenoklinedatafetcher.cornevurdeveloper.deno.net
 
 const coinSifterUrl = 'https://coin-sifter-server.onrender.com';
 //const alertsHubUrl = 'https://alert-hub-server.onrender.com';
-const alertsHubUrl = 'https://alerts-superhub-deno.deno.dev';
+const alertsHubUrl = 'https://alertssuperhubdeno.wikimodels.deno.net';
 export const BUFFER_MS = 3 * 60 * 1000;
 export const PIXEL_TOLERANCE = 5;
 

@@ -104,6 +104,7 @@ export class VolatilityExhaustionTrackerService {
         return {
             backgroundColor: 'transparent',
             title: {
+                show: false,
                 text: `Volatility Exhaustion Tracker (${tf})`,
                 left: 'center',
                 top: 5,

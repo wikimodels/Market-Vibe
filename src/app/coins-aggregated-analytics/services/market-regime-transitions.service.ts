@@ -115,6 +115,7 @@ export class MarketRegimeTransitionsService {
         return {
             backgroundColor: 'transparent',
             title: {
+                show: false,
                 text: `Market Regime Transitions (${tf})`,
                 left: 'center',
                 top: 5,

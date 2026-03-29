@@ -30,8 +30,9 @@ interface TfRow {
   serverCount: number | null;
   isLoading: boolean;
   lastUpdated: Date | null;
-  status: 'idle' | 'running' | 'success' | 'error' | 'stale';
+  status: 'idle' | 'connecting' | 'running' | 'processing' | 'success' | 'error' | 'stale';
   errorMessage?: string;
+  progressTicks?: number;
 }
 
 @Component({
@@ -82,11 +83,11 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
   public isDeletingCoins = false;
 
   public rows: TfRow[] = [
-    { label: '1h', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle' },
-    { label: '4h', serverName: 'Bizzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle' },
-    { label: '8h', serverName: 'Bizzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle' },
-    { label: '12h', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle' },
-    { label: 'D', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle' },
+    { label: '1h', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle', progressTicks: 0 },
+    { label: '4h', serverName: 'Bizzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle', progressTicks: 0 },
+    { label: '8h', serverName: 'Bizzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle', progressTicks: 0 },
+    { label: '12h', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle', progressTicks: 0 },
+    { label: 'D', serverName: 'Bazzar', localCount: 0, serverCount: null, isLoading: false, lastUpdated: null, status: 'idle', progressTicks: 0 },
   ];
 
   async ngOnInit() {
@@ -171,21 +172,26 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
     if (row.isLoading) return;
 
     row.isLoading = true;
-    row.status = 'running';
+    row.status = 'connecting';
     row.serverCount = null;
     row.errorMessage = '';
+    row.progressTicks = 0;
 
-    this.notification.info(`Job started for ${row.label}. Please wait ~3 min.`);
+    this.notification.info(`Job started for ${row.label}. Please wait...`);
     this.cdr.markForCheck();
 
-    this.syncService.runSyncCycle(row.label).subscribe({
-      next: (count) => {
-        row.serverCount = count;
-        row.status = 'success';
-        row.lastUpdated = new Date();
-        row.isLoading = false;
-        this.notification.success(`Sync ${row.label} Success! Coins: ${count}`);
-        this.refreshLocalStats(); // This triggers checks
+    const syncSub = this.syncService.runSyncCycle(row.label).subscribe({
+      next: (update) => {
+        row.status = update.status === 'completed' ? 'success' : update.status as any;
+        row.progressTicks = update.ticks;
+        
+        if (update.status === 'completed') {
+          row.serverCount = update.resultCount || 0;
+          row.lastUpdated = new Date();
+          row.isLoading = false;
+          this.notification.success(`Sync ${row.label} Success! Coins: ${row.serverCount}`);
+          this.refreshLocalStats(); 
+        }
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -204,6 +210,7 @@ export class CacheManagerComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
     });
+    this.sub.add(syncSub);
   }
 
   private formatLag(ms: number): string {

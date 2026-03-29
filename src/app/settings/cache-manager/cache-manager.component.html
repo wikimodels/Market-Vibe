@@ -171,9 +171,24 @@
               <mat-icon>hourglass_empty</mat-icon> Ready to Sync
             </div>
 
+            <div *ngSwitchCase="'connecting'" class="status-badge running">
+              <mat-spinner diameter="16"></mat-spinner>
+              <span class="pulse-text">Connecting...</span>
+            </div>
+
             <div *ngSwitchCase="'running'" class="status-badge running">
               <mat-spinner diameter="16"></mat-spinner>
-              <span class="pulse-text">Running Job... (~3 min)</span>
+              <div style="display: flex; flex-direction: column; margin-left: 8px;">
+                <span class="pulse-text">Running Job...</span>
+                <span style="font-size: 0.8em; opacity: 0.8;" *ngIf="row.progressTicks && row.progressTicks > 0">
+                  Server points: {{ row.progressTicks }}
+                </span>
+              </div>
+            </div>
+
+            <div *ngSwitchCase="'processing'" class="status-badge running">
+              <mat-spinner diameter="16" color="accent"></mat-spinner>
+              <span class="pulse-text">Saving Cache...</span>
             </div>
 
             <div *ngSwitchCase="'success'" class="status-badge success">

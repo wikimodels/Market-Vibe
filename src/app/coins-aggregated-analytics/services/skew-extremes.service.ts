@@ -132,6 +132,7 @@ export class SkewExtremesService {
         return {
             backgroundColor: 'transparent',
             title: {
+                show: false,
                 text: `Skewness Extremes & Reversals (${tf})`,
                 left: 'center',
                 top: 5,

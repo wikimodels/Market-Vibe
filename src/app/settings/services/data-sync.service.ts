@@ -14,6 +14,13 @@ export interface StaleDataError {
   serverTime: number;
 }
 
+export interface SyncProgress {
+  status: 'connecting' | 'running' | 'processing' | 'completed' | 'error';
+  ticks: number;
+  resultCount?: number;
+  error?: string;
+}
+
 import { IndicatorPipelineService } from '../../shared/services/pipeline/indicator-pipeline.service';
 import { DataSourceService } from '../../shared/services/data-source.service';
 
@@ -38,7 +45,7 @@ export class DataSyncService {
     });
   }
 
-  public runSyncCycle(tf: TF): Observable<number> {
+  public runSyncCycle(tf: TF): Observable<SyncProgress> {
     const currentSource = this.dataSourceService.getCurrentSource();
     console.log(`🚀 [DataSync] Starting sync for ${tf} using ${currentSource.toUpperCase()} source`);
 
@@ -54,12 +61,13 @@ export class DataSyncService {
   /**
    * Ngrok flow: Direct data fetch (data is always fresh)
    */
-  private fetchAndProcessData(tf: TF): Observable<number> {
+  private fetchAndProcessData(tf: TF): Observable<SyncProgress> {
     const cacheUrl = this.dataSourceService.getKlineUrl(tf);
     console.log(`📥 [DataSync] Fetching from ${cacheUrl}...`);
 
     return this.http.get<KlineApiResponse>(cacheUrl, { headers: this.getAuthHeaders() }).pipe(
       switchMap((response) => this.processResponse(response, tf)),
+      map((count) => ({ status: 'completed' as const, ticks: 0, resultCount: count })),
       catchError((err) => {
         console.error(`❌ [DataSync] Fetch failed for ${tf}`, err);
         return throwError(() => err);
@@ -68,33 +76,91 @@ export class DataSyncService {
   }
 
   /**
-   * Render flow: Trigger job, wait 3 min, then fetch
+   * Render flow: Trigger job, stream progress ticks, then fetch
    */
-  private triggerJobAndFetch(tf: TF): Observable<number> {
-    const jobUrl = this.dataSourceService.getJobUrl(tf);
-    const cacheUrl = this.dataSourceService.getKlineUrl(tf);
+  private triggerJobAndFetch(tf: TF): Observable<SyncProgress> {
+    return new Observable<SyncProgress>((subscriber) => {
+      subscriber.next({ status: 'connecting', ticks: 0 });
 
-    if (!jobUrl) {
-      return throwError(() => new Error('Job URL not available for current source'));
-    }
+      const jobUrl = this.dataSourceService.getJobUrl(tf);
+      const cacheUrl = this.dataSourceService.getKlineUrl(tf);
 
-    console.log(`🔨 [DataSync] Triggering job at ${jobUrl}...`);
+      if (!jobUrl) {
+        subscriber.error(new Error('Job URL not available for current source'));
+        return;
+      }
 
-    return this.http
-      .post<{ success: boolean; message: string }>(jobUrl, {}, { headers: this.getAuthHeaders() })
-      .pipe(
-        tap((res) => console.log(`✅ [DataSync] Job triggered:`, res)),
-        delay(180000), // Wait 3 minutes
-        switchMap(() => {
-          console.log(`📥 [DataSync] Checking cache at ${cacheUrl}...`);
-          return this.http.get<KlineApiResponse>(cacheUrl, { headers: this.getAuthHeaders() });
-        }),
-        switchMap((response) => this.processResponse(response, tf)),
-        catchError((err) => {
-          console.error(`❌ [DataSync] Cycle failed for ${tf}`, err);
-          return throwError(() => err);
-        })
-      );
+      console.log(`🔨 [DataSync] Triggering job stream at ${jobUrl}...`);
+      const controller = new AbortController();
+
+      fetch(jobUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
+        signal: controller.signal
+      })
+      .then(async (response) => {
+        if (!response.body) {
+          throw new Error('ReadableStream not supported by browser');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let ticksCount = 0;
+        let completeResponseStr = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          completeResponseStr += chunk;
+
+          const newDots = (chunk.match(/\./g) || []).length;
+          if (newDots > 0) {
+            ticksCount += newDots;
+            subscriber.next({ status: 'running', ticks: ticksCount });
+          }
+        }
+
+        // Stream closed
+        let finalData;
+        try {
+          finalData = JSON.parse(completeResponseStr);
+        } catch (e) {
+          // If response isn't pure JSON, we ignore the parse error, as streaming might produce artifacts
+        }
+
+        if (finalData && finalData.success === false) {
+          throw new Error(finalData.error || 'Server responded with success: false');
+        }
+
+        subscriber.next({ status: 'processing', ticks: ticksCount });
+        console.log(`📥 [DataSync] Stream finished. Checking cache at ${cacheUrl}...`);
+
+        this.http.get<KlineApiResponse>(cacheUrl, { headers: this.getAuthHeaders() }).pipe(
+          switchMap((res) => this.processResponse(res, tf))
+        ).subscribe({
+          next: (count) => {
+            subscriber.next({ status: 'completed', ticks: ticksCount, resultCount: count });
+            subscriber.complete();
+          },
+          error: (err) => subscriber.error(err)
+        });
+
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          subscriber.error(error);
+        }
+      });
+
+      return () => {
+        controller.abort();
+      };
+    });
   }
 
   /**

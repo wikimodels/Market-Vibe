@@ -1,0 +1,47 @@
+<div class="page-header">
+  <app-search-filter (searchChange)="onFilterChange($event)"></app-search-filter>
+
+  <h2 class="page-title">Binance Calculator <span class="navbar-color">({{filteredCoins().length}})</span></h2>
+
+  <div class="header-actions">
+    <div class="amount-field">
+      <span class="amount-label">Amount</span>
+      <input #amtInput class="amount-input" type="number" [ngModel]="usdtAmount()" (ngModelChange)="onAmountChange($event)" placeholder="10" min="1">
+      @if (usdtAmount() !== null) {
+      <button class="clear-button" (click)="clearAmount(); amtInput.focus()" type="button">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+</div>
+
+@if (isLoading()) {
+  <div class="loading-spinner">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+} @else {
+  <div class="coin-pills-container">
+    @for (coin of filteredCoins(); track coin.symbol) {
+      <div class="coin-pill calc-pill" (click)="copyToClipboard(coin.positionSize, coin.symbol)">
+        
+        <div class="coin-info">
+          <img [src]="'assets/logo/' + coin.logoUrl" (error)="onImageError($event)" alt="{{coin.symbol}} logo" class="coin-logo">
+          <span class="coin-symbol">
+            {{ coin.symbol }} 
+            <span class="coin-category">({{ coin.categoryStr }})</span>
+          </span>
+        </div>
+        
+        <div class="calc-results">
+            <span class="size-val">{{ formatSize(coin.positionSize, coin.lastPrice) }}</span>
+        </div>
+
+      </div>
+    } @empty {
+      <div class="empty-list-message">
+        <span>No Binance coins found or matching the filter.</span>
+      </div>
+    }
+  </div>
+}

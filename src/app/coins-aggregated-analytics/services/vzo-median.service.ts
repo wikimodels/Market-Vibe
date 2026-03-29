@@ -119,6 +119,7 @@ export class VzoMedianService {
     return {
       backgroundColor: 'transparent',
       title: {
+        show: false,
         text: `VZO Median (${tf})`,
         left: 'center',
         textStyle: { color: '#888', fontSize: 12 },

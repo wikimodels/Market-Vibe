@@ -126,6 +126,7 @@ export class StatisticalRegimeService {
         return {
             backgroundColor: 'transparent',
             title: {
+                show: false,
                 text: `Market Regime Map (${tf})`,
                 left: 'center',
                 top: 5,
