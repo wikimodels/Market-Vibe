@@ -51,8 +51,6 @@ import { VolatilityAnomalyService } from './services/volatility-anomaly.service'
 // --- 8. TREND QUALITY / ADX / MACD / ENTROPY ---
 import { AdxMedianService } from './services/adx-median.service';
 import { MacdImpulseService } from './services/macd-impulse.service';
-import { MarketEntropyService } from './services/market-entropy.service';
-import { EntropyStrategiesService } from './services/entropy-strategies.service';
 import { MarketPhasesService } from './services/market-phases.service';
 import { MarketGravityService } from './services/market-gravity.service';
 
@@ -125,8 +123,6 @@ export class CoinsAggregatedAnalytics implements OnInit {
 
   private adxMedianService = inject(AdxMedianService);
   private macdImpulseService = inject(MacdImpulseService);
-  private entropyService = inject(MarketEntropyService);
-  private entStratService = inject(EntropyStrategiesService);
   private phasesService = inject(MarketPhasesService);
   private gravityService = inject(MarketGravityService);
 
@@ -165,7 +161,6 @@ export class CoinsAggregatedAnalytics implements OnInit {
     { id: 'kama_regime', label: 'KAMA Trend', hasChart: true },
     { id: 'macd_impulse', label: 'MACD Impulse', hasChart: true },
     { id: 'composite', label: 'Market Composite', hasChart: true },
-    { id: 'entropy', label: 'Market Entropy', hasChart: true },
     { id: 'gravity', label: 'Market Gravity', hasChart: true },
     { id: 'phases', label: 'Market Phase Matrix', hasChart: true },
     { id: 'regime_trans', label: 'Market Regime Transitions', hasChart: true },
@@ -320,14 +315,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
           charts: this.macdImpulseService.getWidgetData(this.allMarketData),
           title: 'MACD Impulse (Momentum Breath)',
         };
-        this.widgetCache['entropy'] = {
-          charts: this.entropyService.getWidgetData(this.allMarketData),
-          title: 'Market Entropy Index (Chaos vs Order)',
-        };
-        this.widgetCache['ent_strategies'] = {
-          charts: this.entStratService.getWidgetData(this.allMarketData),
-          title: 'Market Opportunities: Clean Breaks vs Traps',
-        };
+    // removed entropy widgets
         this.widgetCache['phases'] = {
           charts: this.phasesService.getWidgetData(this.allMarketData),
           title: 'Market Phases: Entropy vs Trend Strength',
@@ -383,10 +371,6 @@ export class CoinsAggregatedAnalytics implements OnInit {
         this.widgetCache['vzo_median'] = {
           charts: this.vzoMedianService.getWidgetData(this.allMarketData),
           title: 'Market VZO Median',
-        };
-        this.widgetCache['entropy'] = {
-          charts: this.entropyService.getWidgetData(this.allMarketData),
-          title: 'Market Entropy Index (Chaos vs Order)',
         };
 
         // 🔥 STATISTICAL METRICS

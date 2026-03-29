@@ -130,17 +130,6 @@ export const ANALYTICS_REGISTRY: Record<string, AnalyticsRegistryItem> = {
   },
 
   // === MARKET PHYSICS ===
-  entropy: {
-    label: 'Entropy',
-    docFile: 'entropy_reference',
-    config: {
-      title: 'Entropy Structure Scanner',
-      metricPrefix: 'entropy',
-      visualType: 'standard',
-      theme: 'lower-better', // Низкая энтропия = структура
-      max: 3.32,
-    },
-  },
   fractal_dimension: {
     label: 'Fractal Dimension',
     docFile: 'fractal_dimension_reference',

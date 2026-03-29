@@ -14,18 +14,12 @@ export interface CoinData {
   volume24h: number;
   change24h: number;
 
-  // --- Индикаторы Hurst, Entropy (1h, 2h, 4h, 12h, 1d) ---
+  // --- Индикаторы Hurst (1h, 2h, 4h, 12h, 1d) ---
   hurst_1h: number;
   hurst_2h: number;
   hurst_4h: number;
   hurst_12h: number;
   hurst_1d: number;
-
-  entropy_1h: number;
-  entropy_2h: number;
-  entropy_4h: number;
-  entropy_12h: number;
-  entropy_1d: number;
 
   // --- Trend/MR Quality (w20) ---
   trend_quality_1h_w20: number;

@@ -15,13 +15,6 @@ export interface ScannerConfig {
 
 // Примеры конфигураций (можно использовать как пресеты)
 export const SCANNERS: Record<string, ScannerConfig> = {
-  ENTROPY: {
-    title: 'Entropy Structure Scanner',
-    metricPrefix: 'entropy',
-    visualType: 'standard',
-    theme: 'lower-better', // Меньше = Структура (Синий), Больше = Хаос (Красный)
-    max: 3.32,
-  },
   EFFICIENCY: {
     title: 'Efficiency Scanner',
     metricPrefix: 'movement_efficiency',

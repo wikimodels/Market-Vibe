@@ -27,7 +27,6 @@ import { calculateSlope } from '../../../calculations/slope';
 import { analyzeLineStates } from '../../../calculations/states';
 import { calculateVZO } from '../../../calculations/vzo';
 import { calculateZScore } from '../../../calculations/z-score';
-import { calculateEntropy, calculateSignEntropy } from '../../../calculations/entropy';
 import { Candle, MarketData, PriceSeries } from '../../../models/kline.model';
 import { calculateRollingHurst } from '../../../calculations/hurst';
 import { calculateRollingKurtosis } from '../../../calculations/kurtosis';
@@ -164,11 +163,6 @@ export class IndicatorPipelineService {
       const zScoreOI = calculateZScore(priceSeries.openInterest || [], shortHistoryWindow);
 
       // --- 5. STATS & MATH ---
-      const entropyResult20 = calculateEntropy(priceSeries, 20);
-      const signEntropyResult20 = calculateSignEntropy(priceSeries, 20);
-      const entropyResult50 = calculateEntropy(priceSeries, 50);
-      const signEntropyResult50 = calculateSignEntropy(priceSeries, 50);
-
       const kurtosis100 = calculateRollingKurtosis(priceSeries, 100);
 
       // Адаптивное окно для Hurst в зависимости от количества свечей
@@ -391,11 +385,6 @@ export class IndicatorPipelineService {
         c['volumeDeltaZScore'] = zScoreVolDelta[index];
         c['fundingRateZScore'] = zScoreFunding[index];
         c['openInterestZScore'] = zScoreOI[index];
-
-        c['entropy20'] = entropyResult20;
-        c['signEntropy20'] = signEntropyResult20;
-        c['entropy50'] = entropyResult50;
-        c['signEntropy50'] = signEntropyResult50;
 
         c['kurtosis100'] = kurtosis100[index];
         const hData = hurst[index];

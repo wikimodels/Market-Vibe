@@ -14,7 +14,6 @@ export interface ExhaustionCoin {
     price: number;
     fundingRate?: number;
     rsi?: number;
-    entropy?: number;
 }
 
 export interface ExhaustionTableRow {
@@ -126,7 +125,6 @@ export class RvwapExhaustionDetectorService {
                         price: candle.closePrice,
                         fundingRate: candle.fundingRate ?? 0,
                         rsi: candle.rsi ?? 0,
-                        entropy: candle.entropy20 ?? 0,
                     });
 
                     // Break to avoid cluttering the table with adjacent candles for the same coin?
@@ -267,10 +265,7 @@ export class RvwapExhaustionDetectorService {
             if (funding.score > 0) allReasons.push(...funding.reasons);
         }
 
-        // 3. ENTROPY (Instability)
-        const entropy = this.analyzeEntropyContext(candle);
-        totalScore += entropy.score * 0.12;
-        if (entropy.score > 0) allReasons.push(...entropy.reasons);
+        // Removed Entropy step
 
         // 4. RVWAP Band Behavior (Over-extension)
         const rvwap = this.analyzeRVWAPBandBehavior(candle, side);
@@ -313,22 +308,6 @@ export class RvwapExhaustionDetectorService {
             if (fr <= -0.05) return { score: 1.0, reasons: [`Neg Funding (${fr.toFixed(3)}%)`] };
             if (fr <= -0.01) return { score: 0.5, reasons: [`Negative Funding`] };
         }
-
-        return { score: 0, reasons: [] };
-    }
-
-    private analyzeEntropyContext(candle: any): { score: number, reasons: string[] } {
-        // Logic: High entropy usually signals market regime shift or chaos
-        if (!candle.entropy20) return { score: 0, reasons: [] };
-
-        const e = candle.entropy20;
-        // Assume normalized entropy around 3.0? Or 1.0? 
-        // User prompt says 'entropy', typically Shannon entropy on n=20.
-        // Let's assume > 3.0 is high, < 2.0 is low (just heuristics). 
-        // Note: without distribution knowledge, we check for 'high' relative to typical.
-        // Let's guess threshold 2.8 for "High".
-        if (e > 3.5) return { score: 1.0, reasons: [`Extreme Entropy`] };
-        if (e > 3.0) return { score: 0.5, reasons: [`High Entropy`] };
 
         return { score: 0, reasons: [] };
     }
@@ -451,7 +430,6 @@ export class RvwapExhaustionDetectorService {
                     // Note: using detectExhaustion on every candle for every coin is heavy.
                     // Optimization: Check quick proxies first. 
                     // If RSI < 50 while at Upper Band -> Likely Bearish Divergence -> Exhaustion
-                    // If Entropy is high -> Exhaustion
                     // Let's use the full check but maybe simplified if performance is an issue.
                     // For now, full check.
                     const res = this.detectExhaustion(coinData.candles, 'upper', marketData.timeframe, openTime);

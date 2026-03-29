@@ -352,13 +352,13 @@ export class AuditStrategyService {
       id: 'rvwap_exhaustion_bulls',
       navLabel: 'Weak Bulls',
       title: 'Weak Bulls (Exhaustion at Highs)',
-      description: 'Coins at RVWAP Upper Band with Divs, High Entropy or Funding',
+      description: 'Coins at RVWAP Upper Band with Divs or Funding',
     },
     rvwap_exhaustion_bears: {
       id: 'rvwap_exhaustion_bears',
       navLabel: 'Weak Bears',
       title: 'Weak Bears (Exhaustion at Lows)',
-      description: 'Coins at RVWAP Lower Band with Divs, High Entropy or Funding',
+      description: 'Coins at RVWAP Lower Band with Divs or Funding',
     },
   };
 
