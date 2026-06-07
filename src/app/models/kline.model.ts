@@ -212,6 +212,12 @@ export interface Candle {
   // === Skew Reversal ===
   isBullishSkewReversal?: boolean | null;
   isBearishSkewReversal?: boolean | null;
+
+  // === VWAP Gravity (rolling 48-candle window) ===
+  /** Доля свечей за последние 48 (close < RVWAP) — медвежья гравитация 0–1 */
+  vwapGravityPct?: number | null;
+  /** Доля свечей за последние 48 (close > RVWAP) — бычья буйность 0–1 */
+  vwapBuoyancyPct?: number | null;
 }
 /**
  * Holds all candle data for a single coin.

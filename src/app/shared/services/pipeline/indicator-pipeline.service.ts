@@ -45,6 +45,7 @@ import { analyzeCmfSlopeChange } from '../../../calculations/cmf-slope-change';
 import { analyzeMarketRegimeChange } from '../../../calculations/market-regime-change';
 import { analyzeVolatilityExhaustion } from '../../../calculations/volatility-exhaustion';
 import { analyzeSkewReversal } from '../../../calculations/skew-reversal';
+import { calculateVwapGravity } from '../../../calculations/vwap-gravity';
 
 // Интерфейс для динамического расширения свойств свечи
 interface CandleWithIndicators extends Candle {
@@ -307,6 +308,9 @@ export class IndicatorPipelineService {
         1.5 // skew threshold
       );
 
+      // --- VWAP GRAVITY (48-candle rolling window) ---
+      const vwapGravityResult = calculateVwapGravity(priceSeries, 48, 1.0);
+
       // --- 8. ЗАПИСЬ В СВЕЧИ (Data Mapping) ---
       coin.candles.forEach((candle, index) => {
         const c = candle as CandleWithIndicators;
@@ -509,6 +513,10 @@ export class IndicatorPipelineService {
         // --- SKEW REVERSAL FLAGS ---
         c['isBullishSkewReversal'] = skewReversal['isBullishSkewReversal'][index];
         c['isBearishSkewReversal'] = skewReversal['isBearishSkewReversal'][index];
+
+        // --- VWAP GRAVITY ---
+        c['vwapGravityPct'] = vwapGravityResult.gravityPct[index];
+        c['vwapBuoyancyPct'] = vwapGravityResult.buoyancyPct[index];
       });
     }
     return data;

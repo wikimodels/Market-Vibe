@@ -65,6 +65,7 @@ import { VolatilityExhaustionTrackerService } from './services/volatility-exhaus
 import { SkewExtremesService } from './services/skew-extremes.service';
 import { SignalIntensityHeatmapService } from './services/signal-intensity-heatmap.service';
 import { RvwapExhaustionDetectorService } from './services/rvwap-exhaustion-detector.service';
+import { VwapGravityBreadthService } from './services/vwap-gravity-breadth.service';
 
 import { CoinsAggregatedAnalyticsCharts } from './coins-aggregated-analytics-charts/coins-aggregated-analytics-charts';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
@@ -136,6 +137,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
   private skewExtremesService = inject(SkewExtremesService);
   private signalHeatmapService = inject(SignalIntensityHeatmapService);
   private rvwapExhaustionService = inject(RvwapExhaustionDetectorService);
+  private vwapGravityBreadthService = inject(VwapGravityBreadthService);
 
   public isLoading = signal<boolean>(true);
   public chartsData = signal<AnalyticsChartsData | null>(null);
@@ -181,6 +183,7 @@ export class CoinsAggregatedAnalytics implements OnInit {
     { id: 'vol_exhaust', label: 'Volatility Exhaustion', hasChart: true },
     { id: 'vol_churn', label: 'Volume Churn (Effort vs Result)', hasChart: true },
     { id: 'vzo_median', label: 'VZO Median', hasChart: true },
+    { id: 'vwap_gravity', label: 'VWAP Gravity Breadth', hasChart: true },
     { id: 'zscore_regime', label: 'Z-Score Anomalies', hasChart: true },
   ];
 
@@ -397,6 +400,10 @@ export class CoinsAggregatedAnalytics implements OnInit {
         this.widgetCache['rvwap_exhaustion'] = {
           charts: this.rvwapExhaustionService.getWidgetData(this.allMarketData),
           title: 'RVWAP Exhaustion (Bulls vs Bears)',
+        };
+        this.widgetCache['vwap_gravity'] = {
+          charts: this.vwapGravityBreadthService.getWidgetData(this.allMarketData),
+          title: 'VWAP Gravity Breadth: Coins Below vs Above RVWAP (≥70%)',
         };
       }
     } catch (err) {
