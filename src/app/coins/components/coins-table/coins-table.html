@@ -1,0 +1,38 @@
+<div class="coins-table-wrapper" #wrap (scroll)="onScroll($event)">
+  <table class="coins-table">
+    <thead>
+      <tr>
+        <th class="col-coin sortable" (click)="onSort('symbol')">
+          coins <span class="sort-arrow">{{ arrow('symbol') }}</span>
+        </th>
+        @for (col of cols; track col) {
+          <th class="col-num sortable" (click)="onSort(col)">
+            {{ col }} <span class="sort-arrow">{{ arrow(col) }}</span>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.coin.symbol) {
+        <tr>
+          <td class="col-coin">
+            <app-coin-item [coin]="row.coin"></app-coin-item>
+          </td>
+          @for (col of cols; track col) {
+            <td class="col-num" [ngClass]="cls(row.changes[col])">{{ fmt(row.changes[col]) }}</td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="cols.length + 1" class="empty">Нет монет</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  @if (loadingChanges()) {
+    <div class="table-loading">Загрузка изменений цены…</div>
+  }
+</div>
+@if (showScrollTop()) {
+  <button class="scroll-top-btn" (click)="scrollToTop()" title="Наверх">▲</button>
+}

@@ -6,6 +6,20 @@ import { CoinData } from '../../models/coin-data.model';
 import { WorkingCoin } from '../../shared/models/working-coin.model';
 import { KlineCacheService } from '../../shared/services/cache/kline-cache.service';
 import { KlineDataService } from '../../shared/services/kline-data.service';
+import { Candle, TF } from '../../models/kline.model';
+
+/** Колонки таблицы изменения цены. '1d' маппится на TF 'D'. */
+export type PriceChangeCol = '1h' | '4h' | '8h' | '12h' | '1d';
+
+const COL_TF: Record<PriceChangeCol, TF> = {
+  '1h': '1h',
+  '4h': '4h',
+  '8h': '8h',
+  '12h': '12h',
+  '1d': 'D',
+};
+
+export const PRICE_CHANGE_COLS: PriceChangeCol[] = ['1h', '4h', '8h', '12h', '1d'];
 
 /**
  * Этот сервис отвечает за предоставление списка "рабочих" монет
@@ -80,6 +94,83 @@ export class CoinsService {
         logoUrl: logoUrl, // <-- ИЗМЕНЕНО
       };
     });
+  }
+
+  /**
+   * Изменение цены (%) за окна 1h/4h/8h/12h/1d для всех монет из local DB.
+   * Источник — KlineDataService (сначала IndexedDB, иначе API).
+   * Ключ мапы — чистый symbol ('BTC'), значение null — нет данных.
+   */
+  public async getPriceChanges(): Promise<Map<string, Record<PriceChangeCol, number | null>>> {
+    const cols = PRICE_CHANGE_COLS;
+
+    const snapshots = await Promise.all(
+      cols.map((col) => this.klineDataService.getKlines(COL_TF[col]).catch(() => null))
+    );
+
+    // symbol (clean, 'BTC') -> per-col change
+    const result = new Map<string, Record<PriceChangeCol, number | null>>();
+
+    const ensure = (symbol: string): Record<PriceChangeCol, number | null> => {
+      let rec = result.get(symbol);
+      if (!rec) {
+        rec = { '1h': null, '4h': null, '8h': null, '12h': null, '1d': null };
+        result.set(symbol, rec);
+      }
+      return rec;
+    };
+
+    snapshots.forEach((market, i) => {
+      if (!market?.data) return;
+      const col = cols[i];
+      // base map: 'BTCUSDT' -> entry (strip trailing USDT like _transform does)
+      const byBase = new Map<string, (typeof market.data)[number]>();
+      for (const entry of market.data) {
+        const norm = this._normalizeSymbol(entry.symbol);
+        if (!norm) continue;
+        byBase.set(norm, entry);
+        if (norm.endsWith('USDT') && norm.length > 4) {
+          byBase.set(norm.slice(0, -4), entry);
+        }
+      }
+      // Для каждой известной чистой монеты ищем запись
+      for (const [cleanSymbol] of result) {
+        const entry = byBase.get(cleanSymbol);
+        if (entry) {
+          ensure(cleanSymbol)[col] = this._calcChange(entry.candles);
+        }
+      }
+      // Монеты, встреченные только в маркет-данных: регистрируем под чистым именем
+      for (const [key, entry] of byBase) {
+        const clean = key.endsWith('USDT') && key.length > 4 ? key.slice(0, -4) : key;
+        if (!result.has(clean)) {
+          ensure(clean)[col] = this._calcChange(entry.candles);
+        } else if (ensure(clean)[col] === null) {
+          ensure(clean)[col] = this._calcChange(entry.candles);
+        }
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * % изменения за последний интервал ТФ: берём две последние свечи серии
+   * (close[-1] vs close[-2]) — данные из local DB (KlineDataService).
+   */
+  private _calcChange(candles: Candle[] | undefined): number | null {
+    if (!candles || candles.length < 2) return null;
+    const last = candles[candles.length - 1];
+    const prev = candles[candles.length - 2];
+    if (!last || !prev || !(prev.closePrice > 0) || !(last.closePrice > 0)) return null;
+    return ((last.closePrice - prev.closePrice) / prev.closePrice) * 100;
+  }
+
+  /** Нормализация как в enrichWithRealtimeCorrelation: 'BTC/USDT:USDT' -> 'BTCUSDT'. */
+  private _normalizeSymbol(val: string): string {
+    if (!val) return '';
+    const base = val.split(':')[0];
+    return base.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   }
 
   /**

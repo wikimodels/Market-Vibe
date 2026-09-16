@@ -28,9 +28,6 @@
       [tooltipText]="'Coin Analytics'">
     </app-panel-button> -->
 
-    <app-panel-button [iconPath]="sortIcon()" (actionClick)="sortOut()" [tooltipText]="'Сортировка'">
-    </app-panel-button>
-
     <app-panel-button [iconPath]="'download'" (actionClick)="downloadList()" [tooltipText]="'Скачать список'">
     </app-panel-button>
 
@@ -53,19 +50,5 @@
   <app-loading-spinner></app-loading-spinner>
 </div>
 } @else {
-<div class="coin-pills-container">
-  @for (coin of filteredCoins(); track coin.symbol) {
-  <app-coin-item [coin]="coin" />
-  } @empty {
-  <div class="empty-list-message">
-    <span>
-      @if (filterText()) {
-      Монет по фильтру "{{filterText()}}" не найдено.
-      } @else {
-      Не удалось загрузить монеты.
-      }
-    </span>
-  </div>
-  }
-</div>
+<app-coins-table [coins]="filteredCoins()"></app-coins-table>
 }

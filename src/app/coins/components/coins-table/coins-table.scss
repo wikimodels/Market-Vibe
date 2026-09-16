@@ -1,0 +1,157 @@
+/* Таблица изменения цены: тёмная тема как у страницы, fixed header */
+.coins-table-wrapper {
+  position: relative;
+  max-height: calc(100vh - 150px);
+  min-height: 70vh;
+  overflow: auto;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: #121212;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.coins-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.coins-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #1b1b1b;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+}
+
+.coins-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.coins-table thead th.sortable:hover {
+  color: #fff;
+  background: #242424;
+}
+
+.sort-arrow {
+  display: inline-block;
+  min-width: 1em;
+  font-size: 0.8em;
+  color: #e000b0;
+}
+
+.coins-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.87);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.coins-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.coins-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.col-coin {
+  font-weight: 600;
+  text-align: center;
+}
+
+.coins-table td.col-coin {
+  text-align: left;
+}
+
+.col-coin app-coin-item {
+  display: block;
+  max-width: 230px;
+  margin: 0;
+}
+
+/* Компактная пилла внутри таблицы (пробиваем инкапсуляцию coin-item) */
+.col-coin ::ng-deep .coin-pill {
+  padding: 5px 10px 5px 6px;
+  border-radius: 6px;
+}
+
+.col-coin ::ng-deep .coin-logo {
+  width: 18px;
+  height: 18px;
+}
+
+.col-coin ::ng-deep .coin-symbol {
+  font-size: 0.7rem;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-coin ::ng-deep .coin-links {
+  gap: 2px;
+  padding: 0 2px;
+}
+
+.col-coin ::ng-deep .circle-btn {
+  width: 19px;
+  height: 19px;
+}
+
+.col-coin ::ng-deep .circle-btn img {
+  width: 12px;
+  height: 12px;
+}
+
+.col-num {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.coins-table tbody td.pos {
+  color: #4caf50;
+}
+
+.coins-table tbody td.neg {
+  color: #ef5350;
+}
+
+.empty,
+.table-loading {
+  text-align: center;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 14px;
+  right: 46px;
+  z-index: 1000;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 0, 176, 0.4);
+  background: #1b1b1b;
+  color: #e000b0;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.scroll-top-btn:hover {
+  background: #242424;
+  transform: translateY(-2px);
+}

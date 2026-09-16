@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 import { WorkingCoin } from '../shared/models/working-coin.model';
 import { CoinsService } from './services/coins.service';
-import { CoinItemComponent } from '../shared/components/coin-item/coin-item.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,8 +22,7 @@ import { NotificationService } from '../shared/services/notification.service';
 import { CoinWindowService } from '../shared/services/coin-window.service';
 import { WorkingCoinsApiService } from '../shared/services/api/working-coins-api.service';
 import { PanelButtonComponent } from '../shared/components/panel-button/panel-button.component';
-
-type SortMode = 'name-asc' | 'name-desc' | 'category-asc' | 'category-desc';
+import { CoinsTableComponent } from './components/coins-table/coins-table';
 
 @Component({
   selector: 'app-coins',
@@ -32,13 +30,13 @@ type SortMode = 'name-asc' | 'name-desc' | 'category-asc' | 'category-desc';
   imports: [
     CommonModule,
     LoadingSpinnerComponent,
-    CoinItemComponent,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatButtonModule,
     SearchFilterComponent,
     PanelButtonComponent,
+    CoinsTableComponent,
   ],
   templateUrl: './coins.html',
   styleUrls: ['./coins.scss'],
@@ -56,7 +54,6 @@ export class Coins {
   public coins = signal<WorkingCoin[]>([]);
   public isLoading = signal<boolean>(true);
   public filterText = signal<string>('');
-  public sortMode = signal<SortMode>('name-asc');
 
   private readonly bitcoinUrl = 'https://www.tradingview.com/chart?symbol=BYBIT:BTCUSDT.P';
 
@@ -68,30 +65,13 @@ export class Coins {
   public selectionCount = computed(() => this.selectionSignal().length);
   public hasSelection = computed(() => this.selectionSignal().length > 0);
 
-  public sortIcon = computed(() => {
-    const mode = this.sortMode();
-    return mode === 'name-asc' || mode === 'category-asc' ? 'sort-up' : 'sort-down';
-  });
-
   public filteredCoins = computed(() => {
-    let allCoins = [...this.coins()];
+    const allCoins = [...this.coins()];
     const filter = this.filterText().toLowerCase();
 
-    // Фильтрация
+    // Фильтрация (сортировка — в таблице)
     if (filter) {
-      allCoins = allCoins.filter((coin) => coin.symbol.toLowerCase().includes(filter));
-    }
-
-    // Сортировка
-    const mode = this.sortMode();
-    if (mode === 'name-asc') {
-      allCoins.sort((a, b) => a.symbol.localeCompare(b.symbol));
-    } else if (mode === 'name-desc') {
-      allCoins.sort((a, b) => b.symbol.localeCompare(a.symbol));
-    } else if (mode === 'category-asc') {
-      allCoins.sort((a, b) => a.category - b.category);
-    } else if (mode === 'category-desc') {
-      allCoins.sort((a, b) => b.category - a.category);
+      return allCoins.filter((coin) => coin.symbol.toLowerCase().includes(filter));
     }
 
     return allCoins;
@@ -134,17 +114,6 @@ export class Coins {
 
   public onFilterChange(filterValue: string): void {
     this.filterText.set(filterValue);
-  }
-
-  public sortOut(): void {
-    const current = this.sortMode();
-    const cycle: Record<SortMode, SortMode> = {
-      'name-asc': 'name-desc',
-      'name-desc': 'category-asc',
-      'category-asc': 'category-desc',
-      'category-desc': 'name-asc',
-    };
-    this.sortMode.set(cycle[current]);
   }
 
   // ============================================
