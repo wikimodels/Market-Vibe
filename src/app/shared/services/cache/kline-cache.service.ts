@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { KlineDB, CoinsDataWrapper } from './kline-db';
 import { CoinData } from '../../../models/coin-data.model';
 import { TF, MarketData } from '../../../models/kline.model';
+import { getFreshnessInfo, isMarketDataExpired } from './kline-freshness';
 
 // Статический ключ для хранения единого мастер-списка монет
 const COIN_DATA_KEY = 'MASTER_COIN_LIST';
@@ -23,6 +24,12 @@ export class KlineCacheService {
 
   /**
    * Получает MarketData для указанного таймфрейма из IndexedDB.
+   *
+   * ⚠️ СЫРОЙ доступ без проверки свежести. Только для внутренних нужд
+   * (синхронизация в /settings, статистика). UI-компоненты НЕ должны
+   * использовать его напрямую — только через KlineDataService.getKlines()
+   * или getFreshMarketData() ниже.
+   *
    * @param timeframe Таймфрейм ('1h', '4h', и т.д.)
    * @returns MarketData или null, если не найдено.
    */
@@ -67,6 +74,32 @@ export class KlineCacheService {
     } catch (error) {
       console.error(`❌ Cache: Ошибка удаления MarketData [${timeframe}]`, error);
     }
+  }
+
+  /**
+   * ЕДИНСТВЕННЫЙ разрешенный путь чтения свечей из IndexedDB для UI.
+   *
+   * Возвращает данные ТОЛЬКО если они свежие (проверка через
+   * kline-freshness.ts). Протухшие/пустые данные приравниваются к
+   * отсутствующим: метод возвращает null и удаляет протухшую запись,
+   * чтобы она никого больше не отравила.
+   *
+   * @param timeframe Таймфрейм ('1h', '4h', и т.д.)
+   * @returns Свежий MarketData или null.
+   */
+  public async getFreshMarketData(timeframe: TF): Promise<MarketData | null> {
+    const data = await this.getMarketData(timeframe);
+    if (!data) return null;
+    if (isMarketDataExpired(data, timeframe)) {
+      console.warn(`⚠️ Cache: MarketData [${timeframe}] протух, отдавать нельзя — удаляю.`, getFreshnessInfo(data, timeframe));
+      try {
+        await this.db.marketData.delete(timeframe);
+      } catch (error) {
+        console.error(`❌ Cache: Ошибка удаления протухшего MarketData [${timeframe}]`, error);
+      }
+      return null;
+    }
+    return data;
   }
 
   // ========================================

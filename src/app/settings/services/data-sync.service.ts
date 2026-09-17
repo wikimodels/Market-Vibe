@@ -2,10 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, from } from 'rxjs';
 import { switchMap, map, catchError, delay, tap } from 'rxjs/operators';
-import { environment, BUFFER_MS } from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { TF, KlineApiResponse, MarketData } from '../../models/kline.model';
 import { KlineCacheService } from '../../shared/services/cache/kline-cache.service';
 import { CoinsDataService } from '../../shared/services/coin-data.service';
+import {
+  getMaxLastOpenTime,
+  isMarketDataExpired,
+  parseTimeframeToMs,
+} from '../../shared/services/cache/kline-freshness';
 
 export interface StaleDataError {
   isStale: boolean;
@@ -218,17 +223,12 @@ export class DataSyncService {
         return { isStale: true, lagMs: 0, lastOpenTime: 0, serverTime: Date.now() };
       }
 
-      const timeframeMs = this.parseTimeframeToMs(timeframe);
-      let maxLastOpenTime = 0;
-      for (const coin of data.data) {
-        if (!coin.candles?.length) continue;
-        const last = coin.candles[coin.candles.length - 1];
-        if (last.openTime > maxLastOpenTime) maxLastOpenTime = last.openTime;
-      }
+      const timeframeMs = parseTimeframeToMs(timeframe);
+      const maxLastOpenTime = getMaxLastOpenTime(data);
 
       const currentTime = Date.now();
-      const expectedMinTime = currentTime - (2 * timeframeMs + BUFFER_MS);
-      const isStale = maxLastOpenTime < expectedMinTime;
+      // Единая формула свежести (см. kline-freshness.ts)
+      const isStale = isMarketDataExpired(data, timeframe);
 
       const idealCloseTime = maxLastOpenTime + timeframeMs;
       const lagMs = Math.max(0, currentTime - idealCloseTime);
@@ -238,15 +238,5 @@ export class DataSyncService {
       console.error('Error checking stale status', e);
       return { isStale: true, lagMs: 0, lastOpenTime: 0, serverTime: Date.now() };
     }
-  }
-
-  private parseTimeframeToMs(timeframe: TF): number {
-    const H = 3600000;
-    if (timeframe === '1h') return H;
-    if (timeframe === '4h') return 4 * H;
-    if (timeframe === '8h') return 8 * H;
-    if (timeframe === '12h') return 12 * H;
-    if (timeframe === 'D' || timeframe === '1d') return 24 * H;
-    return 0;
   }
 }

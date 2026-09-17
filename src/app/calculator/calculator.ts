@@ -16,6 +16,7 @@ import { NotificationService } from '../shared/services/notification.service';
 import { SearchFilterComponent } from '../shared/components/search-filter/search-filter.component';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 import { KlineCacheService } from '../shared/services/cache/kline-cache.service';
+import { KlineDataService } from '../shared/services/kline-data.service';
 
 interface CalculatedCoin {
   symbol: string;
@@ -45,6 +46,7 @@ interface CalculatedCoin {
 })
 export class CalculatorComponent implements OnInit {
   private klineCacheService = inject(KlineCacheService);
+  private klineDataService = inject(KlineDataService);
   private notificationService = inject(NotificationService);
 
   // Signals
@@ -111,8 +113,14 @@ export class CalculatorComponent implements OnInit {
         return;
       }
 
-      // ─── ШАГ 3: Klines 1h из IndexedDB — для цен ───
-      const marketData = await this.klineCacheService.getMarketData('1h');
+      // ─── ШАГ 3: Klines 1h ТОЛЬКО свежие — через оркестратор ───
+      // Напрямую из IndexedDB читать нельзя: там может лежать протухшее.
+      // getKlines() каждый вызов проверяет свежесть и вернет null, а не stale.
+      const marketData = await this.klineDataService.getKlines('1h');
+      if (!marketData) {
+        this.notificationService.error('Market data is stale or missing. Please sync 1h in Settings.');
+        return;
+      }
       const priceMap = new Map<string, number>();
       if (marketData?.data?.length) {
         for (const d of marketData.data) {

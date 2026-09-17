@@ -39,11 +39,19 @@ export class CoinsService {
 
   /**
    * Получает список монет, готовых для отображения в UI.
+   *
+   * Строгое правило свежести: сначала требуем СВЕЖИЕ klines через оркестратор.
+   * Если свежих данных нет (null = протухшие/отсутствуют), возвращаем [],
+   * а не трансформируем потенциально протухший мастер-список.
    */
   public async getWorkingCoins(): Promise<WorkingCoin[]> {
     try {
-      // Шаг 1: Гарантируем свежесть данных (по вашему требованию).
-      await this.klineDataService.getKlines('1h');
+      // Шаг 1: Гарантируем свежесть данных. null = свежих нет, stale не отдаем.
+      const fresh = await this.klineDataService.getKlines('1h');
+      if (!fresh) {
+        console.warn('⚠️ CoinsService: нет свежих klines 1h — WorkingCoins не отдаю.');
+        return [];
+      }
 
       // Шаг 2: Берем данные из IndexedDB.
       const masterCoinList = await this.cache.getCoinsData();
