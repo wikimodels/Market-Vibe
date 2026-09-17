@@ -46,12 +46,10 @@ export class KlineDataApiService {
     // 🚀 ЛОГИКА: Добавляем параметры запроса
     let params = new HttpParams();
 
-    // Если это 1-часовой таймфрейм, ставим лимит 600
-    if (timeframe === '1h') {
+    // 1h / 4h / 1d (D) — 600 свечей, остальные — дефолт сервера 400
+    if (timeframe === '1h' || timeframe === '4h' || timeframe === 'D' || (timeframe as string) === '1d') {
       params = params.set('limit', '600');
     }
-    // Для всех остальных таймфреймов limit не будет добавлен,
-    // и сервер использует свой лимит по умолчанию (400)
 
     // 🚀 ИСПРАВЛЕНО: Добавляем { headers, params } в запрос
     return this.http.get<KlineApiResponse>(url, { headers, params });
