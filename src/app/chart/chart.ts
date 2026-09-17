@@ -17,12 +17,16 @@ import {
   CandlestickSeries,
   ColorType,
   createChart,
+  CrosshairMode,
   HistogramData,
   HistogramSeries,
   IChartApi,
   ISeriesApi,
   LineData,
   LineSeries,
+  LineStyle,
+  TickMarkType,
+  Time,
   UTCTimestamp,
 } from 'lightweight-charts';
 import { WorkingCoin } from '../shared/models/working-coin.model';
@@ -37,6 +41,86 @@ import { MarketData, TF } from '../models/kline.model';
 const CHART_TFS: TF[] = ['1h', '4h', '8h', '12h', 'D'];
 const UP = '#26a69a';
 const DOWN = '#ef5350';
+const MSK_TZ = 'Europe/Moscow';
+
+/** Только Москва — без сдвига данных, чисто форматирование */
+function fmtMskTick(time: Time, type: TickMarkType): string | null {
+  const ts = typeof time === 'number' ? (time as number) : NaN;
+  if (!isFinite(ts)) return null;
+  const d = new Date(ts * 1000);
+  try {
+    switch (type) {
+      case TickMarkType.Year:
+        return new Intl.DateTimeFormat('ru-RU', { timeZone: MSK_TZ, year: 'numeric' }).format(d);
+      case TickMarkType.Month:
+        return new Intl.DateTimeFormat('ru-RU', {
+          timeZone: MSK_TZ,
+          month: 'short',
+          year: '2-digit',
+        }).format(d);
+      case TickMarkType.DayOfMonth:
+        return new Intl.DateTimeFormat('ru-RU', {
+          timeZone: MSK_TZ,
+          day: '2-digit',
+          month: 'short',
+        }).format(d);
+      case TickMarkType.Time:
+        return new Intl.DateTimeFormat('ru-RU', {
+          timeZone: MSK_TZ,
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(d);
+      case TickMarkType.TimeWithSeconds:
+        return new Intl.DateTimeFormat('ru-RU', {
+          timeZone: MSK_TZ,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).format(d);
+      default:
+        return null;
+    }
+  } catch {
+    return null;
+  }
+}
+function fmtMskCrosshair(time: Time): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ts = typeof time === 'number' ? (time as number) : NaN;
+  if (!isFinite(ts)) return String(time ?? '');
+  const d = new Date(ts * 1000);
+  try {
+    // красива дата/время: 17 сент. 15:00
+    return new Intl.DateTimeFormat('ru-RU', {
+      timeZone: MSK_TZ,
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(d);
+  } catch {
+    return d.toLocaleString('ru-RU');
+  }
+}
+function fmtPrice(price: number): string {
+  if (!isFinite(price)) return '';
+  const abs = Math.abs(price);
+  // тебе нужно 2-3 знака после запятой, без лишней точности
+  // CHZ ~0.04 -> 0.040, BTC ~90000 -> 90000.12, микро <0.001 -> больше знаков чтобы не 0.000
+  let dec = 2;
+  if (abs >= 1) dec = 2;
+  else if (abs >= 0.01) dec = 3; // 0.034 -> 0.034
+  else if (abs >= 0.001) dec = 3;
+  else dec = 6; // 0.000012 -> 0.000012
+  let s = price.toFixed(dec);
+  // для 2-3 знаков хвостовые нули не критичны — оставляем как есть, чтобы было ровно 0.040
+  // но для микро (6) чистим
+  if (dec > 3) s = s.replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.0+$/, '');
+  return s;
+}
 
 @Component({
   selector: 'app-chart-page',
@@ -111,6 +195,13 @@ export class ChartPage implements AfterViewInit, OnDestroy {
   private ema150: ISeriesApi<'Line'> | null = null;
   private ro: ResizeObserver | null = null;
   private loadToken = 0;
+  // — оптимизация: кэш нарезанных серий + дебаунс —
+  private seriesCache = new Map<
+    string,
+    { updatedAt: number; cd: CandlestickData[]; vd: HistogramData[]; ema50: LineData[]; ema100: LineData[]; ema150: LineData[] }
+  >();
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private pending: { coin: WorkingCoin; tf: TF } | null = null;
 
   constructor() {
     // График следует за выделением: последняя кликнутая пилла
@@ -120,12 +211,21 @@ export class ChartPage implements AfterViewInit, OnDestroy {
         this.chartCoin.set(sel[sel.length - 1]);
       }
     });
-    // Перезагрузка серии при смене монеты/ТФ
+    // Перезагрузка серии при смене монеты/ТФ — дебаунс 90мс чтобы убрать дёрганность при быстрых кликах
     effect(() => {
       const coin = this.chartCoin();
       const tf = this.tf();
-      if (coin) void this.loadSeries(coin, tf);
+      if (coin) this.scheduleLoad(coin, tf);
     });
+  }
+
+  private scheduleLoad(coin: WorkingCoin, tf: TF): void {
+    this.pending = { coin, tf };
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      const p = this.pending;
+      if (p) void this.loadSeries(p.coin, p.tf);
+    }, 90);
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -147,6 +247,7 @@ export class ChartPage implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
     this.ro?.disconnect();
     this.chart?.remove();
     this.chart = null;
@@ -204,11 +305,50 @@ export class ChartPage implements AfterViewInit, OnDestroy {
           vertLines: { visible: false },
           horzLines: { visible: false },
         },
-        crosshair: {
-          vertLine: { visible: false },
-          horzLine: { visible: false },
+        rightPriceScale: {
+          visible: true,
+          borderVisible: false,
+          borderColor: 'rgba(255,255,255,0.08)',
+          textColor: 'rgba(255, 255, 255, 0.62)',
+          entireTextOnly: false,
+          ticksVisible: false,
+          minimumWidth: 74,
+          scaleMargins: { top: 0.05, bottom: 0.25 },
         },
-        timeScale: { visible: false },
+        leftPriceScale: { visible: false },
+        timeScale: {
+          visible: true,
+          borderVisible: false,
+          borderColor: 'rgba(255,255,255,0.08)',
+          timeVisible: true,
+          secondsVisible: false,
+          ticksVisible: false,
+          fixLeftEdge: true,
+          fixRightEdge: false,
+          rightOffset: 7,
+          rightOffsetPixels: 100,
+          barSpacing: 6,
+          minimumHeight: 22,
+          allowBoldLabels: true,
+          tickMarkFormatter: (time: Time, type: TickMarkType) => fmtMskTick(time, type),
+        },
+        crosshair: {
+          mode: CrosshairMode.Normal,
+          vertLine: {
+            visible: true,
+            width: 1 as const,
+            color: 'rgba(255,255,255,0.35)',
+            style: LineStyle.Dashed,
+            labelVisible: false,
+          },
+          horzLine: { visible: false, labelVisible: false },
+        },
+        localization: {
+          locale: 'ru-RU',
+          dateFormat: 'dd.MM.yyyy',
+          timeFormatter: (time: Time) => fmtMskCrosshair(time),
+          priceFormatter: (p: number) => fmtPrice(p),
+        },
       });
       this.candles = this.chart.addSeries(CandlestickSeries, {
         upColor: UP,
@@ -219,17 +359,29 @@ export class ChartPage implements AfterViewInit, OnDestroy {
         priceScaleId: 'right',
         priceLineVisible: false,
         lastValueVisible: false,
+        priceFormat: { type: 'custom', formatter: fmtPrice, minMove: 0.000001 } as const,
       });
+      // scaleMargins уже в rightPriceScale, но дублируем для надёжности после создания серии
       this.chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.05, bottom: 0.25 } });
-    this.volume = this.chart.addSeries(HistogramSeries, { priceScaleId: 'vol' });
-    this.chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-    const emaOpts = { lineWidth: 2 as const, priceScaleId: 'right', priceLineVisible: false, lastValueVisible: false, title: '' as const };
-    this.ema50 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#FF9800' });
-    this.ema100 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#EF5350' });
-    this.ema150 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#2962FF' });
-      // прячем оси только после привязки серий
-      this.chart.priceScale('right').applyOptions({ visible: false });
-      this.chart.priceScale('left').applyOptions({ visible: false });
+      this.volume = this.chart.addSeries(HistogramSeries, {
+        priceScaleId: 'vol',
+        priceLineVisible: false,
+        lastValueVisible: false,
+      });
+      this.chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+      const emaOpts = {
+        lineWidth: 2 as const,
+        priceScaleId: 'right',
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false as const,
+        crosshairMarkerRadius: 0 as const,
+        title: '' as const,
+      };
+      this.ema50 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#FF9800' });
+      this.ema100 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#EF5350' });
+      this.ema150 = this.chart.addSeries(LineSeries, { ...emaOpts, color: '#2962FF' });
+      // левая шкала скрыта, правая — видима узкая (только цены), vol — скрыта
 
       this.ro = new ResizeObserver(() => {
         const box = this.chartBox?.nativeElement;
@@ -248,34 +400,91 @@ export class ChartPage implements AfterViewInit, OnDestroy {
     return data.data.find((e) => want.has(norm(e.symbol))) ?? null;
   }
 
-  /**
-   * EMA как в TradingView: сид — SMA первых N закрытий,
-   * дальше close*k + prev*(1-k), k = 2/(N+1).
-   */
-  private calcEMA(values: { time: UTCTimestamp; close: number }[], period: number): LineData[] {
-    if (values.length < period) return [];
-    const k = 2 / (period + 1);
-    const out: LineData[] = [];
-    let sma = 0;
-    for (let i = 0; i < period; i++) sma += values[i].close;
-    let ema = sma / period;
-    out.push({ time: values[period - 1].time, value: ema });
-    for (let i = period; i < values.length; i++) {
-      ema = values[i].close * k + ema * (1 - k);
-      out.push({ time: values[i].time, value: ema });
+  /** EMA 50/100/150 за один проход — в 3 раза меньше циклов */
+  private calcEMAs(
+    values: { time: UTCTimestamp; close: number }[],
+    periods: number[],
+  ): Map<number, LineData[]> {
+    const outs = new Map<number, LineData[]>();
+    const sorted = [...periods].sort((a, b) => a - b);
+    const max = Math.max(...sorted);
+    if (values.length < max) {
+      sorted.forEach((p) => outs.set(p, []));
+      return outs;
     }
-    return out;
+    const ks = new Map(sorted.map((p) => [p, 2 / (p + 1)]));
+    const emas = new Map<number, number>();
+    sorted.forEach((p) => outs.set(p, []));
+    // префиксные суммы для SMA сидов
+    let sum = 0;
+    for (let i = 0; i < values.length; i++) {
+      sum += values[i].close;
+      for (const p of sorted) {
+        if (i === p - 1) {
+          const ema0 = sum / p;
+          emas.set(p, ema0);
+          outs.get(p)!.push({ time: values[i].time, value: ema0 });
+        } else if (i >= p) {
+          const k = ks.get(p)!;
+          const prev = emas.get(p)!;
+          const cur = values[i].close * k + prev * (1 - k);
+          emas.set(p, cur);
+          outs.get(p)!.push({ time: values[i].time, value: cur });
+        }
+      }
+    }
+    return outs;
+  }
+
+  /** @deprecated одиночный EMA — оставлен для совместимости */
+  private calcEMA(values: { time: UTCTimestamp; close: number }[], period: number): LineData[] {
+    return this.calcEMAs(values, [period]).get(period) ?? [];
+  }
+
+  private applySeries(s: { cd: CandlestickData[]; vd: HistogramData[]; ema50: LineData[]; ema100: LineData[]; ema150: LineData[] }): void {
+    // батчим в одном фрейме — один invalidate вместо 5
+    const doApply = () => {
+      this.candles?.setData(s.cd);
+      this.volume?.setData(s.vd);
+      this.ema50?.setData(s.ema50);
+      this.ema100?.setData(s.ema100);
+      this.ema150?.setData(s.ema150);
+      this.chart?.timeScale().scrollToRealTime();
+    };
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(doApply);
+    else doApply();
   }
 
   private async loadSeries(coin: WorkingCoin, tf: TF): Promise<void> {
     const token = ++this.loadToken;
+    const cacheKey = `${coin.symbol}|${tf}`;
+    const cached = this.seriesCache.get(cacheKey);
+    // мгновенная отдача из кэша — без мигания лоадера
+    if (cached) {
+      this.applySeries(cached);
+      this.chartStatus.set('ready');
+      // фоном проверим свежесть (RAM hit = 0мс)
+      void this.klineData.getKlines(tf).then((m) => {
+        if (m && m.updatedAt !== cached.updatedAt) {
+          // протух кэш — инвалидируем и перезальём
+          this.seriesCache.delete(cacheKey);
+          if (token === this.loadToken && this.chartCoin()?.symbol === coin.symbol && this.tf() === tf) {
+            void this.loadSeries(coin, tf);
+          }
+        }
+      });
+      // префетч остальных ТФ
+      this.prefetchOtherTFs(tf);
+      return;
+    }
+
     this.chartStatus.set('loading');
     try {
       const market = await this.klineData.getKlines(tf);
       if (token !== this.loadToken) return; // устаревший запрос
       const entry = market ? this.findEntry(market, coin.symbol) : null;
       const raw = (entry?.candles ?? []).filter(
-        (c) => c.openTime > 0 && c.openPrice > 0 && c.closePrice > 0
+        (c) => c.openTime > 0 && c.openPrice > 0 && c.closePrice > 0,
       );
       if (!this.candles || raw.length < 2) {
         this.chartStatus.set('empty');
@@ -295,21 +504,37 @@ export class ChartPage implements AfterViewInit, OnDestroy {
         value: c.volume ?? 0,
         color: c.closePrice >= c.openPrice ? 'rgba(38,166,154,0.45)' : 'rgba(239,83,80,0.45)',
       }));
-      this.candles.setData(cd);
-      this.volume?.setData(vd);
-      // EMA 50/100/150 по закрытиям
-      if (this.ema50 && this.ema100 && this.ema150) {
-        const closes = cd.map((d) => ({ time: d.time as UTCTimestamp, close: d.close }));
-        this.ema50.setData(this.calcEMA(closes, 50));
-        this.ema100.setData(this.calcEMA(closes, 100));
-        this.ema150.setData(this.calcEMA(closes, 150));
+      const closes = cd.map((d) => ({ time: d.time as UTCTimestamp, close: d.close }));
+      const emas = this.calcEMAs(closes, [50, 100, 150]);
+      const pack = {
+        updatedAt: market?.updatedAt ?? 0,
+        cd,
+        vd,
+        ema50: emas.get(50) ?? [],
+        ema100: emas.get(100) ?? [],
+        ema150: emas.get(150) ?? [],
+      };
+      this.seriesCache.set(cacheKey, pack);
+      // LRU — держим не больше 60 серий
+      if (this.seriesCache.size > 60) {
+        const first = this.seriesCache.keys().next().value as string;
+        this.seriesCache.delete(first);
       }
-      this.chart?.timeScale().scrollToRealTime();
+      this.applySeries(pack);
       this.chartStatus.set('ready');
+      this.prefetchOtherTFs(tf);
     } catch (e) {
       if (token !== this.loadToken) return;
       console.error('❌ ChartPage: loadSeries failed', e);
       this.chartStatus.set('error');
+    }
+  }
+
+  private prefetchOtherTFs(current: TF): void {
+    for (const t of this.tfs) {
+      if (t === current) continue;
+      // fire-and-forget, RAM/IDB hit ~0мс, сеть — в фоне
+      void this.klineData.getKlines(t).catch(() => {});
     }
   }
 }

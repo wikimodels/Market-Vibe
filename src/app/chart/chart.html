@@ -18,10 +18,9 @@
         }
       </div>
     </div>
-    <div class="chart-box" #chartBox>
-      @if (chartStatus() === 'loading') {
-        <div class="chart-overlay">Загрузка графика…</div>
-      } @else if (chartStatus() === 'empty') {
+    <div class="chart-box" #chartBox [class.loading]="chartStatus() === 'loading'">
+      <div class="chart-loader" [class.on]="chartStatus() === 'loading'"></div>
+      @if (chartStatus() === 'empty') {
         <div class="chart-overlay">Нет данных для {{ chartCoin()?.symbol }} ({{ tf() }})</div>
       } @else if (chartStatus() === 'error') {
         <div class="chart-overlay error">Ошибка загрузки графика</div>
