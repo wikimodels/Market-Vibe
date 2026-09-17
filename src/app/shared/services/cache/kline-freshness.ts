@@ -57,8 +57,7 @@ export function isMarketDataExpired(
     if (maxLastOpenTime === 0) return true;
 
     const currentTime = Date.now();
-    // 4ч свеча 11:00 при сейчас 18:00 должна считаться протухшей — 1*TF+буфер, а не 2*TF
-    const expiryTime = maxLastOpenTime + timeframeMs + BUFFER_MS + 5 * 60 * 1000;
+    const expiryTime = maxLastOpenTime + 2 * timeframeMs + BUFFER_MS;
     return currentTime > expiryTime;
   } catch {
     // Fail-closed: при любой ошибке считаем данные протухшими.
@@ -71,7 +70,7 @@ export function getFreshnessInfo(data: MarketData | null | undefined, timeframe:
   const timeframeMs = parseTimeframeToMs(timeframe);
   const maxLastOpenTime = getMaxLastOpenTime(data);
   const currentTime = Date.now();
-  const expiryTime = maxLastOpenTime + timeframeMs + BUFFER_MS + 5 * 60 * 1000;
+  const expiryTime = maxLastOpenTime + 2 * timeframeMs + BUFFER_MS;
   return {
     maxLastOpenTime: maxLastOpenTime ? new Date(maxLastOpenTime).toISOString() : null,
     currentTime: new Date(currentTime).toISOString(),
