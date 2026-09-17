@@ -19,8 +19,8 @@ export const environment = {
   token: 'O0hrTGEd3meImdof/H0Hj2XOKuVgQAbr+D9w0DRZvtA=',
   klineDataUrls: {
     '1h': bazzarUrl + '/api/cache/1h',
-    '4h': bizzarUrl + '/api/cache/4h',
-    '8h': bizzarUrl + '/api/cache/8h',
+    '4h': bazzarUrl + '/api/cache/4h',
+    '8h': bazzarUrl + '/api/cache/8h',
     '12h': bazzarUrl + '/api/cache/12h',
     D: bazzarUrl + '/api/cache/D',
     '1d': bazzarUrl + '/api/cache/D', // Alias for D
@@ -51,5 +51,5 @@ export const environment = {
     D: 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D',
     '1d': 'https://loyal-yearly-jawfish.ngrok-free.app/api/cache/D', // Alias for D
   },
-  defaultDataSource: 'ngrok' as 'render' | 'ngrok', // Default to Ngrok servers
+  defaultDataSource: 'render' as 'render' | 'ngrok', // bazzar primary, ngrok flaky for 4h
 };
