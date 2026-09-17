@@ -101,8 +101,9 @@ export class CoinsService {
    * Источник — KlineDataService (сначала IndexedDB, иначе API).
    * Ключ мапы — чистый symbol ('BTC'), значение null — нет данных.
    */
-  public async getPriceChanges(): Promise<Map<string, Record<PriceChangeCol, number | null>>> {
-    const cols = PRICE_CHANGE_COLS;
+  public async getPriceChanges(
+    cols: PriceChangeCol[] = PRICE_CHANGE_COLS
+  ): Promise<Map<string, Record<PriceChangeCol, number | null>>> {
 
     const snapshots = await Promise.all(
       cols.map((col) => this.klineDataService.getKlines(COL_TF[col]).catch(() => null))

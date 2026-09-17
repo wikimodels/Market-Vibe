@@ -82,6 +82,10 @@ export const routes: Routes = [
         loadComponent: () => import('./coins/coins').then((m) => m.Coins),
       },
       {
+        path: 'chart',
+        loadComponent: () => import('./chart/chart').then((m) => m.ChartPage),
+      },
+      {
         path: 'calculator',
         loadComponent: () => import('./calculator/calculator').then((m) => m.CalculatorComponent),
       },

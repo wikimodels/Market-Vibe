@@ -1,0 +1,55 @@
+<div class="terminal">
+  <section class="chart-pane">
+    <div class="chart-header">
+      <div class="chart-symbol">
+        <span class="sym">{{ chartCoin()?.symbol ?? '—' }}</span>
+        @if (chartCoin()?.categoryStr) {
+          <span class="cat">({{ chartCoin()?.categoryStr }})</span>
+        }
+      </div>
+      <div class="tf-switch">
+        @for (t of tfs; track t) {
+          <button
+            class="tf-btn"
+            [class.active]="t === tf()"
+            (click)="setTf(t)">
+            {{ t === 'D' ? '1d' : t }}
+          </button>
+        }
+      </div>
+    </div>
+    <div class="chart-box" #chartBox>
+      @if (chartStatus() === 'loading') {
+        <div class="chart-overlay">Загрузка графика…</div>
+      } @else if (chartStatus() === 'empty') {
+        <div class="chart-overlay">Нет данных для {{ chartCoin()?.symbol }} ({{ tf() }})</div>
+      } @else if (chartStatus() === 'error') {
+        <div class="chart-overlay error">Ошибка загрузки графика</div>
+      }
+    </div>
+  </section>
+
+  <aside class="watchlist">
+    <div class="watch-search">
+      <app-search-filter (searchChange)="onFilterChange($event)"></app-search-filter>
+    </div>
+    <div class="watch-head">
+      <span class="sortable" (click)="onWatchSort('symbol')">Symbol {{ watchArrow('symbol') }}</span>
+      <span class="sortable" (click)="onWatchSort('chg')">Chg% {{ watchArrow('chg') }}</span>
+    </div>
+    <div class="watch-rows">
+      @for (coin of filteredCoins(); track coin.symbol) {
+        <div class="watch-row" [class.active]="coin.symbol === chartCoin()?.symbol" (click)="pick(coin)">
+          <div class="wpill">
+            <img [src]="logoSrc(coin)" [alt]="coin.symbol" class="wpill-logo" (error)="onLogoError($event)">
+            <span class="wpill-sym">{{ coin.symbol }}</span>
+            <app-links [linkableObject]="coin"></app-links>
+          </div>
+          <span class="watch-chg" [ngClass]="clsChg(chg1h(coin.symbol))">{{ fmtChg(chg1h(coin.symbol)) }}</span>
+        </div>
+      } @empty {
+        <div class="watch-empty">Нет монет</div>
+      }
+    </div>
+  </aside>
+</div>
